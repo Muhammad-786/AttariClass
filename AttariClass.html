@@ -3,164 +3,165 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Attari — Per‑Student Notes</title>
+  <title>Attari — Class Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { color-scheme: light dark; }
-    html, body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Noto Sans, "Apple Color Emoji", "Segoe UI Emoji"; }
+    :root{
+      color-scheme: light dark;
+      --grad-1: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      --grad-2: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);
+      --grad-emerald: linear-gradient(135deg,#10b981 0%,#059669 100%);
+      --glow: 0 0 30px rgba(102,126,234,.35);
+      --glow-emerald: 0 0 30px rgba(16,185,129,.35);
+    }
+    html,body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;scroll-behavior:smooth}
+    .glass{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+    .gradient-animated{background:linear-gradient(-45deg,#667eea,#764ba2,#4facfe,#00f2fe);background-size:400% 400%;animation:gradShift 10s ease infinite}
+    @keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .float{animation:float 6s ease-in-out infinite}
+    @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+    .btn-primary{background:var(--grad-emerald);position:relative;overflow:hidden;transition:transform .2s ease, box-shadow .2s ease}
+    .btn-primary::before{content:"";position:absolute;inset:0;left:-100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transition:left .5s}
+    .btn-primary:hover::before{left:100%}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--glow-emerald)}
+    .spinner{width:18px;height:18px;border:2px solid rgba(16,185,129,.35);border-top:2px solid #10b981;border-radius:50%;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .custom-scrollbar::-webkit-scrollbar{height:8px;width:8px}
+    .custom-scrollbar::-webkit-scrollbar-thumb{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:4px}
+    .notification{position:fixed;top:18px;right:18px;padding:12px 16px;border-radius:12px;color:#fff;font-weight:600;z-index:50;transform:translateX(320px);transition:transform .25s ease}
+    .notification.show{transform:translateX(0)}
+    .notification.success{background:linear-gradient(135deg,#10b981,#059669)}
+    .notification.error{background:linear-gradient(135deg,#ef4444,#dc2626)}
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
-  <div class="max-w-6xl mx-auto p-4 md:p-8">
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
+  <div id="toast" class="notification" role="status" aria-live="polite"></div>
+  <div class="max-w-7xl mx-auto p-4 md:p-8 relative">
     <!-- Header -->
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div>
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Attari — Per‑Student Notes</h1>
-        <p class="text-slate-500 dark:text-slate-400">Add, edit, or delete daily reports for each student. Firestore + Anonymous Auth.</p>
-      </div>
-      <div class="flex items-center gap-3">
-        <span id="authStatus" class="px-3 py-1 rounded-full text-sm bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Connecting…</span>
+    <header class="text-center mb-10">
+      <div class="float">
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Attari Class Tracker</h1>
+        <div class="w-24 h-1 gradient-animated mx-auto mt-4 rounded-full"></div>
+        <p class="mt-4 text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your class.</p>
+        <p class="mt-2 text-sm"><span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> <span id="whoami">Not signed in</span> • <span id="todayDisplay"></span></span></p>
       </div>
     </header>
 
-    <!-- AUTH GATE -->
-    <div id="authGate" class="mt-6">
-      <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 max-w-xl mx-auto">
-        <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <h2 class="text-xl font-semibold">Sign in</h2>
+    <!-- AUTH GATE (styled) -->
+    <div id="authGate" class="max-w-xl mx-auto">
+      <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
+        <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+          <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">Sign in</h2>
           <button id="showSignup" class="text-sm text-emerald-700 hover:underline">Create account</button>
         </div>
-        <form id="signinForm" class="p-6 space-y-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Email</label>
-            <input id="siEmail" type="email" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" required />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Password</label>
-            <input id="siPass" type="password" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" required />
-          </div>
-          <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-medium">Sign in</button>
-          <p id="siMsg" class="text-sm text-slate-500 mt-2"></p>
+        <form id="signinForm" class="p-6 md:p-8 space-y-4">
+          <input id="siEmail" type="email" placeholder="Email" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+          <input id="siPass" type="password" placeholder="Password" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+          <button class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Sign in</button>
+          <p id="siMsg" class="text-sm text-slate-500"></p>
         </form>
-
-        <form id="signupForm" class="hidden p-6 space-y-4">
-          <div class="text-sm text-slate-500">Fill this once to create your teacher account.</div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Email</label>
-            <input id="suEmail" type="email" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" required />
-          </div>
-          <div>
-            <label class="block text-sm font-medium mb-1">Password (min 6 chars)</label>
-            <input id="suPass" type="password" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" required minlength="6" />
-          </div>
-          <button class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-medium">Create account</button>
-          <p id="suMsg" class="text-sm text-slate-500 mt-2"></p>
+        <form id="signupForm" class="hidden p-6 md:p-8 space-y-4">
+          <div class="text-sm text-slate-500">Create your teacher account.</div>
+          <input id="suEmail" type="email" placeholder="Email" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+          <input id="suPass" type="password" placeholder="Password (min 6)" minlength="6" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+          <button class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Create account</button>
+          <p id="suMsg" class="text-sm text-slate-500"></p>
           <div class="text-sm"><button id="showSignin" type="button" class="text-emerald-700 hover:underline">Back to sign in</button></div>
         </form>
       </div>
     </div>
 
-    <!-- APP (hidden until signed in) -->
+    <!-- APP -->
     <div id="app" class="hidden">
-      <!-- Main Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        <!-- Left: Form -->
-        <section class="lg:col-span-1">
-          <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
-            <div class="p-5 md:p-6 border-b border-slate-100 dark:border-slate-800">
-              <div class="flex items-center justify-between">
-                <h2 class="text-xl font-semibold"><span id="formTitle">New Note</span></h2>
-                <div class="text-right">
-                  <div class="text-sm text-slate-500 dark:text-slate-400">Date: <span id="todayDisplay" class="font-medium"></span></div>
-                  <button id="signOutBtn" class="mt-2 text-xs px-2 py-1 rounded-lg ring-1 ring-slate-200 dark:ring-slate-700">Sign out</button>
-                </div>
-              </div>
+      <div class="grid grid-cols-1 xl:grid-cols-5 gap-8">
+        <!-- Form Card -->
+        <section class="xl:col-span-2">
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
+            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+              <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"><span id="formTitle">✨ New Entry</span></h2>
+              <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Sign out</button>
             </div>
-            <form id="notesForm" class="p-5 md:p-6 space-y-4">
+            <form id="notesForm" class="p-6 md:p-8 space-y-6">
               <div>
-                <label class="block text-sm font-medium mb-1">Student</label>
-                <select id="student" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" required>
-                  <option value="" disabled selected>Select a student…</option>
+                <label class="block text-sm font-semibold mb-1">👤 Student</label>
+                <select id="student" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required>
+                  <option value="" disabled selected>Choose a student…</option>
                 </select>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium mb-1">Quran</label>
-                  <input id="quran" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium mb-1">Surah</label>
-                  <input id="surah" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium mb-1">Laws of Salah</label>
-                  <input id="laws" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium mb-1">Qamar</label>
-                  <input id="qamar" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" />
-                </div>
+                <div><label class="block text-sm font-semibold mb-1">📖 Quran</label><input id="quran" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" /></div>
+                <div><label class="block text-sm font-semibold mb-1">🕌 Surah</label><input id="surah" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-purple-500 focus:ring-0" /></div>
+                <div><label class="block text-sm font-semibold mb-1">🤲 Laws of Salah</label><input id="laws" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-indigo-500 focus:ring-0" /></div>
+                <div><label class="block text-sm font-semibold mb-1">🌙 Qamar</label><input id="qamar" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-pink-500 focus:ring-0" /></div>
               </div>
               <div>
-                <label class="block text-sm font-medium mb-1">Anything else</label>
-                <textarea id="anything" rows="4" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2"></textarea>
+                <label class="block text-sm font-semibold mb-1">💭 Additional Notes</label>
+                <textarea id="anything" rows="4" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-teal-500 focus:ring-0"></textarea>
               </div>
-              <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-                <button id="saveBtn" type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-medium shadow hover:bg-emerald-700 transition">Save Note</button>
-                <button id="cancelEditBtn" type="button" class="hidden px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700">Cancel Edit</button>
-                <span id="saveStatus" class="text-sm text-slate-500"></span>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <button id="saveBtn" type="submit" class="btn-primary flex-1 px-6 py-4 rounded-2xl text-white font-bold inline-flex items-center justify-center gap-3"><span id="saveText">💾 Save Entry</span><div id="saveSpinner" class="spinner hidden"></div></button>
+                <button id="cancelEditBtn" type="button" class="hidden px-6 py-4 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium border border-slate-300/40 dark:border-slate-600/40">✖️ Cancel Edit</button>
               </div>
+              <div id="saveStatus" class="text-center text-sm font-medium"></div>
             </form>
           </div>
         </section>
 
-        <!-- Right: Table -->
-        <section class="lg:col-span-2">
-          <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
-            <div class="p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <!-- History Card -->
+        <section class="xl:col-span-3">
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
+            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
               <div>
-                <h2 class="text-xl font-semibold">History</h2>
-                <p class="text-sm text-slate-500">Per‑student notes (latest first). Edit or Delete.</p>
+                <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">📊 Progress History</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Real‑time per‑student notes (latest first)</p>
               </div>
-              <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <select id="filterStudent" class="rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2">
+              <div class="flex flex-wrap gap-3">
+                <select id="filterStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500">
                   <option value="">All students</option>
                 </select>
-                <input id="filterDate" type="date" class="rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" />
-                <button id="clearFilters" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-700">Clear</button>
+                <input id="filterDate" type="date" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500" />
+                <button id="clearFilters" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200">🔄 Clear</button>
               </div>
             </div>
-            <div class="overflow-x-auto">
-              <table class="min-w-full text-left text-sm">
-                <thead class="bg-slate-50 dark:bg-slate-950/50">
-                  <tr>
-                    <th class="px-4 py-3 font-medium">Date</th>
-                    <th class="px-4 py-3 font-medium">Student</th>
-                    <th class="px-4 py-3 font-medium">Quran</th>
-                    <th class="px-4 py-3 font-medium">Surah</th>
-                    <th class="px-4 py-3 font-medium">Laws of Salah</th>
-                    <th class="px-4 py-3 font-medium">Qamar</th>
-                    <th class="px-4 py-3 font-medium">Anything else</th>
-                    <th class="px-4 py-3 font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="historyBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-              </table>
-              <div id="emptyState" class="hidden text-center text-slate-500 text-sm py-8">No notes yet — add one on the left.</div>
+            <div class="overflow-hidden">
+              <div class="overflow-x-auto custom-scrollbar max-h-96">
+                <table class="min-w-full text-left text-sm">
+                  <thead class="sticky top-0 backdrop-blur bg-slate-100/90 dark:bg-slate-800/90">
+                    <tr>
+                      <th class="px-6 py-3 font-semibold">📅 Date</th>
+                      <th class="px-6 py-3 font-semibold">👤 Student</th>
+                      <th class="px-6 py-3 font-semibold">📖 Quran</th>
+                      <th class="px-6 py-3 font-semibold">🕌 Surah</th>
+                      <th class="px-6 py-3 font-semibold">🤲 Salah</th>
+                      <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
+                      <th class="px-6 py-3 font-semibold">💭 Notes</th>
+                      <th class="px-6 py-3 font-semibold">⚡ Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
+                </table>
+              </div>
+              <div id="emptyState" class="hidden text-center py-14">
+                <div class="text-6xl mb-3">📝</div>
+                <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No entries yet</h3>
+                <p class="text-slate-500">Add your first note using the form.</p>
+              </div>
             </div>
-            <div class="p-4 flex items-center justify-between text-sm text-slate-500">
-              <div id="countInfo"></div>
-              <button id="reload" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-700">Reload</button>
+            <div class="p-6 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50">
+              <div id="countInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
+              <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">🔄 Refresh</button>
             </div>
           </div>
         </section>
       </div>
 
-      <footer class="mt-8 text-center text-xs text-slate-500">
-        Signed in as <span id="whoami" class="font-medium"></span>. Data stored at <span class="font-mono">classes/Attari/notes</span>.
+      <footer class="mt-12 text-center">
+        <div class="glass bg-white/60 dark:bg-slate-800/60 rounded-2xl px-6 py-4 inline-block">
+          <p class="text-xs text-slate-600 dark:text-slate-400">🔒 Data: <span class="font-mono font-semibold">classes/Attari/notes</span> • Unique per <em>date + student</em></p>
+        </div>
       </footer>
     </div>
   </div>
@@ -169,28 +170,9 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      setDoc,
-      getDoc,
-      deleteDoc,
-      query,
-      orderBy,
-      limit as qLimit,
-      onSnapshot,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, query, orderBy, limit as qLimit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCTGIoNNey_0GwRxg_85Xv-jEQtQDjzehw",
-      authDomain: "attari-579d2.firebaseapp.com",
-      projectId: "attari-579d2",
-      storageBucket: "attari-579d2.firebasestorage.app",
-      messagingSenderId: "765966619098",
-      appId: "1:765966619098:web:9ab852c4881426472b70e3"
-    };
+    const firebaseConfig = { apiKey:"AIzaSyCTGIoNNey_0GwRxg_85Xv-jEQtQDjzehw", authDomain:"attari-579d2.firebaseapp.com", projectId:"attari-579d2", storageBucket:"attari-579d2.firebasestorage.app", messagingSenderId:"765966619098", appId:"1:765966619098:web:9ab852c4881426472b70e3" };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -200,159 +182,86 @@
     const authGate = document.getElementById('authGate');
     const appShell = document.getElementById('app');
     const authStatus = document.getElementById('authStatus');
+    const dot = document.getElementById('dot');
     const whoami = document.getElementById('whoami');
     const signOutBtn = document.getElementById('signOutBtn');
+    const toast = document.getElementById('toast');
 
-    // Sign in/up forms
+    // Forms
     const signinForm = document.getElementById('signinForm');
     const signupForm = document.getElementById('signupForm');
-    const showSignup = document.getElementById('showSignup');
-    const showSignin = document.getElementById('showSignin');
+    document.getElementById('showSignup').addEventListener('click',()=>{signinForm.classList.add('hidden');signupForm.classList.remove('hidden')});
+    document.getElementById('showSignin').addEventListener('click',()=>{signupForm.classList.add('hidden');signinForm.classList.remove('hidden')});
 
-    showSignup.addEventListener('click', () => { signinForm.classList.add('hidden'); signupForm.classList.remove('hidden'); });
-    showSignin.addEventListener('click', () => { signupForm.classList.add('hidden'); signinForm.classList.remove('hidden'); });
+    signinForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=siEmail.value.trim();const pass=siPass.value;siMsg.textContent='';try{await signInWithEmailAndPassword(auth,email,pass);}catch(err){siMsg.textContent=err.message;showToast(err.message,'error')}});
+    signupForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=suEmail.value.trim();const pass=suPass.value;suMsg.textContent='';try{await createUserWithEmailAndPassword(auth,email,pass);suMsg.textContent='Account created. Signed in.';showToast('Welcome!','success')}catch(err){suMsg.textContent=err.message;showToast(err.message,'error')}});
+    signOutBtn?.addEventListener('click', ()=>signOut(auth));
 
-    signinForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('siEmail').value.trim();
-      const pass = document.getElementById('siPass').value;
-      const msg = document.getElementById('siMsg');
-      msg.textContent = '';
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-      } catch (err) {
-        msg.textContent = err.message;
-      }
-    });
-
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('suEmail').value.trim();
-      const pass = document.getElementById('suPass').value;
-      const msg = document.getElementById('suMsg');
-      msg.textContent = '';
-      try {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        msg.textContent = 'Account created. You are now signed in.';
-      } catch (err) {
-        msg.textContent = err.message;
-      }
-    });
-
-    signOutBtn?.addEventListener('click', () => signOut(auth));
-
-    // Students
-    const students = ["Siyaam Azar","Hussain Ali","Hamza Razzaq","Subhan Hussain","Milad Raza","Murtaza Arfan","Zeeshan Hussain","Mohammed Subhan Ramzan","Onees Usman","Mohammed Hassan Hussain","Ali Hussein"];
-    const inputs = {
-      student: document.getElementById('student'),
-      quran: document.getElementById('quran'),
-      surah: document.getElementById('surah'),
-      laws: document.getElementById('laws'),
-      qamar: document.getElementById('qamar'),
-      anything: document.getElementById('anything')
-    };
-    const filterStudent = document.getElementById('filterStudent');
-    const filterDate = document.getElementById('filterDate');
-    const historyBody = document.getElementById('historyBody');
-    const emptyState = document.getElementById('emptyState');
-    const countInfo = document.getElementById('countInfo');
-    const formTitle = document.getElementById('formTitle');
-    const cancelEditBtn = document.getElementById('cancelEditBtn');
-    const saveBtn = document.getElementById('saveBtn');
-    const saveStatus = document.getElementById('saveStatus');
+    // Students and elements
+    const students=["Siyaam Azar","Hussain Ali","Hamza Razzaq","Subhan Hussain","Milad Raza","Murtaza Arfan","Zeeshan Hussain","Mohammed Subhan Ramzan","Onees Usman","Mohammed Hassan Hussain","Ali Hussein"];
+    const inputs={student:document.getElementById('student'),quran:document.getElementById('quran'),surah:document.getElementById('surah'),laws:document.getElementById('laws'),qamar:document.getElementById('qamar'),anything:document.getElementById('anything')};
+    const filterStudent=document.getElementById('filterStudent');
+    const filterDate=document.getElementById('filterDate');
+    const historyBody=document.getElementById('historyBody');
+    const emptyState=document.getElementById('emptyState');
+    const countInfo=document.getElementById('countInfo');
+    const formTitle=document.getElementById('formTitle');
+    const cancelEditBtn=document.getElementById('cancelEditBtn');
+    const saveBtn=document.getElementById('saveBtn');
+    const saveText=document.getElementById('saveText');
+    const saveSpinner=document.getElementById('saveSpinner');
+    const saveStatus=document.getElementById('saveStatus');
 
     // Populate selects
-    function populateStudents() {
-      inputs.student.innerHTML = '<option value="" disabled selected>Select a student…</option>';
-      filterStudent.innerHTML = '<option value="">All students</option>';
-      students.forEach(n => {
-        const o = document.createElement('option'); o.value = n; o.textContent = n; inputs.student.appendChild(o);
-        const o2 = document.createElement('option'); o2.value = n; o2.textContent = n; filterStudent.appendChild(o2);
-      });
-    }
+    function populateStudents(){inputs.student.innerHTML='<option value="" disabled selected>Choose a student…</option>';filterStudent.innerHTML='<option value="">All students</option>';students.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;inputs.student.appendChild(o);const o2=document.createElement('option');o2.value=o.value;o2.textContent=n;filterStudent.appendChild(o2);});}
     populateStudents();
 
-    const today = new Date().toISOString().slice(0,10);
-    document.getElementById('todayDisplay').textContent = today;
+    const today=new Date().toISOString().slice(0,10); document.getElementById('todayDisplay').textContent=today;
 
-    const CLASS_ID = 'Attari';
-    const notesCol = collection(doc(db, 'classes', CLASS_ID), 'notes');
+    const CLASS_ID='Attari';
+    const notesCol=collection(doc(db,'classes',CLASS_ID),'notes');
 
-    // Key helpers
-    const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-    const noteId = (date, student) => `${date}_${slug(student)}`;
+    const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+    const noteId=(date,student)=>`${date}_${slug(student)}`;
 
-    // EDIT MODE
-    let editingKey = null;
-    function setEditMode(n = null) {
-      if (n) {
-        editingKey = n.id; formTitle.textContent = 'Edit Note'; saveBtn.textContent = 'Update Note'; cancelEditBtn.classList.remove('hidden');
-        inputs.student.value = n.student; inputs.quran.value = n.quran||''; inputs.surah.value = n.surah||''; inputs.laws.value = n.lawsOfSalah||''; inputs.qamar.value = n.qamar||''; inputs.anything.value = n.anythingElse||n.other||'';
-      } else {
-        editingKey = null; formTitle.textContent = 'New Note'; saveBtn.textContent = 'Save Note'; cancelEditBtn.classList.add('hidden'); document.getElementById('notesForm').reset();
-      }
+    // Edit mode
+    let editingKey=null;
+    function setEditMode(n=null){
+      if(n){editingKey=n.id;formTitle.textContent='✏️ Edit Entry';saveText.textContent='✅ Update Entry';cancelEditBtn.classList.remove('hidden');inputs.student.value=n.student;inputs.quran.value=n.quran||'';inputs.surah.value=n.surah||'';inputs.laws.value=n.lawsOfSalah||'';inputs.qamar.value=n.qamar||'';inputs.anything.value=n.anythingElse||n.other||'';}
+      else{editingKey=null;formTitle.textContent='✨ New Entry';saveText.textContent='💾 Save Entry';cancelEditBtn.classList.add('hidden');document.getElementById('notesForm').reset();}
     }
-    cancelEditBtn.addEventListener('click', () => setEditMode(null));
+    cancelEditBtn.addEventListener('click',()=>setEditMode(null));
 
-    // Save or update
-    document.getElementById('notesForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const student = inputs.student.value; if (!student) { saveStatus.textContent = 'Choose a student'; return; }
-      const id = editingKey || noteId(today, student);
-      const ref = doc(notesCol, id);
-      const payload = { id, date: today, student, quran: inputs.quran.value.trim(), surah: inputs.surah.value.trim(), lawsOfSalah: inputs.laws.value.trim(), qamar: inputs.qamar.value.trim(), anythingElse: inputs.anything.value.trim(), updatedAt: serverTimestamp(), ownerUid: auth.currentUser?.uid || null };
-      const snap = await getDoc(ref); if (!snap.exists()) payload.createdAt = serverTimestamp();
-      await setDoc(ref, payload, { merge: true });
-      saveStatus.textContent = editingKey ? 'Updated ✅' : 'Saved ✅'; setTimeout(()=> saveStatus.textContent='',1200);
-      setEditMode(null);
-    });
+    // Save/Update
+    document.getElementById('notesForm').addEventListener('submit',async(e)=>{e.preventDefault();const student=inputs.student.value;if(!student){saveStatus.textContent='Choose a student';return}saveSpinner.classList.remove('hidden');const id=editingKey||noteId(today,student);const ref=doc(notesCol,id);const payload={id,date:today,student,quran:inputs.quran.value.trim(),surah:inputs.surah.value.trim(),lawsOfSalah:inputs.laws.value.trim(),qamar:inputs.qamar.value.trim(),anythingElse:inputs.anything.value.trim(),updatedAt:serverTimestamp(),ownerUid:auth.currentUser?.uid||null};const snap=await getDoc(ref);if(!snap.exists())payload.createdAt=serverTimestamp();await setDoc(ref,payload,{merge:true});saveSpinner.classList.add('hidden');showToast(editingKey?'Updated ✓':'Saved ✓','success');saveStatus.textContent=editingKey?'Updated ✅':'Saved ✅';setTimeout(()=>saveStatus.textContent='',1200);setEditMode(null)});
 
-    // History
-    let unsub = null; let allRows = [];
-    function startHistoryStream() {
-      if (unsub) unsub();
-      const q = query(notesCol, orderBy('date','desc'), qLimit(200));
-      unsub = onSnapshot(q, (snap) => { allRows = snap.docs.map(d => d.data()); applyFilters(); });
-    }
-    function applyFilters() {
-      const s = filterStudent.value; const d = filterDate.value; let list = allRows; if (s) list = list.filter(r=>r.student===s); if (d) list = list.filter(r=>r.date===d); renderHistory(list);
-    }
-    filterStudent.addEventListener('change', applyFilters); filterDate.addEventListener('change', applyFilters);
-    document.getElementById('clearFilters').addEventListener('click', ()=>{ filterStudent.value=''; filterDate.value=''; applyFilters(); });
-    document.getElementById('reload').addEventListener('click', applyFilters);
+    // History stream & filters
+    let unsub=null, allRows=[];
+    function startHistoryStream(){ if(unsub)unsub(); const q=query(notesCol,orderBy('date','desc'),qLimit(200)); unsub=onSnapshot(q,(snap)=>{allRows=snap.docs.map(d=>d.data()); applyFilters();}); }
+    function applyFilters(){const s=filterStudent.value;const d=filterDate.value;let list=allRows;if(s)list=list.filter(r=>r.student===s);if(d)list=list.filter(r=>r.date===d);renderHistory(list);} 
+    filterStudent.addEventListener('change',applyFilters); filterDate.addEventListener('change',applyFilters); document.getElementById('clearFilters').addEventListener('click',()=>{filterStudent.value='';filterDate.value='';applyFilters();}); document.getElementById('reload').addEventListener('click',applyFilters);
 
-    function renderHistory(rows) { historyBody.innerHTML=''; if (!rows.length) { emptyState.classList.remove('hidden'); countInfo.textContent='0 notes'; return;} emptyState.classList.add('hidden'); rows.forEach(r=>{ const tr=document.createElement('tr'); tr.className='hover:bg-slate-50/60 dark:hover:bg-slate-900/40'; tr.innerHTML = `
-        <td class="px-4 py-3 font-medium">${r.date}</td>
-        <td class="px-4 py-3">${r.student}</td>
-        <td class="px-4 py-3">${escapeHtml(r.quran||'')}</td>
-        <td class="px-4 py-3">${escapeHtml(r.surah||'')}</td>
-        <td class="px-4 py-3">${escapeHtml(r.lawsOfSalah||'')}</td>
-        <td class="px-4 py-3">${escapeHtml(r.qamar||'')}</td>
-        <td class="px-4 py-3">${escapeHtml(r.anythingElse||'')}</td>
-        <td class="px-4 py-3 whitespace-nowrap">
-          <button class="px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800" data-action="edit" data-id="${r.id}">Edit</button>
-          <button class="px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" data-action="delete" data-id="${r.id}">Delete</button>
-        </td>`; historyBody.appendChild(tr); }); countInfo.textContent = `${rows.length} note${rows.length===1?'':'s'} shown`; }
+    function renderHistory(rows){historyBody.innerHTML=''; if(!rows.length){emptyState.classList.remove('hidden');countInfo.textContent='0 notes';return;} emptyState.classList.add('hidden'); rows.forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`
+          <td class='px-6 py-3 font-medium'>${r.date}</td>
+          <td class='px-6 py-3'>${r.student}</td>
+          <td class='px-6 py-3'>${esc(r.quran||'')}</td>
+          <td class='px-6 py-3'>${esc(r.surah||'')}</td>
+          <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
+          <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
+          <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
+          <td class='px-6 py-3 whitespace-nowrap'>
+            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800' data-action='edit' data-id='${r.id}'>Edit</button>
+            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20' data-action='delete' data-id='${r.id}'>Delete</button>
+          </td>`;historyBody.appendChild(tr);}); countInfo.textContent=`${rows.length} note${rows.length===1?'':'s'} shown`;}
 
-    historyBody.addEventListener('click', async (e) => { const btn=e.target.closest('button'); if (!btn) return; const id=btn.getAttribute('data-id'); if (btn.getAttribute('data-action')==='edit') { const snap=await getDoc(doc(notesCol,id)); if (snap.exists()) setEditMode(snap.data()); } else if (btn.getAttribute('data-action')==='delete') { if (!confirm('Delete this note?')) return; await deleteDoc(doc(notesCol,id)); } });
+    historyBody.addEventListener('click',async(e)=>{const btn=e.target.closest('button'); if(!btn) return; const id=btn.getAttribute('data-id'); if(btn.getAttribute('data-action')==='edit'){const snap=await getDoc(doc(notesCol,id)); if(snap.exists()) setEditMode(snap.data());} else if(btn.getAttribute('data-action')==='delete'){ if(!confirm('Delete this note?')) return; await deleteDoc(doc(notesCol,id)); showToast('Deleted','success'); }});
 
-    // Auth state gate
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        authStatus.textContent = 'Signed in';
-        whoami.textContent = user.email || user.uid;
-        authGate.classList.add('hidden');
-        appShell.classList.remove('hidden');
-        startHistoryStream();
-      } else {
-        authStatus.textContent = 'Signed out';
-        appShell.classList.add('hidden');
-        authGate.classList.remove('hidden');
-        whoami.textContent='';
-      }
-    });
+    // Auth gate
+    onAuthStateChanged(auth,(user)=>{ if(user){authGate.classList.add('hidden'); appShell.classList.remove('hidden'); whoami.textContent=user.email||user.uid; authStatus.textContent='Online'; dot.className='w-2 h-2 rounded-full bg-emerald-400'; startHistoryStream(); } else { appShell.classList.add('hidden'); authGate.classList.remove('hidden'); whoami.textContent='Not signed in'; authStatus.textContent='Signed out'; dot.className='w-2 h-2 rounded-full bg-amber-400'; }});
 
-    function escapeHtml(s){ return (s??'').replace(/[&<>\"]/g, (c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c])); }
+    // Utils
+    function esc(s){return (s??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]))}
+    function showToast(text,type='success'){ toast.textContent=text; toast.className=`notification show ${type}`; setTimeout(()=>{toast.classList.remove('show')},1600); }
   </script>
 </body>
 </html>
