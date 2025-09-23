@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Attari — Class Notes</title>
+  <title>Attari — Per‑Student Notes</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,116 +18,112 @@
     <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
-        <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Attari — Class Notes</h1>
-        <p class="text-slate-500 dark:text-slate-400">Daily notes database powered by Firebase (Firestore + Anonymous Auth).</p>
+        <h1 class="text-3xl md:text-4xl font-bold tracking-tight">Attari — Per‑Student Notes</h1>
+        <p class="text-slate-500 dark:text-slate-400">Add, edit, or delete daily reports for each student. Firestore + Anonymous Auth.</p>
       </div>
       <div class="flex items-center gap-3">
         <span id="authStatus" class="px-3 py-1 rounded-full text-sm bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">Connecting…</span>
-        <button id="exportCsvBtn" class="hidden md:inline-flex px-4 py-2 rounded-xl shadow-sm bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Export CSV</button>
       </div>
     </header>
 
     <!-- Main Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-      <!-- Left: Today Form -->
-      <section class="lg:col-span-2">
+      <!-- Left: Form -->
+      <section class="lg:col-span-1">
         <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
           <div class="p-5 md:p-6 border-b border-slate-100 dark:border-slate-800">
             <div class="flex items-center justify-between">
-              <h2 class="text-xl font-semibold">Today’s Entry</h2>
+              <h2 class="text-xl font-semibold"><span id="formTitle">New Note</span></h2>
               <div class="text-sm text-slate-500 dark:text-slate-400">Date (auto): <span id="todayDisplay" class="font-medium"></span></div>
             </div>
           </div>
           <form id="notesForm" class="p-5 md:p-6 space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Student</label>
+              <select id="student" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" required>
+                <option value="" disabled selected>Select a student…</option>
+              </select>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium mb-1">Quran</label>
-                <input id="quran" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="e.g., Juz 1, pages 1–10" />
+                <input id="quran" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="e.g., Juz/pages" />
               </div>
               <div>
                 <label class="block text-sm font-medium mb-1">Surah</label>
-                <input id="surah" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="e.g., Al-Fātiḥah 1–7" />
+                <input id="surah" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="e.g., Al‑Baqarah 1–5" />
               </div>
               <div>
                 <label class="block text-sm font-medium mb-1">Laws of Salah</label>
-                <input id="laws" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="e.g., Wudu requirements" />
+                <input id="laws" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="e.g., Wudu, faraid…" />
               </div>
               <div>
                 <label class="block text-sm font-medium mb-1">Qamar</label>
-                <input id="qamar" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="e.g., Lesson / notes" />
+                <input id="qamar" type="text" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="e.g., Lesson notes" />
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">Anything else</label>
-              <textarea id="anything" rows="4" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="Free-form notes, reminders, homework, etc."></textarea>
+              <textarea id="anything" rows="4" class="w-full rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" placeholder="Homework, behaviour, reminders…"></textarea>
             </div>
             <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3">
-              <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-medium shadow hover:bg-emerald-700 transition">Save / Update today</button>
-              <button id="clearFormBtn" type="button" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Clear form</button>
+              <button id="saveBtn" type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-medium shadow hover:bg-emerald-700 transition">Save Note</button>
+              <button id="cancelEditBtn" type="button" class="hidden px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 ring-1 ring-slate-200 dark:ring-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Cancel Edit</button>
               <span id="saveStatus" class="text-sm text-slate-500"></span>
             </div>
           </form>
         </div>
       </section>
 
-      <!-- Right: Students -->
-      <aside class="lg:col-span-1">
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 overflow-hidden">
-          <div class="p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <h2 class="text-lg font-semibold">Students</h2>
-            <button id="syncStudentsBtn" class="text-sm px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700">Sync to Firestore</button>
+      <!-- Right: Table -->
+      <section class="lg:col-span-2">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
+          <div class="p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+            <div>
+              <h2 class="text-xl font-semibold">History</h2>
+              <p class="text-sm text-slate-500">Per‑student notes (latest first). Click Edit or Delete.</p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <select id="filterStudent" class="rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2">
+                <option value="">All students</option>
+              </select>
+              <input id="filterDate" type="date" class="rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" />
+              <button id="clearFilters" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-700">Clear</button>
+            </div>
           </div>
-          <ul id="studentsList" class="p-5 md:p-6 grid grid-cols-1 gap-2 text-sm"></ul>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-950/50">
+                <tr>
+                  <th class="px-4 py-3 font-medium">Date</th>
+                  <th class="px-4 py-3 font-medium">Student</th>
+                  <th class="px-4 py-3 font-medium">Quran</th>
+                  <th class="px-4 py-3 font-medium">Surah</th>
+                  <th class="px-4 py-3 font-medium">Laws of Salah</th>
+                  <th class="px-4 py-3 font-medium">Qamar</th>
+                  <th class="px-4 py-3 font-medium">Anything else</th>
+                  <th class="px-4 py-3 font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+            </table>
+            <div id="emptyState" class="hidden text-center text-slate-500 text-sm py-8">No notes yet — add one on the left.</div>
+          </div>
+          <div class="p-4 flex items-center justify-between text-sm text-slate-500">
+            <div id="countInfo"></div>
+            <button id="reload" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 ring-1 ring-slate-200 dark:ring-slate-700">Reload</button>
+          </div>
         </div>
-      </aside>
+      </section>
     </div>
 
-    <!-- History -->
-    <section class="mt-8">
-      <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
-        <div class="p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-          <div>
-            <h2 class="text-xl font-semibold">History</h2>
-            <p class="text-sm text-slate-500">Browse previous days’ notes.</p>
-          </div>
-          <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-            <input id="filterInput" type="text" placeholder="Filter (e.g., Surah, keyword)" class="flex-1 sm:w-64 rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2" />
-            <select id="limitSelect" class="rounded-xl bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 px-3 py-2">
-              <option value="7">Last 7</option>
-              <option value="14">Last 14</option>
-              <option value="30" selected>Last 30</option>
-              <option value="90">Last 90</option>
-            </select>
-          </div>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-left text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-950/50">
-              <tr>
-                <th class="px-4 py-3 font-medium">Date</th>
-                <th class="px-4 py-3 font-medium">Quran</th>
-                <th class="px-4 py-3 font-medium">Surah</th>
-                <th class="px-4 py-3 font-medium">Laws of Salah</th>
-                <th class="px-4 py-3 font-medium">Qamar</th>
-                <th class="px-4 py-3 font-medium">Anything else</th>
-              </tr>
-            </thead>
-            <tbody id="historyBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-              <!-- rows injected here -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
     <footer class="mt-8 text-center text-xs text-slate-500">
-      Built for class <span class="font-semibold">Attari</span>. Data stored in your Firebase project <span class="font-mono">attari-579d2</span>.
+      Data stored at <span class="font-mono">classes/Attari/notes</span>. Each day+student is unique (edit updates same record).
     </footer>
   </div>
 
   <!-- Firebase SDKs -->
   <script type="module">
-    // Firebase imports (v12 modular)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
     import {
@@ -137,14 +133,15 @@
       setDoc,
       getDoc,
       getDocs,
+      deleteDoc,
       query,
+      where,
       orderBy,
       limit as qLimit,
       onSnapshot,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-    // --- CONFIG FROM YOUR PROJECT ---
     const firebaseConfig = {
       apiKey: "AIzaSyCTGIoNNey_0GwRxg_85Xv-jEQtQDjzehw",
       authDomain: "attari-579d2.firebaseapp.com",
@@ -154,7 +151,6 @@
       appId: "1:765966619098:web:9ab852c4881426472b70e3"
     };
 
-    // Initialize
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -163,6 +159,7 @@
     const todayDisplay = document.getElementById('todayDisplay');
     const form = document.getElementById('notesForm');
     const inputs = {
+      student: document.getElementById('student'),
       quran: document.getElementById('quran'),
       surah: document.getElementById('surah'),
       laws: document.getElementById('laws'),
@@ -170,191 +167,174 @@
       anything: document.getElementById('anything')
     };
     const saveStatus = document.getElementById('saveStatus');
-    const clearFormBtn = document.getElementById('clearFormBtn');
-    const historyBody = document.getElementById('historyBody');
-    const limitSelect = document.getElementById('limitSelect');
-    const filterInput = document.getElementById('filterInput');
-    const authStatus = document.getElementById('authStatus');
-    const exportCsvBtn = document.getElementById('exportCsvBtn');
-    const studentsList = document.getElementById('studentsList');
-    const syncStudentsBtn = document.getElementById('syncStudentsBtn');
+    const formTitle = document.getElementById('formTitle');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveBtn = document.getElementById('saveBtn');
 
-    // Students — prefilled roster
+    const filterStudent = document.getElementById('filterStudent');
+    const filterDate = document.getElementById('filterDate');
+    const historyBody = document.getElementById('historyBody');
+    const emptyState = document.getElementById('emptyState');
+    const countInfo = document.getElementById('countInfo');
+
     const students = [
-      "Siyaam Azar",
-      "Hussain Ali",
-      "Hamza Razzaq",
-      "Subhan Hussain",
-      "Milad Raza",
-      "Murtaza Arfan",
-      "Zeeshan Hussain",
-      "Mohammed Subhan Ramzan",
-      "Onees Usman",
-      "Mohammed Hassan Hussain",
-      "Ali Hussein"
+      "Siyaam Azar","Hussain Ali","Hamza Razzaq","Subhan Hussain","Milad Raza","Murtaza Arfan","Zeeshan Hussain","Mohammed Subhan Ramzan","Onees Usman","Mohammed Hassan Hussain","Ali Hussein"
     ];
 
-    // Render students list
-    function renderStudents() {
-      studentsList.innerHTML = students.map((name, i) => `
-        <li class="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-950/40 ring-1 ring-slate-200 dark:ring-slate-800">
-          <span class="font-medium">${name}</span>
-          <span class="text-xs text-slate-500">#${i+1}</span>
-        </li>
-      `).join('');
+    // Populate selects
+    function populateStudents() {
+      students.forEach(n => {
+        const o = document.createElement('option'); o.value = n; o.textContent = n; inputs.student.appendChild(o);
+        const o2 = document.createElement('option'); o2.value = n; o2.textContent = n; filterStudent.appendChild(o2);
+      });
     }
-    renderStudents();
+    populateStudents();
 
-    // Helpers
-    const todayIso = () => new Date().toISOString().slice(0,10); // YYYY-MM-DD
-    const asText = v => (v ?? '').toString();
-
-    // Show today
-    const today = todayIso();
+    const today = new Date().toISOString().slice(0,10);
     todayDisplay.textContent = today;
 
-    // Firestore paths
     const CLASS_ID = 'Attari';
-    const classDocRef = doc(db, 'classes', CLASS_ID);
-    const daysColRef = collection(classDocRef, 'days');
+    const notesCol = collection(doc(db, 'classes', CLASS_ID), 'notes');
 
-    // Auth (anonymous)
+    // Doc ID helper: date + student slug → unique per day+student
+    const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+    const noteId = (date, student) => `${date}_${slug(student)}`;
+
+    // Auth
+    const authStatus = document.getElementById('authStatus');
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         authStatus.textContent = 'Connected';
-        authStatus.className = 'px-3 py-1 rounded-full text-sm bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300';
-        // Load today's entry into the form (if exists)
-        await loadTodayIntoForm();
-        // Start history stream
-        startHistoryStream(parseInt(limitSelect.value, 10));
+        startHistoryStream();
       } else {
-        try {
-          await signInAnonymously(auth);
-        } catch (e) {
-          authStatus.textContent = 'Auth error';
-          console.error(e);
-        }
+        authStatus.textContent = 'Signing in…';
+        await signInAnonymously(auth).catch(e=>{authStatus.textContent = 'Auth error'; console.error(e)});
       }
     });
+    signInAnonymously(auth).catch(()=>{});
 
-    // If not signed in yet, kick off anon sign-in
-    signInAnonymously(auth).catch(() => {});
+    // EDIT MODE STATE
+    let editingKey = null; // holds doc id if editing
 
-    // Save/Update today
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      saveStatus.textContent = 'Saving…';
-      const data = {
-        date: today, // stored as string for natural key & ordering
-        quran: asText(inputs.quran.value).trim(),
-        surah: asText(inputs.surah.value).trim(),
-        lawsOfSalah: asText(inputs.laws.value).trim(),
-        qamar: asText(inputs.qamar.value).trim(),
-        anythingElse: asText(inputs.anything.value).trim(),
-        updatedAt: serverTimestamp(),
-      };
-      const docRef = doc(daysColRef, today);
-      // Merge so repeated saves update fields
-      await setDoc(docRef, { createdAt: serverTimestamp(), ...data }, { merge: true });
-      saveStatus.textContent = 'Saved ✅';
-      setTimeout(() => saveStatus.textContent = '', 1500);
-    });
-
-    clearFormBtn.addEventListener('click', () => {
-      Object.values(inputs).forEach(i => i.value = '');
-    });
-
-    // Load today’s form if existing
-    async function loadTodayIntoForm() {
-      const docRef = doc(daysColRef, today);
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        const d = snap.data();
-        inputs.quran.value = d.quran ?? '';
-        inputs.surah.value = d.surah ?? '';
-        inputs.laws.value = d.lawsOfSalah ?? '';
-        inputs.qamar.value = d.qamar ?? '';
-        inputs.anything.value = d.anythingElse ?? '';
+    function setEditMode(n = null) {
+      if (n) {
+        editingKey = n.id;
+        formTitle.textContent = 'Edit Note';
+        saveBtn.textContent = 'Update Note';
+        cancelEditBtn.classList.remove('hidden');
+        // Prefill
+        inputs.student.value = n.student;
+        inputs.quran.value = n.quran || '';
+        inputs.surah.value = n.surah || '';
+        inputs.laws.value = n.lawsOfSalah || '';
+        inputs.qamar.value = n.qamar || '';
+        inputs.anything.value = n.anythingElse || n.other || '';
+      } else {
+        editingKey = null;
+        formTitle.textContent = 'New Note';
+        saveBtn.textContent = 'Save Note';
+        cancelEditBtn.classList.add('hidden');
+        form.reset();
       }
     }
 
+    cancelEditBtn.addEventListener('click', () => setEditMode(null));
+
+    // Submit (create or update)
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const student = inputs.student.value;
+      if (!student) { saveStatus.textContent = 'Choose a student'; return; }
+      const id = editingKey || noteId(today, student);
+      const ref = doc(notesCol, id);
+      const payload = {
+        id,
+        date: today,
+        student,
+        quran: (inputs.quran.value||'').trim(),
+        surah: (inputs.surah.value||'').trim(),
+        lawsOfSalah: (inputs.laws.value||'').trim(),
+        qamar: (inputs.qamar.value||'').trim(),
+        anythingElse: (inputs.anything.value||'').trim(),
+        updatedAt: serverTimestamp(),
+      };
+      // If creating new, add createdAt once
+      const existing = await getDoc(ref);
+      if (!existing.exists()) payload.createdAt = serverTimestamp();
+
+      await setDoc(ref, payload, { merge: true });
+      saveStatus.textContent = editingKey ? 'Updated ✅' : 'Saved ✅';
+      setTimeout(() => saveStatus.textContent = '', 1200);
+      setEditMode(null);
+    });
+
     // History stream
-    let unsubHistory = null;
-    function startHistoryStream(n = 30) {
-      if (unsubHistory) unsubHistory();
-      const q = query(daysColRef, orderBy('date', 'desc'), qLimit(n));
-      unsubHistory = onSnapshot(q, (snap) => {
-        const rows = [];
-        snap.forEach(doc => {
-          const d = doc.data();
-          rows.push({
-            date: d.date,
-            quran: d.quran || '',
-            surah: d.surah || '',
-            lawsOfSalah: d.lawsOfSalah || '',
-            qamar: d.qamar || '',
-            anythingElse: d.anythingElse || ''
-          });
-        });
-        renderHistory(rows);
+    let unsub = null; let allRows = [];
+    function startHistoryStream() {
+      if (unsub) unsub();
+      const q = query(notesCol, orderBy('date','desc'), qLimit(200));
+      unsub = onSnapshot(q, (snap) => {
+        allRows = snap.docs.map(d => d.data());
+        applyFilters();
+      }, (err) => {
+        console.error(err);
       });
     }
 
-    function renderHistory(rows) {
-      const filter = filterInput.value.toLowerCase().trim();
-      const filtered = !filter ? rows : rows.filter(r => Object.values(r).some(v => (v||'').toLowerCase().includes(filter)));
-      historyBody.innerHTML = filtered.map(r => `
-        <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-900/40">
-          <td class="px-4 py-3 font-medium">${r.date}</td>
-          <td class="px-4 py-3">${escapeHtml(r.quran)}</td>
-          <td class="px-4 py-3">${escapeHtml(r.surah)}</td>
-          <td class="px-4 py-3">${escapeHtml(r.lawsOfSalah)}</td>
-          <td class="px-4 py-3">${escapeHtml(r.qamar)}</td>
-          <td class="px-4 py-3">${escapeHtml(r.anythingElse)}</td>
-        </tr>
-      `).join('');
+    function applyFilters() {
+      const s = filterStudent.value; const d = filterDate.value;
+      let list = allRows;
+      if (s) list = list.filter(r => r.student === s);
+      if (d) list = list.filter(r => r.date === d);
+      renderHistory(list);
     }
 
-    filterInput.addEventListener('input', () => startHistoryStream(parseInt(limitSelect.value, 10)));
-    limitSelect.addEventListener('change', () => startHistoryStream(parseInt(limitSelect.value, 10)));
+    filterStudent.addEventListener('change', applyFilters);
+    filterDate.addEventListener('change', applyFilters);
+    document.getElementById('clearFilters').addEventListener('click', ()=>{ filterStudent.value=''; filterDate.value=''; applyFilters(); });
+    document.getElementById('reload').addEventListener('click', applyFilters);
 
-    // Export CSV
-    exportCsvBtn.addEventListener('click', async () => {
-      const n = parseInt(limitSelect.value, 10);
-      const qy = query(daysColRef, orderBy('date', 'desc'), qLimit(n));
-      const snap = await getDocs(qy);
-      const items = [];
-      snap.forEach(doc => items.push(doc.data()));
-      const csv = toCSV(items, ['date','quran','surah','lawsOfSalah','qamar','anythingElse']);
-      downloadFile(csv, `attari-notes-last-${n}.csv`, 'text/csv');
-    });
+    function renderHistory(rows) {
+      historyBody.innerHTML = '';
+      if (!rows.length) { emptyState.classList.remove('hidden'); countInfo.textContent = '0 notes'; return; }
+      emptyState.classList.add('hidden');
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-900/40';
+        tr.innerHTML = `
+          <td class="px-4 py-3 font-medium">${r.date}</td>
+          <td class="px-4 py-3">${r.student}</td>
+          <td class="px-4 py-3">${escapeHtml(r.quran||'')}</td>
+          <td class="px-4 py-3">${escapeHtml(r.surah||'')}</td>
+          <td class="px-4 py-3">${escapeHtml(r.lawsOfSalah||'')}</td>
+          <td class="px-4 py-3">${escapeHtml(r.qamar||'')}</td>
+          <td class="px-4 py-3">${escapeHtml(r.anythingElse||'')}</td>
+          <td class="px-4 py-3 whitespace-nowrap">
+            <button class="px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800" data-action="edit" data-id="${r.id}">Edit</button>
+            <button class="px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" data-action="delete" data-id="${r.id}">Delete</button>
+          </td>`;
+        historyBody.appendChild(tr);
+      });
+      countInfo.textContent = `${rows.length} note${rows.length===1?'':'s'} shown`;
+    }
 
-    // Sync students to Firestore (stored under classes/Attari students[])
-    syncStudentsBtn.addEventListener('click', async () => {
-      await setDoc(classDocRef, { name: CLASS_ID, students, updatedAt: serverTimestamp() }, { merge: true });
-      syncStudentsBtn.textContent = 'Synced ✓';
-      setTimeout(() => syncStudentsBtn.textContent = 'Sync to Firestore', 1500);
+    // Row action handlers (event delegation)
+    historyBody.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const id = btn.getAttribute('data-id');
+      if (btn.getAttribute('data-action') === 'edit') {
+        const snap = await getDoc(doc(notesCol, id));
+        if (snap.exists()) setEditMode(snap.data());
+      } else if (btn.getAttribute('data-action') === 'delete') {
+        if (!confirm('Delete this note?')) return;
+        await deleteDoc(doc(notesCol, id));
+      }
     });
 
     // Utils
     function escapeHtml(s) {
-      return (s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-    }
-    function toCSV(rows, headers) {
-      const esc = (v) => {
-        const s = (v ?? '').toString();
-        return /[",\n]/.test(s) ? '"' + s.replaceAll('"','""') + '"' : s;
-      };
-      const head = headers.join(',');
-      const body = rows.map(r => headers.map(h => esc(r[h])).join(',')).join('\n');
-      return head + '\n' + body + '\n';
-    }
-    function downloadFile(content, filename, mime) {
-      const blob = new Blob([content], { type: mime });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename; a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 500);
+      return (s ?? '').replace(/[&<>\"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]));
     }
   </script>
 </body>
