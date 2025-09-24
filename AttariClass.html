@@ -312,12 +312,31 @@
     });
 
     // History stream & filters
-    let unsub=null, allRows=[], currentReportRows=[];
+    let unsub=null, historyRows=[], currentReportRows=[];
     let reportRequestToken=0;
     let jsPdfModulePromise=null;
-    function startHistoryStream(){ if(unsub)unsub(); const q=query(notesCol,orderBy('date','desc'),qLimit(200)); unsub=onSnapshot(q,(snap)=>{allRows=snap.docs.map(d=>d.data()); applyFilters(); renderMonthlyReport();}); }
-    function applyFilters(){const s=filterStudent.value;const d=filterDate.value;let list=allRows;if(s)list=list.filter(r=>r.student===s);if(d)list=list.filter(r=>r.date===d);renderHistory(list);renderMonthlyReport();}
+    function startHistoryStream(){ if(unsub)unsub(); const q=query(notesCol,orderBy('date','desc'),qLimit(200)); unsub=onSnapshot(q,(snap)=>{historyRows=snap.docs.map(d=>({id:d.id,...d.data()})); applyFilters(); renderMonthlyReport();}); }
+    function applyFilters(){const s=filterStudent.value;const d=filterDate.value;let list=historyRows;if(s)list=list.filter(r=>r.student===s);if(d)list=list.filter(r=>r.date===d);renderHistory(list);renderMonthlyReport();}
     filterStudent.addEventListener('change',applyFilters); filterDate.addEventListener('change',applyFilters); document.getElementById('clearFilters').addEventListener('click',()=>{filterStudent.value='';filterDate.value='';applyFilters();}); document.getElementById('reload').addEventListener('click',applyFilters);
+    async function fetchMonthlyRows(student,range){
+      const baseConstraints=[where('date','>=',range.start),where('date','<=',range.end),orderBy('date','asc')];
+      const mapSnap=snap=>snap.docs.map(docSnap=>({id:docSnap.id,...docSnap.data()}));
+      if(!student){
+        const snap=await getDocs(query(notesCol,...baseConstraints));
+        return mapSnap(snap);
+      }
+      try{
+        const snap=await getDocs(query(notesCol,where('student','==',student),...baseConstraints));
+        return mapSnap(snap);
+      }catch(err){
+        if(err?.code==='failed-precondition'||/index/i.test(err?.message||'')){
+          const snap=await getDocs(query(notesCol,...baseConstraints));
+          return mapSnap(snap).filter(r=>r.student===student);
+        }
+        throw err;
+      }
+    }
+
     reportStudent?.addEventListener('change',renderMonthlyReport);
     reportMonth?.addEventListener('change',renderMonthlyReport);
     reportFormat?.addEventListener('change',updateReportDownloadLabel);
@@ -357,15 +376,12 @@
       reportEmptyText.textContent='Loading report…';
       try{
         const range=getMonthDateRange(monthValue);
-        let rows=[];
-        if(range){
-          const monthQuery=query(notesCol,where('date','>=',range.start),where('date','<=',range.end),orderBy('date','asc'));
-          const snap=await getDocs(monthQuery);
-          if(requestId!==reportRequestToken)return;
-          rows=snap.docs.map(docSnap=>({id:docSnap.id,...docSnap.data()}));
-        }else{
-          rows=allRows.slice();
+        if(!range){
+          reportEmptyText.textContent='Choose a valid month to view the report.';
+          return;
         }
+        const rows=await fetchMonthlyRows(student,range);
+        if(requestId!==reportRequestToken)return;
         const filtered=rows.filter(r=>r.student===student&&isInMonth(r.date,monthValue));
         if(!filtered.length){
           if(requestId===reportRequestToken){reportEmptyText.textContent=`No entries found for ${student} in ${formatMonthYear(monthValue)}.`;}
