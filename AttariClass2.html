@@ -10,43 +10,75 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      color-scheme: light dark;
-      --grad-1: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-      --grad-2: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);
-      --grad-emerald: linear-gradient(135deg,#10b981 0%,#059669 100%);
-      --glow: 0 0 30px rgba(102,126,234,.35);
-      --glow-emerald: 0 0 30px rgba(16,185,129,.35);
+      color-scheme:light dark;
+      --grad-1:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      --grad-2:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);
+      --grad-emerald:linear-gradient(135deg,#10b981 0%,#059669 100%);
+      --glow:0 0 30px rgba(102,126,234,.35);
+      --glow-emerald:0 0 30px rgba(16,185,129,.35);
     }
     html,body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;scroll-behavior:smooth}
+    body[data-density="compact"] .density-target{padding:.5rem .75rem;font-size:.875rem}
     .glass{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
     .gradient-animated{background:linear-gradient(-45deg,#667eea,#764ba2,#4facfe,#00f2fe);background-size:400% 400%;animation:gradShift 10s ease infinite}
     @keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
     .float{animation:float 6s ease-in-out infinite}
     @keyframes float{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
-    .btn-primary{background:var(--grad-emerald);position:relative;overflow:hidden;transition:transform .2s ease, box-shadow .2s ease}
+    .btn-primary{background:var(--grad-emerald);position:relative;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease;will-change:transform,box-shadow}
     .btn-primary::before{content:"";position:absolute;inset:0;left:-100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transition:left .5s}
     .btn-primary:hover::before{left:100%}
     .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--glow-emerald)}
     .spinner{width:18px;height:18px;border:2px solid rgba(16,185,129,.35);border-top:2px solid #10b981;border-radius:50%;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
+    @media(prefers-reduced-motion:reduce){.gradient-animated,.float,.btn-primary,.notification{animation:none!important;transition:none!important}}
     .custom-scrollbar::-webkit-scrollbar{height:8px;width:8px}
     .custom-scrollbar::-webkit-scrollbar-thumb{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:4px}
-    .notification{position:fixed;top:18px;right:18px;padding:12px 16px;border-radius:12px;color:#fff;font-weight:600;z-index:50;transform:translateX(320px);transition:transform .25s ease}
+    .notification{position:fixed;top:18px;right:18px;padding:12px 16px;border-radius:12px;color:#fff;font-weight:600;z-index:50;transform:translateX(320px);transition:transform .25s ease;box-shadow:0 12px 30px rgba(15,23,42,.25)}
     .notification.show{transform:translateX(0)}
     .notification.success{background:linear-gradient(135deg,#10b981,#059669)}
     .notification.error{background:linear-gradient(135deg,#ef4444,#dc2626)}
+    .history-table tbody tr{transition:background .15s ease}
+    .history-table tbody tr:hover{background:rgba(148,163,184,.12)}
+    .dark .history-table thead{background:rgba(30,41,59,.85)}
+    .dark .history-table tbody tr:hover{background:rgba(148,163,184,.08)}
+    .history-cards{display:grid;gap:.75rem}
+    .history-card{border-radius:1rem;border:1px solid rgba(148,163,184,.25);background:rgba(255,255,255,.85);padding:1rem;display:flex;flex-direction:column;gap:.75rem;position:relative}
+    .dark .history-card{background:rgba(15,23,42,.8);border-color:rgba(71,85,105,.55)}
+    .history-card-actions{position:sticky;bottom:.75rem;display:flex;gap:.5rem;background:inherit;padding-top:.5rem}
+    .avatar-chip{width:2.25rem;height:2.25rem;border-radius:9999px;display:grid;place-items:center;font-weight:700;color:#fff;flex-shrink:0}
+    .status-badge{border-radius:9999px;padding:.15rem .6rem;font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;gap:.35rem}
+    .status-badge::before{content:"";width:.5rem;height:.5rem;border-radius:9999px;background:currentColor;opacity:.85}
+    .command-palette{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding:3rem 1rem 1.5rem;z-index:60}
+    .command-palette[data-open="true"]{display:flex}
+    .command-panel{width:min(640px,100%);border-radius:1.25rem;overflow:hidden;box-shadow:0 30px 80px rgba(15,23,42,.35)}
+    .inline-editor{position:fixed;inset-inline:.75rem;bottom:1rem;z-index:70;display:none}
+    .inline-editor[data-open="true"]{display:block}
+    .sparkline{width:120px;height:40px}
+    .radar-chart{width:220px;height:220px}
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
   <div id="toast" class="notification" role="status" aria-live="polite"></div>
   <div class="max-w-7xl mx-auto p-4 md:p-8 relative">
     <!-- Header -->
-    <header class="text-center mb-10">
-      <div class="float">
+    <header class="text-center space-y-6 mb-10">
+      <div class="float space-y-4">
         <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Attari Class Tracker</h1>
         <div class="w-24 h-1 gradient-animated mx-auto mt-4 rounded-full"></div>
-        <p class="mt-4 text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your class.</p>
-        <p class="mt-2 text-sm"><span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> <span id="whoami">Not signed in</span> • <span id="todayDisplay"></span></span></p>
+        <p class="text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your class.</p>
+        
+        <div class="flex flex-wrap justify-center gap-3 text-xs">
+          <span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span><span id="whoami">Not signed in</span> • <span id="todayDisplay"></span></span>
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="font-semibold">Density</span><button id="densityToggle" class="px-2 py-1 rounded-lg bg-slate-200/80 dark:bg-slate-700/60">Comfort</button></span>
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><label for="localeSelect" class="font-semibold">Date format</label><select id="localeSelect" class="bg-transparent focus:outline-none">
+              <option value="D MMM YYYY">D MMM YYYY</option>
+              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+            </select></span>
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><label for="firstDaySelect" class="font-semibold">First day</label><select id="firstDaySelect" class="bg-transparent focus:outline-none">
+              <option value="0">Sun</option>
+              <option value="1">Mon</option>
+            </select></span>
+        </div>
       </div>
     </header>
 
@@ -82,31 +114,108 @@
           <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
             <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
               <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"><span id="formTitle">✨ New Entry</span></h2>
-              <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Sign out</button>
+              <div class="flex items-center gap-3">
+                <button id="openBulk" class="px-3 py-1.5 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-sm">📋 Bulk</button>
+                <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Sign out</button>
+              </div>
             </div>
-            <form id="notesForm" class="p-6 md:p-8 space-y-6">
-              <div>
-                <label class="block text-sm font-semibold mb-1">👤 Student</label>
-                <select id="student" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required>
-                  <option value="" disabled selected>Choose a student…</option>
-                </select>
+            <form id="notesForm" class="p-6 md:p-8 space-y-6" autocomplete="off">
+              <div class="grid gap-4">
+                <div>
+                  <label class="block text-sm font-semibold mb-1" for="entryDate">📅 Date</label>
+                  <div class="flex flex-wrap gap-2">
+                    <input id="entryDate" name="entryDate" type="date" class="rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0 flex-1" required />
+                    <div class="flex gap-2">
+                      <button type="button" data-date-chip="today" class="px-3 py-2 rounded-xl bg-slate-200/70 dark:bg-slate-700/60 text-xs">Today</button>
+                      <button type="button" data-date-chip="yesterday" class="px-3 py-2 rounded-xl bg-slate-200/70 dark:bg-slate-700/60 text-xs">Yesterday</button>
+                      <button type="button" data-date-chip="lastFri" class="px-3 py-2 rounded-xl bg-slate-200/70 dark:bg-slate-700/60 text-xs">Last Fri</button>
+                      <button type="button" data-date-chip="clear" class="px-3 py-2 rounded-xl bg-slate-200/70 dark:bg-slate-700/60 text-xs">Clear</button>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold mb-1" for="student">👤 Student</label>
+                  <select id="student" name="student" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required>
+                    <option value="" disabled selected>Choose a student…</option>
+                  </select>
+                </div>
               </div>
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label class="block text-sm font-semibold mb-1">📖 Quran</label><input id="quran" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" /></div>
-                <div><label class="block text-sm font-semibold mb-1">🕌 Surah</label><input id="surah" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-purple-500 focus:ring-0" /></div>
-                <div><label class="block text-sm font-semibold mb-1">🤲 Laws of Salah</label><input id="laws" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-indigo-500 focus:ring-0" /></div>
-                <div><label class="block text-sm font-semibold mb-1">🌙 Qamar</label><input id="qamar" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-pink-500 focus:ring-0" /></div>
+                <div>
+                  <label class="block text-sm font-semibold mb-1" for="quran">📖 Quran</label>
+                  <input id="quran" name="quran" type="text" maxlength="120" class="density-target w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold mb-1" for="surah">🕌 Surah</label>
+                  <input id="surah" name="surah" type="text" maxlength="120" class="density-target w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-purple-500 focus:ring-0" />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold mb-1" for="laws">🤲 Laws of Salah</label>
+                  <input id="laws" name="laws" type="text" maxlength="120" class="density-target w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-indigo-500 focus:ring-0" />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold mb-1" for="qamar">🌙 Qamar</label>
+                  <input id="qamar" name="qamar" type="text" maxlength="120" class="density-target w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-pink-500 focus:ring-0" />
+                </div>
               </div>
+
               <div>
-                <label class="block text-sm font-semibold mb-1">💭 Additional Notes</label>
-                <textarea id="anything" rows="4" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-teal-500 focus:ring-0"></textarea>
+                <label class="block text-sm font-semibold mb-1" for="anything">💭 Additional Notes</label>
+                <textarea id="anything" name="anything" rows="4" maxlength="450" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-teal-500 focus:ring-0"></textarea>
               </div>
+
+              <div>
+                <span class="block text-sm font-semibold mb-2">🎯 Status</span>
+                <div id="statusChips" class="flex flex-wrap gap-2"></div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <span class="block text-sm font-semibold mb-2">✅ Attendance</span>
+                  <div id="attendanceButtons" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div>
+                  <span class="block text-sm font-semibold mb-2">😊 Behaviour</span>
+                  <div id="behaviourButtons" class="flex flex-wrap gap-2"></div>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <label for="tags" class="block text-sm font-semibold">🏷️ Tags (comma separated)</label>
+                <input id="tags" name="tags" type="text" maxlength="160" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" placeholder="e.g. Homework, Needs follow-up" />
+                <div class="flex flex-wrap gap-2 items-center text-sm">
+                  <label for="templateSelect" class="font-semibold">Templates</label>
+                  <select id="templateSelect" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-3 py-1.5 text-sm">
+                    <option value="">Apply template…</option>
+                  </select>
+                  <input id="templateName" type="text" placeholder="Template name" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-3 py-1.5 text-sm" />
+                  <button id="saveTemplate" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-500/90 text-white text-sm">Save template</button>
+                  <button id="deleteTemplate" type="button" class="px-3 py-1.5 rounded-xl bg-red-500/80 text-white text-sm">Delete</button>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <div class="text-sm font-semibold">🔁 Smart suggestions</div>
+                <div id="suggestions" class="flex flex-wrap gap-2 text-sm"></div>
+              </div>
+
               <div class="flex flex-col sm:flex-row gap-4">
                 <button id="saveBtn" type="submit" class="btn-primary flex-1 px-6 py-4 rounded-2xl text-white font-bold inline-flex items-center justify-center gap-3"><span id="saveText">💾 Save Entry</span><div id="saveSpinner" class="spinner hidden"></div></button>
-                <button id="cancelEditBtn" type="button" class="hidden px-6 py-4 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium border border-slate-300/40 dark:border-slate-600/40">✖️ Cancel Edit</button>
+                <button id="cancelEditBtn" type="button" class="hidden px-6 py-4 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium border border-slate-300/40 dark:border-slate-600/40">✖️ Cancel</button>
               </div>
-              <div id="saveStatus" class="text-center text-sm font-medium"></div>
+              <div id="saveStatus" class="text-center text-sm font-medium" aria-live="polite"></div>
             </form>
+          </div>
+
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 p-6 space-y-4 mt-6">
+            <h3 class="text-lg font-semibold">⏰ Weekly reminder</h3>
+            <div class="flex flex-wrap gap-3 text-sm">
+              <label class="inline-flex items-center gap-2"><input id="reminderToggle" type="checkbox" class="rounded" /> Enable reminder</label>
+              <label class="inline-flex items-center gap-2">Day<select id="reminderDay" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-3 py-1 text-sm"><option value="5">Friday</option><option value="4">Thursday</option><option value="6">Saturday</option></select></label>
+              <label class="inline-flex items-center gap-2">Time<input id="reminderTime" type="time" value="15:00" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-3 py-1 text-sm" /></label>
+            </div>
+            <p class="text-xs text-slate-500">We'll nudge you once per day when the reminder triggers.</p>
           </div>
         </section>
 
@@ -123,36 +232,52 @@
                   <option value="">All students</option>
                 </select>
                 <input id="filterDate" type="date" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500" />
+                <select id="filterStatus" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500">
+                  <option value="">All statuses</option>
+                </select>
+                <input id="searchText" type="search" placeholder="Search…" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500" />
                 <button id="clearFilters" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200">🔄 Clear</button>
               </div>
             </div>
             <div class="overflow-hidden">
-              <div class="overflow-x-auto custom-scrollbar max-h-96">
-                <table class="min-w-full text-left text-sm">
+              <div class="hidden md:block overflow-x-auto custom-scrollbar max-h-96">
+                <table class="history-table min-w-full text-left text-sm">
                   <thead class="sticky top-0 backdrop-blur bg-slate-100/90 dark:bg-slate-800/90">
                     <tr>
                       <th class="px-6 py-3 font-semibold">📅 Date</th>
                       <th class="px-6 py-3 font-semibold">👤 Student</th>
+                      <th class="px-6 py-3 font-semibold">Status</th>
                       <th class="px-6 py-3 font-semibold">📖 Quran</th>
                       <th class="px-6 py-3 font-semibold">🕌 Surah</th>
                       <th class="px-6 py-3 font-semibold">🤲 Salah</th>
                       <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
                       <th class="px-6 py-3 font-semibold">💭 Notes</th>
+                      <th class="px-6 py-3 font-semibold">Tags</th>
                       <th class="px-6 py-3 font-semibold">⚡ Actions</th>
                     </tr>
                   </thead>
                   <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
                 </table>
               </div>
-              <div id="emptyState" class="hidden text-center py-14">
-                <div class="text-6xl mb-3">📝</div>
+              <div id="historyCards" class="md:hidden history-cards p-4"></div>
+              <div id="emptyState" class="hidden text-center py-14 space-y-3">
+                <div class="text-6xl">📝</div>
                 <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No entries yet</h3>
-                <p class="text-slate-500">Add your first note using the form.</p>
-              </div>
+                <p class="text-slate-500">Add your first note using the form or import in bulk.</p>
+                <div class="flex flex-wrap justify-center gap-3">
+                  <button id="demoEntry" class="px-4 py-2 rounded-xl bg-emerald-500/90 text-white">Add demo entry</button>
+                  <button id="pasteClipboard" class="px-4 py-2 rounded-xl bg-indigo-500/90 text-white">Paste from clipboard</button>
+                </div>
             </div>
-            <div class="p-6 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50">
-              <div id="countInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
-              <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">🔄 Refresh</button>
+            <div class="p-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between border-t border-slate-200/50 dark:border-slate-700/50">
+              <div class="flex flex-col gap-1 text-sm text-slate-600 dark:text-slate-400">
+                <span id="countInfo"></span>
+                <span id="streakInfo"></span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button id="loadMore" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">Load more</button>
+                <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600">Refresh</button>
+              </div>
             </div>
           </div>
         </section>
@@ -166,15 +291,17 @@
                 <p class="text-sm text-slate-600 dark:text-slate-400">Review per-student progress and export it as a CSV or PDF file.</p>
               </div>
               <div class="flex flex-wrap gap-3 items-center">
-                <select id="reportStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus-border-emerald-500">
+                <select id="reportStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500">
                   <option value="" disabled selected>Select a student…</option>
                 </select>
                 <input id="reportMonth" type="month" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500" />
                 <select id="reportFormat" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500">
                   <option value="csv" selected>CSV</option>
-                  <option value="pdf">PDF</option>
+                  <option value="pdf">Teacher PDF</option>
                 </select>
-                <button id="reportDownload" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>⬇️ Download CSV</button>
+                <button id="reportDownload" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>⬇️ Download</button>
+                <button id="reportParentDownload" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>👪 Parent PDF</button>
+              </div>
               </div>
             </div>
             <div class="p-6 md:p-8 space-y-6">
@@ -184,11 +311,15 @@
                   <thead class="bg-slate-100/80 dark:bg-slate-800/80">
                     <tr>
                       <th class="px-6 py-3 font-semibold">📅 Date</th>
+                      <th class="px-6 py-3 font-semibold">Status</th>
+                      <th class="px-6 py-3 font-semibold">Attendance</th>
+                      <th class="px-6 py-3 font-semibold">Behaviour</th>
                       <th class="px-6 py-3 font-semibold">📖 Quran</th>
                       <th class="px-6 py-3 font-semibold">🕌 Surah</th>
                       <th class="px-6 py-3 font-semibold">🤲 Salah</th>
                       <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
                       <th class="px-6 py-3 font-semibold">💭 Notes</th>
+                      <th class="px-6 py-3 font-semibold">Tags</th>
                     </tr>
                   </thead>
                   <tbody id="reportBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
@@ -203,6 +334,31 @@
         </section>
       </div>
 
+      <section class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 p-6 md:p-8 space-y-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-emerald-600">📈 Progress Insights</h2>
+            <p class="text-sm text-slate-600 dark:text-slate-400">Sparklines, streaks and balance to quickly scan momentum.</p>
+          </div>
+          <button id="refreshInsights" class="px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-emerald-500 text-white">Refresh insights</button>
+        </div>
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold">Per-student monthly sparkline</h3>
+            <div id="sparklineList" class="space-y-4 max-h-80 overflow-y-auto pr-2 custom-scrollbar"></div>
+          </div>
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold">🔥 Streak counter</h3>
+            <div id="streakCounter" class="text-4xl font-bold"></div>
+            <p class="text-sm text-slate-500">Days in a row with entries (per class).</p>
+          </div>
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold">🧭 Balance radar</h3>
+            <div id="radarWrapper" class="flex items-center justify-center"></div>
+          </div>
+        </div>
+      </section>
+
       <footer class="mt-12 text-center">
         <div class="glass bg-white/60 dark:bg-slate-800/60 rounded-2xl px-6 py-4 inline-block">
           <p class="text-xs text-slate-600 dark:text-slate-400">🔒 Data: <span class="font-mono font-semibold">classes/Attari/notes</span> • Unique per <em>date + student</em></p>
@@ -212,537 +368,1792 @@
   </div>
 
   <!-- Firebase SDKs -->
+  <div class="command-palette" id="commandPalette">
+    <div class="command-panel bg-white/90 dark:bg-slate-900/95 border border-white/30 dark:border-slate-700/50">
+      <div class="p-4 border-b border-slate-200/40 dark:border-slate-700/40">
+        <input id="commandSearch" type="search" placeholder="Search students, surahs, notes…" class="w-full rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 px-4 py-3" />
+      </div>
+      <div id="commandResults" class="max-h-80 overflow-y-auto custom-scrollbar divide-y divide-slate-200/40 dark:divide-slate-700/40"></div>
+    </div>
+  </div>
+
+  <div class="inline-editor" id="inlineEditor">
+    <div class="glass bg-white/90 dark:bg-slate-900/95 rounded-2xl shadow-2xl border border-white/40 dark:border-slate-700/40 p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 id="inlineLabel" class="text-sm font-semibold"></h3>
+        <button id="inlineClose" class="text-sm text-slate-500">Esc</button>
+      </div>
+      <textarea id="inlineInput" rows="3" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-3 py-2"></textarea>
+      <div class="flex justify-end gap-2 text-sm">
+        <button id="inlineCancel" class="px-3 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/70">Cancel</button>
+        <button id="inlineSave" class="px-3 py-2 rounded-xl bg-emerald-500/90 text-white">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bulkModal" class="command-palette">
+    <div class="command-panel bg-white/95 dark:bg-slate-900/95 border border-white/30 dark:border-slate-700/50 max-h-[90vh] overflow-hidden">
+      <div class="p-4 border-b border-slate-200/40 dark:border-slate-700/40 flex items-center justify-between">
+        <h3 class="text-lg font-semibold">📋 Bulk entry mode</h3>
+        <div class="flex gap-2 items-center text-sm">
+          <label class="flex items-center gap-2">Date<input id="bulkDate" type="date" class="rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-3 py-1.5" /></label>
+          <button id="bulkClose" class="px-3 py-1.5 rounded-xl bg-slate-200/80 dark:bg-slate-700/70">Close</button>
+        </div>
+      </div>
+      <div class="p-4 overflow-y-auto custom-scrollbar" id="bulkBody"></div>
+      <div class="p-4 border-t border-slate-200/40 dark:border-slate-700/40 flex items-center justify-between">
+        <span id="bulkStatus" class="text-sm text-slate-500"></span>
+        <button id="bulkSubmit" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white">Save all</button>
+      </div>
+    </div>
+  </div>
+
+  <template id="bulkRowTemplate">
+    <div class="border border-slate-200/50 dark:border-slate-700/50 rounded-2xl p-4 mb-3 space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="avatar-chip text-sm"></div>
+        <div class="font-semibold"></div>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3 text-sm">
+        <input data-field="quran" type="text" placeholder="Quran" class="rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 px-3 py-2" />
+        <input data-field="surah" type="text" placeholder="Surah" class="rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 px-3 py-2" />
+        <input data-field="lawsOfSalah" type="text" placeholder="Laws of Salah" class="rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 px-3 py-2" />
+        <input data-field="qamar" type="text" placeholder="Qamar" class="rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 px-3 py-2" />
+      </div>
+      <textarea data-field="anythingElse" rows="2" placeholder="Notes" class="w-full rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 px-3 py-2 text-sm"></textarea>
+      <input data-field="tags" type="text" placeholder="Tags" class="w-full rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200/40 dark:border-slate-700/40 px-3 py-2 text-sm" />
+    </div>
+  </template>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, orderBy, where, limit as qLimit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { initializeFirestore, persistentLocalCache, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, orderBy, where, limit as qLimit, startAfter, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-    const firebaseConfig = { apiKey:"AIzaSyCTGIoNNey_0GwRxg_85Xv-jEQtQDjzehw", authDomain:"attari-579d2.firebaseapp.com", projectId:"attari-579d2", storageBucket:"attari-579d2.firebasestorage.app", messagingSenderId:"765966619098", appId:"1:765966619098:web:9ab852c4881426472b70e3" };
+    const firebaseConfig = { apiKey: "AIzaSyCTGIoNNey_0GwRxg_85Xv-jEQtQDjzehw", authDomain: "attari-579d2.firebaseapp.com", projectId: "attari-579d2", storageBucket: "attari-579d2.firebasestorage.app", messagingSenderId: "765966619098", appId: "1:765966619098:web:9ab852c4881426472b70e3" };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
+    const db = initializeFirestore(app, { localCache: persistentLocalCache() });
 
-    // UI refs
-    const authGate = document.getElementById('authGate');
-    const appShell = document.getElementById('app');
-    const authStatus = document.getElementById('authStatus');
-    const dot = document.getElementById('dot');
-    const whoami = document.getElementById('whoami');
-    const signOutBtn = document.getElementById('signOutBtn');
-    const toast = document.getElementById('toast');
+    const students = ["Siyaam Azar", "Hussain Ali", "Hamza Razzaq", "Subhan Hussain", "Milad Raza", "Murtaza Arfan", "Zeeshan Hussain", "Mohammed Subhan Ramzan", "Onees Usman", "Mohammed Hassan Hussain", "Ali Hussein"];
+    const STATUS_OPTIONS = ["Memorised", "Revised", "Needs practice"];
+    const ATTENDANCE_OPTIONS = [
+      { value: "present", label: "Present", icon: "✅" },
+      { value: "late", label: "Late", icon: "⏰" },
+      { value: "absent", label: "Absent", icon: "❌" }
+    ];
+    const BEHAVIOUR_OPTIONS = [
+      { value: "great", label: "Great", icon: "😃" },
+      { value: "steady", label: "Steady", icon: "🙂" },
+      { value: "needs-support", label: "Needs support", icon: "🧭" }
+    ];
+    const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const HISTORY_PAGE_SIZE = 40;
+    const CLASS_ID = "Attari";
+    const AUTOSAVE_KEY = "attari-draft-v2";
+    const TEMPLATE_KEY = "attari-templates-v2";
+    const DENSITY_KEY = "attari-density";
+    const LOCALE_KEY = "attari-locale";
+    const REMINDER_KEY = "attari-reminder";
 
-    // Forms
-    const signinForm = document.getElementById('signinForm');
-    const signupForm = document.getElementById('signupForm');
-    document.getElementById('showSignup').addEventListener('click',()=>{signinForm.classList.add('hidden');signupForm.classList.remove('hidden')});
-    document.getElementById('showSignin').addEventListener('click',()=>{signupForm.classList.add('hidden');signinForm.classList.remove('hidden')});
+    const notesCol = collection(doc(collection(db, "classes"), CLASS_ID), "notes");
 
-    signinForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=siEmail.value.trim();const pass=siPass.value;siMsg.textContent='';try{await signInWithEmailAndPassword(auth,email,pass);}catch(err){siMsg.textContent=err.message;showToast(err.message,'error')}});
-    signupForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=suEmail.value.trim();const pass=suPass.value;suMsg.textContent='';try{await createUserWithEmailAndPassword(auth,email,pass);suMsg.textContent='Account created. Signed in.';showToast('Welcome!','success')}catch(err){suMsg.textContent=err.message;showToast(err.message,'error')}});
-    signOutBtn?.addEventListener('click', ()=>signOut(auth));
+    const authGate = document.getElementById("authGate");
+    const appShell = document.getElementById("app");
+    const authStatus = document.getElementById("authStatus");
+    const dot = document.getElementById("dot");
+    const whoami = document.getElementById("whoami");
+    const signOutBtn = document.getElementById("signOutBtn");
+    const toast = document.getElementById("toast");
+    const densityToggle = document.getElementById("densityToggle");
+    const localeSelect = document.getElementById("localeSelect");
+    const firstDaySelect = document.getElementById("firstDaySelect");
+    const todayDisplay = document.getElementById("todayDisplay");
 
-    // Students and elements
-    const students=["Siyaam Azar","Hussain Ali","Hamza Razzaq","Subhan Hussain","Milad Raza","Murtaza Arfan","Zeeshan Hussain","Mohammed Subhan Ramzan","Onees Usman","Mohammed Hassan Hussain","Ali Hussein"];
-    const MONTH_LABELS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const inputs={student:document.getElementById('student'),quran:document.getElementById('quran'),surah:document.getElementById('surah'),laws:document.getElementById('laws'),qamar:document.getElementById('qamar'),anything:document.getElementById('anything')};
-    const filterStudent=document.getElementById('filterStudent');
-    const filterDate=document.getElementById('filterDate');
-    const historyBody=document.getElementById('historyBody');
-    const emptyState=document.getElementById('emptyState');
-    const countInfo=document.getElementById('countInfo');
-    const formTitle=document.getElementById('formTitle');
-    const cancelEditBtn=document.getElementById('cancelEditBtn');
-    const saveBtn=document.getElementById('saveBtn');
-    const saveText=document.getElementById('saveText');
-    const saveSpinner=document.getElementById('saveSpinner');
-    const saveStatus=document.getElementById('saveStatus');
-    const reportStudent=document.getElementById('reportStudent');
-    const reportMonth=document.getElementById('reportMonth');
-    const reportFormat=document.getElementById('reportFormat');
-    const reportBody=document.getElementById('reportBody');
-    const reportTableWrapper=document.getElementById('reportTableWrapper');
-    const reportEmpty=document.getElementById('reportEmpty');
-    const reportEmptyText=document.getElementById('reportEmptyText');
-    const reportInfo=document.getElementById('reportInfo');
-    const reportDownload=document.getElementById('reportDownload');
+    const notesForm = document.getElementById("notesForm");
+    const entryDateInput = document.getElementById("entryDate");
+    const inputs = {
+      student: document.getElementById("student"),
+      quran: document.getElementById("quran"),
+      surah: document.getElementById("surah"),
+      laws: document.getElementById("laws"),
+      qamar: document.getElementById("qamar"),
+      anything: document.getElementById("anything"),
+      tags: document.getElementById("tags")
+    };
+    const statusChips = document.getElementById("statusChips");
+    const attendanceButtons = document.getElementById("attendanceButtons");
+    const behaviourButtons = document.getElementById("behaviourButtons");
+    const suggestions = document.getElementById("suggestions");
+    const formTitle = document.getElementById("formTitle");
+    const saveBtn = document.getElementById("saveBtn");
+    const saveText = document.getElementById("saveText");
+    const saveSpinner = document.getElementById("saveSpinner");
+    const saveStatus = document.getElementById("saveStatus");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const templateSelect = document.getElementById("templateSelect");
+    const templateNameInput = document.getElementById("templateName");
+    const reminderToggle = document.getElementById("reminderToggle");
+    const reminderDay = document.getElementById("reminderDay");
+    const reminderTime = document.getElementById("reminderTime");
 
-    // Populate selects
-    function populateStudents(){
-      inputs.student.innerHTML='<option value="" disabled selected>Choose a student…</option>';
-      filterStudent.innerHTML='<option value="">All students</option>';
-      reportStudent.innerHTML='<option value="" disabled selected>Select a student…</option>';
-      students.forEach(n=>{
-        const o=document.createElement('option');o.value=n;o.textContent=n;inputs.student.appendChild(o);
-        const o2=document.createElement('option');o2.value=o.value;o2.textContent=n;filterStudent.appendChild(o2);
-        const o3=document.createElement('option');o3.value=o.value;o3.textContent=n;reportStudent.appendChild(o3);
-      });
+    const filterStudent = document.getElementById("filterStudent");
+    const filterDate = document.getElementById("filterDate");
+    const filterStatus = document.getElementById("filterStatus");
+    const searchText = document.getElementById("searchText");
+    const clearFiltersBtn = document.getElementById("clearFilters");
+    const historyBody = document.getElementById("historyBody");
+    const historyCards = document.getElementById("historyCards");
+    const emptyState = document.getElementById("emptyState");
+    const countInfo = document.getElementById("countInfo");
+    const streakInfo = document.getElementById("streakInfo");
+    const loadMoreBtn = document.getElementById("loadMore");
+    const reloadBtn = document.getElementById("reload");
+    const demoEntryBtn = document.getElementById("demoEntry");
+    const pasteClipboardBtn = document.getElementById("pasteClipboard");
+
+    const reportStudent = document.getElementById("reportStudent");
+    const reportMonth = document.getElementById("reportMonth");
+    const reportFormat = document.getElementById("reportFormat");
+    const reportDownload = document.getElementById("reportDownload");
+    const reportParentDownload = document.getElementById("reportParentDownload");
+    const reportBody = document.getElementById("reportBody");
+    const reportInfo = document.getElementById("reportInfo");
+    const reportTableWrapper = document.getElementById("reportTableWrapper");
+    const reportEmpty = document.getElementById("reportEmpty");
+    const reportEmptyText = document.getElementById("reportEmptyText");
+
+    const commandPalette = document.getElementById("commandPalette");
+    const commandSearch = document.getElementById("commandSearch");
+    const commandResults = document.getElementById("commandResults");
+
+    const inlineEditor = document.getElementById("inlineEditor");
+    const inlineLabel = document.getElementById("inlineLabel");
+    const inlineInput = document.getElementById("inlineInput");
+
+    const bulkModal = document.getElementById("bulkModal");
+    const bulkBody = document.getElementById("bulkBody");
+    const bulkDate = document.getElementById("bulkDate");
+    const bulkStatus = document.getElementById("bulkStatus");
+    const bulkSubmit = document.getElementById("bulkSubmit");
+
+    const sparklineList = document.getElementById("sparklineList");
+    const streakCounter = document.getElementById("streakCounter");
+    const radarWrapper = document.getElementById("radarWrapper");
+    const refreshInsightsBtn = document.getElementById("refreshInsights");
+
+    const state = {
+      editing: null,
+      selectedStatuses: new Set(),
+      selectedAttendance: null,
+      selectedBehaviour: null,
+      historyRecent: [],
+      historyOlder: [],
+      historyAll: [],
+      hasMore: true,
+      lastCursor: null,
+      filters: loadInitialFilters(),
+      templates: loadTemplates(),
+      autosaveTimer: null,
+      autosaveDirty: false,
+      density: loadDensity(),
+      locale: loadLocale(),
+      reminder: loadReminder(),
+      lastEntryByStudent: new Map(),
+      commandItems: [],
+      inlineTarget: null,
+      insightNeedsRefresh: true,
+      reminderCheckTimer: null,
+      currentReportRows: []
+    };
+    const now = new Date();
+    const todayKey = toLocalISODate(now);
+    todayDisplay.textContent = formatDisplayDate(todayKey);
+    entryDateInput.value = todayKey;
+    bulkDate.value = todayKey;
+    if (reportMonth) {
+      reportMonth.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     }
+
+    applyDensity();
+    applyLocaleSelectors();
+    applyReminderState();
     populateStudents();
+    renderStatusButtons();
+    renderAttendanceButtons();
+    renderBehaviourButtons();
+    populateStatusFilter();
+    populateTemplateSelect();
 
-    const now=new Date();
-    const todayKey=toLocalISODate(now);
-    document.getElementById('todayDisplay').textContent=formatDisplayDate(todayKey);
-    if(reportMonth)reportMonth.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-
-    const CLASS_ID='Attari';
-    const notesCol=collection(doc(db,'classes',CLASS_ID),'notes');
-
-    const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-    const noteId=(date,student)=>`${date}_${slug(student)}`;
-
-    // Edit mode
-    let editingKey=null;
-    function setEditMode(n=null){
-      if(n){
-        editingKey=n.id;
-        formTitle.textContent='✏️ Edit Entry';
-        saveText.textContent='✅ Update Entry';
-        cancelEditBtn.classList.remove('hidden');
-        inputs.student.value=n.student;
-        inputs.quran.value=n.quran||'';
-        inputs.surah.value=n.surah||'';
-        inputs.laws.value=n.lawsOfSalah||'';
-        inputs.qamar.value=n.qamar||'';
-        inputs.anything.value=n.anythingElse||n.other||'';
-      } else {
-        editingKey=null;
-        formTitle.textContent='✨ New Entry';
-        saveText.textContent='💾 Save Entry';
-        cancelEditBtn.classList.add('hidden');
-        document.getElementById('notesForm').reset();
-      }
-    }
-    cancelEditBtn.addEventListener('click',()=>setEditMode(null));
-
-    // Save/Update
-    document.getElementById('notesForm').addEventListener('submit',async(e)=>{
-      e.preventDefault();
-      const student=inputs.student.value;
-      if(!student){saveStatus.textContent='Choose a student';return}
-      saveSpinner.classList.remove('hidden');
-      const defaultDate=toLocalISODate(new Date());
-      const entryDate=editingKey?extractDateFromId(editingKey)||defaultDate:defaultDate;
-      const id=editingKey||noteId(entryDate,student);
-      const ref=doc(notesCol,id);
-      const payload={
-        id,
-        date:entryDate,
-        student,
-        quran:inputs.quran.value.trim(),
-        surah:inputs.surah.value.trim(),
-        lawsOfSalah:inputs.laws.value.trim(),
-        qamar:inputs.qamar.value.trim(),
-        anythingElse:inputs.anything.value.trim(),
-        updatedAt:serverTimestamp(),
-        ownerUid:auth.currentUser?.uid||null
-      };
-      const snap=await getDoc(ref);
-      if(!snap.exists())payload.createdAt=serverTimestamp();
-      await setDoc(ref,payload,{merge:true});
-      saveSpinner.classList.add('hidden');
-      showToast(editingKey?'Updated ✓':'Saved ✓','success');
-      saveStatus.textContent=editingKey?'Updated ✅':'Saved ✅';
-      setTimeout(()=>saveStatus.textContent='',1200);
-      setEditMode(null);
-    });
-
-    // History stream & filters
-    let unsub=null, historyRows=[], currentReportRows=[];
-    let reportRequestToken=0;
-    let jsPdfModulePromise=null;
-
-    function startHistoryStream(){
-      if(unsub)unsub();
-      const q=query(notesCol,orderBy('date','desc'),qLimit(200));
-      unsub=onSnapshot(q,(snap)=>{
-        historyRows=snap.docs.map(d=>({id:d.id,...d.data()}));
-        applyFilters();
-        renderMonthlyReport();
-      });
-    }
-
-    function applyFilters(){
-      const s=filterStudent.value;
-      const d=filterDate.value;
-      let list=historyRows;
-      if(s)list=list.filter(r=>r.student===s);
-      if(d)list=list.filter(r=>r.date===d);
-      renderHistory(list);
-      renderMonthlyReport();
-    }
-    filterStudent.addEventListener('change',applyFilters);
-    filterDate.addEventListener('change',applyFilters);
-    document.getElementById('clearFilters').addEventListener('click',()=>{filterStudent.value='';filterDate.value='';applyFilters();});
-    document.getElementById('reload').addEventListener('click',applyFilters);
-
-    async function fetchMonthlyRows(student,range){
-      const baseConstraints=[where('date','>=',range.start),where('date','<=',range.end),orderBy('date','asc')];
-      const mapSnap=snap=>snap.docs.map(docSnap=>({id:docSnap.id,...docSnap.data()}));
-      if(!student){
-        const snap=await getDocs(query(notesCol,...baseConstraints));
-        return mapSnap(snap);
-      }
-      try{
-        const snap=await getDocs(query(notesCol,where('student','==',student),...baseConstraints));
-        return mapSnap(snap);
-      }catch(err){
-        // fallback if composite index is missing
-        if(err?.code==='failed-precondition'||/index/i.test(err?.message||'')){
-          const snap=await getDocs(query(notesCol,...baseConstraints));
-          return mapSnap(snap).filter(r=>r.student===student);
-        }
-        throw err;
-      }
-    }
-
-    reportStudent?.addEventListener('change',renderMonthlyReport);
-    reportMonth?.addEventListener('change',renderMonthlyReport);
-    reportFormat?.addEventListener('change',updateReportDownloadLabel);
-    reportDownload?.addEventListener('click',async()=>{
-      if(reportDownload.disabled)return;
-      await downloadMonthlyReport();
-    });
-    renderMonthlyReport();
-    updateReportDownloadLabel();
-
-    function renderHistory(rows){
-      historyBody.innerHTML='';
-      if(!rows.length){
-        emptyState.classList.remove('hidden');
-        countInfo.textContent='0 notes';
-        return;
-      }
-      emptyState.classList.add('hidden');
-      rows.forEach(r=>{
-        const tr=document.createElement('tr');
-        tr.innerHTML=`
-          <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
-          <td class='px-6 py-3'>${esc(r.student||'')}</td>
-          <td class='px-6 py-3'>${esc(r.quran||'')}</td>
-          <td class='px-6 py-3'>${esc(r.surah||'')}</td>
-          <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
-          <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
-          <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
-          <td class='px-6 py-3 whitespace-nowrap'>
-            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800' data-action='edit' data-id='${r.id}'>Edit</button>
-            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20' data-action='delete' data-id='${r.id}'>Delete</button>
-          </td>`;
-        historyBody.appendChild(tr);
-      });
-      countInfo.textContent=`${rows.length} note${rows.length===1?'':'s'} shown`;
-    }
-
-    async function renderMonthlyReport(){
-      if(!reportStudent||!reportMonth)return;
-      const student=reportStudent.value;
-      const monthValue=reportMonth.value;
-
-      currentReportRows=[];
-      reportBody.innerHTML='';
-      reportInfo.textContent='';
-
-      if(reportDownload){
-        reportDownload.disabled=true;
-        updateReportDownloadLabel();
-      }
-      reportTableWrapper.classList.add('hidden');
-      reportEmpty.classList.remove('hidden');
-
-      if(!student){reportEmptyText.textContent='Select a student to see their monthly report.';return;}
-      if(!monthValue){reportEmptyText.textContent='Choose a month to view the report.';return;}
-
-      const requestId=++reportRequestToken;
-      reportEmptyText.textContent='Loading report…';
-
-      try{
-        const range=getMonthDateRange(monthValue);
-        if(!range){reportEmptyText.textContent='Choose a valid month to view the report.';return;}
-
-        const rows=await fetchMonthlyRows(student,range);
-        if(requestId!==reportRequestToken)return;
-
-        const filtered=rows.filter(r=>r.student===student&&isInMonth(r.date,monthValue));
-        if(!filtered.length){
-          if(requestId===reportRequestToken){reportEmptyText.textContent=`No entries found for ${student} in ${formatMonthYear(monthValue)}.`;}
+    Array.from(document.querySelectorAll('[data-date-chip]')).forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const key = chip.dataset.dateChip;
+        const base = new Date();
+        if (key === 'clear') {
+          entryDateInput.value = '';
           return;
         }
-
-        const sorted=filtered.slice().sort((a,b)=>{
-          const da=parseDate(a.date);const db=parseDate(b.date);
-          if(da&&db)return da-db;
-          return (a.date||'').localeCompare(b.date||'');
-        });
-        if(requestId!==reportRequestToken)return;
-
-        reportBody.innerHTML=sorted.map(r=>`
-          <tr>
-            <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
-            <td class='px-6 py-3'>${esc(r.quran||'')}</td>
-            <td class='px-6 py-3'>${esc(r.surah||'')}</td>
-            <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
-            <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
-            <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
-          </tr>`).join('');
-
-        reportTableWrapper.classList.remove('hidden');
-        reportEmpty.classList.add('hidden');
-        reportInfo.textContent=`${sorted.length} entr${sorted.length===1?'y':'ies'} for ${student} in ${formatMonthYear(monthValue)}.`;
-        if(reportDownload){
-          reportDownload.disabled=false;
-          updateReportDownloadLabel();
+        if (key === 'yesterday') base.setDate(base.getDate() - 1);
+        if (key === 'lastFri') {
+          const desired = 5;
+          const diff = (base.getDay() - desired + 7) % 7 || 7;
+          base.setDate(base.getDate() - diff);
         }
-        currentReportRows=sorted;
-      }catch(err){
-        if(requestId!==reportRequestToken)return;
-        console.error(err);
-        reportEmptyText.textContent='Unable to load monthly report.';
-        showToast('Failed to load monthly report','error');
-      }
-    }
-
-    async function downloadMonthlyReport(){
-      if(!currentReportRows.length||!reportStudent||!reportMonth||!reportDownload)return;
-      const student=reportStudent.value;
-      const monthValue=reportMonth.value;
-      if(!student||!monthValue)return;
-      const format=(reportFormat?.value||'csv').toLowerCase();
-
-      reportDownload.dataset.loading='true';
-      reportDownload.disabled=true;
-      updateReportDownloadLabel();
-
-      try{
-        if(format==='pdf'){
-          await downloadMonthlyPdf(student,monthValue);
-        }else{
-          downloadMonthlyCsv(student,monthValue);
-        }
-      }catch(err){
-        console.error(err);
-        showToast('Download failed','error');
-      }finally{
-        if(reportDownload.dataset.loading)delete reportDownload.dataset.loading;
-        reportDownload.disabled=!currentReportRows.length;
-        updateReportDownloadLabel();
-      }
-    }
-
-    function downloadMonthlyCsv(student,monthValue){
-      const rows=[['Date','Student','Quran','Surah','Laws of Salah','Qamar','Notes']];
-      currentReportRows.forEach(r=>{
-        rows.push([formatDisplayDate(r.date),r.student||'',r.quran||'',r.surah||'',r.lawsOfSalah||'',r.qamar||'',r.anythingElse||'']);
+        entryDateInput.value = toLocalISODate(base);
       });
-      const csv=rows.map(row=>row.map(toCsvValue).join(',')).join('\r\n');
-      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-      const url=URL.createObjectURL(blob);
-      const link=document.createElement('a');
-      link.href=url;
-      link.download=buildReportFilename(student,monthValue,'csv');
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(()=>{URL.revokeObjectURL(url);link.remove();},0);
-      showToast('CSV report downloaded ✓','success');
-    }
+    });
 
-    async function downloadMonthlyPdf(student,monthValue){
-      const module=await ensureJsPdf();
-      const jsPdfConstructor=module?.jsPDF||module?.default?.jsPDF||module?.default;
-      if(typeof jsPdfConstructor!=='function')throw new Error('PDF library failed to load');
+    document.getElementById('showSignup').addEventListener('click', () => {
+      document.getElementById('signinForm').classList.add('hidden');
+      document.getElementById('signupForm').classList.remove('hidden');
+    });
+    document.getElementById('showSignin').addEventListener('click', () => {
+      document.getElementById('signupForm').classList.add('hidden');
+      document.getElementById('signinForm').classList.remove('hidden');
+    });
 
-      const doc=new jsPdfConstructor({orientation:'portrait',unit:'pt'});
-      const margin=40;
-      const pageHeight=doc.internal.pageSize.getHeight();
-      const maxWidth=doc.internal.pageSize.getWidth()-margin*2;
-
-      const monthLabel=formatMonthYear(monthValue)||monthValue;
-      let y=margin;
-
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(18);
-      doc.text('Monthly Report',margin,y);
-      y+=24;
-
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(12);
-      doc.text(`Student: ${student}`,margin,y); y+=16;
-      doc.text(`Month: ${monthLabel}`,margin,y); y+=24;
-
-      const lineHeight=14;
-      currentReportRows.forEach((row,index)=>{
-        if(y>pageHeight-margin){doc.addPage();y=margin;}
-        doc.setFont('helvetica','bold');
-        doc.text(`${index+1}. ${formatDisplayDate(row.date)}`,margin,y);
-        y+=lineHeight;
-
-        doc.setFont('helvetica','normal');
-        const sections=[
-          ['Quran',row.quran],
-          ['Surah',row.surah],
-          ['Laws of Salah',row.lawsOfSalah],
-          ['Qamar',row.qamar],
-          ['Notes',row.anythingElse],
-        ];
-        sections.forEach(([label,value])=>{
-          const text=`• ${label}: ${value||'-'}`;
-          const lines=doc.splitTextToSize(text,Math.max(maxWidth-20,0));
-          lines.forEach(line=>{
-            if(y>pageHeight-margin){doc.addPage();y=margin;}
-            doc.text(line,margin+20,y);
-            y+=lineHeight;
-          });
-        });
-        y+=lineHeight/2;
-      });
-
-      doc.save(buildReportFilename(student,monthValue,'pdf'));
-      showToast('PDF report downloaded ✓','success');
-    }
-
-    function updateReportDownloadLabel(){
-      if(!reportDownload)return;
-      if(reportDownload.dataset.loading){reportDownload.textContent='Preparing…';return;}
-      const format=(reportFormat?.value||'csv').toUpperCase();
-      reportDownload.textContent=`⬇️ Download ${format}`;
-    }
-
-    function buildReportFilename(student,monthValue,extension){
-      const safeStudent=slug(student||'student')||'student';
-      const safeMonth=monthValue||'report';
-      return `${safeStudent}-${safeMonth}-report.${extension}`;
-    }
-
-    function ensureJsPdf(){
-      if(window.jspdf?.jsPDF)return Promise.resolve(window.jspdf);
-      if(!jsPdfModulePromise){
-        jsPdfModulePromise=new Promise((resolve,reject)=>{
-          let script=null;
-          const cleanup=()=>{script?.removeEventListener('error',onError);script?.removeEventListener('load',onLoad);};
-          const onLoad=()=>{
-            cleanup();
-            if(window.jspdf?.jsPDF){
-              resolve(window.jspdf);
-            }else{
-              script?.remove();
-              jsPdfModulePromise=null;
-              reject(new Error('PDF library failed to load'));
-            }
-          };
-          const onError=()=>{
-            cleanup();
-            script?.remove();
-            jsPdfModulePromise=null;
-            reject(new Error('Failed to load PDF library'));
-          };
-          const existing=document.querySelector('script[data-jspdf-loader]');
-          if(existing){
-            script=existing;
-            existing.addEventListener('load',onLoad,{once:true});
-            existing.addEventListener('error',onError,{once:true});
-            return;
-          }
-          script=document.createElement('script');
-          script.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
-          script.async=true;
-          script.crossOrigin='anonymous';
-          script.dataset.jspdfLoader='true';
-          script.addEventListener('load',onLoad,{once:true});
-          script.addEventListener('error',onError,{once:true});
-          document.head.appendChild(script);
-        });
-        jsPdfModulePromise=jsPdfModulePromise.catch(err=>{jsPdfModulePromise=null;throw err;});
-      }
-      return jsPdfModulePromise;
-    }
-
-    historyBody.addEventListener('click',async(e)=>{
-      const btn=e.target.closest('button'); if(!btn) return;
-      const id=btn.getAttribute('data-id');
-      if(btn.getAttribute('data-action')==='edit'){
-        const snap=await getDoc(doc(notesCol,id));
-        if(snap.exists()) setEditMode(snap.data());
-      } else if(btn.getAttribute('data-action')==='delete'){
-        if(!confirm('Delete this note?')) return;
-        await deleteDoc(doc(notesCol,id));
-        showToast('Deleted','success');
+    document.getElementById('signinForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = siEmail.value.trim();
+      const pass = siPass.value;
+      siMsg.textContent = '';
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (err) {
+        siMsg.textContent = err.message;
+        showToast(err.message, 'error');
       }
     });
 
-    // Auth gate
-    onAuthStateChanged(auth,(user)=>{
-      if(user){
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = suEmail.value.trim();
+      const pass = suPass.value;
+      suMsg.textContent = '';
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        suMsg.textContent = 'Account created. Signed in.';
+        showToast('Welcome!', 'success');
+      } catch (err) {
+        suMsg.textContent = err.message;
+        showToast(err.message, 'error');
+      }
+    });
+
+    signOutBtn?.addEventListener('click', () => signOut(auth));
+
+    notesForm.addEventListener('submit', onSubmitForm);
+    cancelEditBtn.addEventListener('click', () => setEditMode(null));
+    templateSelect.addEventListener('change', applyTemplateFromSelect);
+    document.getElementById('saveTemplate').addEventListener('click', onSaveTemplate);
+    document.getElementById('deleteTemplate').addEventListener('click', onDeleteTemplate);
+    densityToggle.addEventListener('click', toggleDensity);
+    localeSelect.addEventListener('change', () => {
+      state.locale.format = localeSelect.value;
+      saveLocale();
+      reRenderAll();
+    });
+    firstDaySelect.addEventListener('change', () => {
+      state.locale.firstDay = Number(firstDaySelect.value);
+      saveLocale();
+    });
+
+    reminderToggle.addEventListener('change', () => {
+      state.reminder.enabled = reminderToggle.checked;
+      saveReminderState();
+    });
+    reminderDay.addEventListener('change', () => {
+      state.reminder.day = Number(reminderDay.value);
+      saveReminderState();
+    });
+    reminderTime.addEventListener('change', () => {
+      state.reminder.time = reminderTime.value;
+      saveReminderState();
+    });
+
+    filterStudent.addEventListener('change', onFilterChange);
+    filterDate.addEventListener('change', onFilterChange);
+    filterStatus.addEventListener('change', onFilterChange);
+    searchText.addEventListener('input', onFilterChange);
+    clearFiltersBtn.addEventListener('click', () => {
+      filterStudent.value = '';
+      filterDate.value = '';
+      filterStatus.value = '';
+      searchText.value = '';
+      state.filters = { student: '', date: '', status: '', text: '' };
+      updateQueryParams();
+      refreshHistory(true);
+    });
+
+    loadMoreBtn.addEventListener('click', () => loadHistoryPage({ append: true }));
+    reloadBtn.addEventListener('click', () => refreshHistory(true));
+    demoEntryBtn?.addEventListener('click', addDemoEntry);
+    pasteClipboardBtn?.addEventListener('click', pasteFromClipboard);
+    document.getElementById('openBulk').addEventListener('click', openBulkModal);
+    document.getElementById('bulkClose').addEventListener('click', closeBulkModal);
+    bulkSubmit.addEventListener('click', saveBulkEntries);
+
+    reportStudent?.addEventListener('change', renderMonthlyReport);
+    reportMonth?.addEventListener('change', renderMonthlyReport);
+    reportFormat?.addEventListener('change', updateReportDownloadLabel);
+    reportDownload?.addEventListener('click', downloadMonthlyReport);
+    reportParentDownload?.addEventListener('click', downloadParentReport);
+
+    refreshInsightsBtn?.addEventListener('click', () => {
+      state.insightNeedsRefresh = true;
+      renderInsights();
+    });
+
+    commandPalette.addEventListener('click', (e) => {
+      if (e.target === commandPalette) closeCommandPalette();
+    });
+    commandSearch.addEventListener('input', renderCommandResults);
+    commandSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeCommandPalette();
+      }
+    });
+
+    inlineEditor.addEventListener('click', (e) => {
+      if (e.target === inlineEditor) closeInlineEditor();
+    });
+    document.getElementById('inlineClose').addEventListener('click', closeInlineEditor);
+    document.getElementById('inlineCancel').addEventListener('click', closeInlineEditor);
+    document.getElementById('inlineSave').addEventListener('click', saveInlineEdit);
+
+    historyBody.addEventListener('click', onHistoryClick);
+    historyCards.addEventListener('click', onHistoryClick);
+
+    document.addEventListener('keydown', handleGlobalShortcuts);
+
+    setInterval(() => {
+      if (state.autosaveDirty) saveDraft();
+    }, 4000);
+
+    state.reminderCheckTimer = setInterval(checkReminder, 60000);
+    checkReminder();
+
+    notesForm.querySelectorAll('input, textarea, select').forEach((el) => {
+      el.addEventListener('input', markAutosaveDirty);
+    });
+    inputs.student.addEventListener('change', updateSuggestions);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
         authGate.classList.add('hidden');
         appShell.classList.remove('hidden');
-        whoami.textContent=user.email||user.uid;
-        authStatus.textContent='Online';
-        dot.className='w-2 h-2 rounded-full bg-emerald-400';
-        startHistoryStream();
+        whoami.textContent = user.email || user.uid;
+        authStatus.textContent = 'Online';
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        restoreDraft();
+        refreshHistory(true);
+        renderMonthlyReport();
       } else {
         appShell.classList.add('hidden');
         authGate.classList.remove('hidden');
-        whoami.textContent='Not signed in';
-        authStatus.textContent='Signed out';
-        dot.className='w-2 h-2 rounded-full bg-amber-400';
+        whoami.textContent = 'Not signed in';
+        authStatus.textContent = 'Signed out';
+        dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        state.historyRecent = [];
+        state.historyOlder = [];
+        state.historyAll = [];
+        state.lastEntryByStudent.clear();
+        renderHistory([]);
+        renderMonthlyReport();
+        state.commandItems = [];
       }
     });
+    async function onSubmitForm(event) {
+      event.preventDefault();
+      const data = collectFormData();
+      const errors = validateEntry(data);
+      if (errors.length) {
+        saveStatus.textContent = errors.join(' ');
+        return;
+      }
+      await saveEntry(data);
+    }
 
-    // Utils
-    function extractDateFromId(id){if(!id)return null;const m=String(id).match(/^(\d{4}-\d{2}-\d{2})_/);return m?m[1]:null;}
-    function parseDate(input){
-      if(!input&&input!==0)return null;
-      if(input instanceof Date)return isNaN(input.getTime())?null:input;
-      if(typeof input?.toDate==='function'){const d=input.toDate();return d instanceof Date&&!isNaN(d.getTime())?d:null;}
-      const str=String(input).trim();
-      const iso=str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-      if(iso){const[,y,m,d]=iso;const dt=new Date(Number(y),Number(m)-1,Number(d));return isNaN(dt.getTime())?null:dt;}
-      const slash=str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if(slash){const[,d,m,y]=slash;const dt=new Date(Number(y),Number(m)-1,Number(d));return isNaN(dt.getTime())?null:dt;}
-      const parsed=new Date(str);return isNaN(parsed.getTime())?null:parsed;
+    async function saveEntry(data) {
+      const isEdit = Boolean(state.editing);
+      const id = isEdit ? state.editing.id : noteId(data.date, data.student);
+      const ref = doc(notesCol, id);
+      const payload = {
+        id,
+        date: data.date,
+        student: data.student,
+        quran: data.quran,
+        surah: data.surah,
+        lawsOfSalah: data.lawsOfSalah,
+        qamar: data.qamar,
+        anythingElse: data.anythingElse,
+        statuses: Array.from(data.statuses),
+        attendance: data.attendance || null,
+        behaviour: data.behaviour || null,
+        tags: data.tags,
+        updatedAt: serverTimestamp(),
+        ownerUid: auth.currentUser?.uid || null,
+        dayOfMonth: Number(data.date.slice(8, 10)),
+        month: data.date.slice(0, 7)
+      };
+
+      saveSpinner.classList.remove('hidden');
+      saveText.textContent = isEdit ? 'Updating…' : 'Saving…';
+      try {
+        const snap = await getDoc(ref);
+        if (!snap.exists()) payload.createdAt = serverTimestamp();
+        await setDoc(ref, payload, { merge: true });
+        showToast(isEdit ? 'Updated ✓' : 'Saved ✓', 'success');
+        saveStatus.textContent = isEdit ? 'Updated ✅' : 'Saved ✅';
+        setTimeout(() => (saveStatus.textContent = ''), 1200);
+        setEditMode(null);
+        clearDraft();
+        refreshHistory(true);
+      } catch (err) {
+        console.error(err);
+        showToast('Save failed', 'error');
+        saveStatus.textContent = 'Save failed. Try again.';
+      } finally {
+        saveSpinner.classList.add('hidden');
+        saveText.textContent = isEdit ? '✅ Update Entry' : '💾 Save Entry';
+      }
     }
-    function toLocalISODate(value){
-      const date=value instanceof Date?value:parseDate(value);
-      if(!date)return '';
-      const year=date.getFullYear();
-      const month=String(date.getMonth()+1).padStart(2,'0');
-      const day=String(date.getDate()).padStart(2,'0');
-      return `${year}-${month}-${day}`;
+
+    function collectFormData() {
+      const statuses = new Set(state.selectedStatuses);
+      return {
+        date: entryDateInput.value || todayKey,
+        student: inputs.student.value,
+        quran: normalizeText(inputs.quran.value),
+        surah: normalizeTitleCase(inputs.surah.value),
+        lawsOfSalah: normalizeText(inputs.laws.value),
+        qamar: normalizeText(inputs.qamar.value),
+        anythingElse: normalizeText(inputs.anything.value, true),
+        statuses,
+        attendance: state.selectedAttendance,
+        behaviour: state.selectedBehaviour,
+        tags: splitTags(inputs.tags.value)
+      };
     }
-    function formatDisplayDate(value){
-      const date=value instanceof Date?value:parseDate(value);
-      if(!date)return value??'';
-      const day=date.getDate();
-      const month=MONTH_LABELS[date.getMonth()]||'';
-      const year=date.getFullYear();
-      return month?`${day} ${month} ${year}`:value??'';
+
+    function validateEntry(data) {
+      const errors = [];
+      if (!data.student) errors.push('Choose a student.');
+      if (!data.date) errors.push('Pick a date.');
+      const entryDate = parseDate(data.date);
+      const today = new Date();
+      if (entryDate && entryDate > new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1)) {
+        errors.push('Date cannot be in the future.');
+      }
+      const fields = [data.quran, data.surah, data.lawsOfSalah, data.qamar, data.anythingElse];
+      if (fields.every((v) => !v) && !data.statuses.size && !data.tags.length) {
+        errors.push('Add at least one progress detail.');
+      }
+      return errors;
     }
-    function formatMonthYear(monthValue){
-      if(!monthValue)return '';
-      const parts=String(monthValue).split('-');
-      if(parts.length<2)return monthValue;
-      const year=Number(parts[0]); const monthIndex=Number(parts[1])-1;
-      if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return monthValue;
-      const month=MONTH_LABELS[monthIndex]||''; return month?`${month} ${year}`:monthValue;
+
+    function setEditMode(note) {
+      if (!note) {
+        state.editing = null;
+        notesForm.reset();
+        entryDateInput.value = todayKey;
+        bulkDate.value = todayKey;
+        state.selectedStatuses.clear();
+        state.selectedAttendance = null;
+        state.selectedBehaviour = null;
+        updateStatusSelections();
+        updateAttendanceSelections();
+        updateBehaviourSelections();
+        suggestions.innerHTML = '';
+        formTitle.textContent = '✨ New Entry';
+        saveText.textContent = '💾 Save Entry';
+        cancelEditBtn.classList.add('hidden');
+        return;
+      }
+      state.editing = note;
+      entryDateInput.value = note.date;
+      inputs.student.value = note.student;
+      inputs.quran.value = note.quran || '';
+      inputs.surah.value = note.surah || '';
+      inputs.laws.value = note.lawsOfSalah || '';
+      inputs.qamar.value = note.qamar || '';
+      inputs.anything.value = note.anythingElse || note.other || '';
+      inputs.tags.value = (note.tags || []).join(', ');
+      state.selectedStatuses = new Set(note.statuses || []);
+      state.selectedAttendance = note.attendance || null;
+      state.selectedBehaviour = note.behaviour || null;
+      updateStatusSelections();
+      updateAttendanceSelections();
+      updateBehaviourSelections();
+      updateSuggestions();
+      formTitle.textContent = '✏️ Edit Entry';
+      saveText.textContent = '✅ Update Entry';
+      cancelEditBtn.classList.remove('hidden');
     }
-    function getMonthDateRange(monthValue){
-      if(!monthValue)return null;
-      const parts=String(monthValue).split('-'); if(parts.length<2)return null;
-      const yearStr=parts[0]; const monthNum=Number(parts[1]); const monthIndex=monthNum-1; const year=Number(yearStr);
-      if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return null;
-      const monthStr=String(monthIndex+1).padStart(2,'0');
-      const lastDay=new Date(year,monthIndex+1,0).getDate();
-      const endDay=String(lastDay).padStart(2,'0');
-      return {start:`${yearStr}-${monthStr}-01`,end:`${yearStr}-${monthStr}-${endDay}`};
+
+    function splitTags(value) {
+      return (value || '')
+        .split(',')
+        .map((tag) => normalizeText(tag))
+        .filter(Boolean);
     }
-    function isInMonth(dateValue,monthValue){
-      const date=parseDate(dateValue); if(!date||!monthValue)return false;
-      const [yearStr,monthStr]=String(monthValue).split('-');
-      const year=Number(yearStr); const month=Number(monthStr);
-      if(Number.isNaN(year)||Number.isNaN(month))return false;
-      return date.getFullYear()===year&&date.getMonth()+1===month;
+
+    function normalizeText(value, allowSentence = false) {
+      const trimmed = (value || '').replace(/\s+/g, ' ').trim();
+      if (!allowSentence) return trimmed;
+      if (!trimmed) return '';
+      return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
     }
-    function toCsvValue(value){const str=(value??'').toString().replace(/"/g,'""').replace(/\r?\n/g,' ');return `"${str}"`;}
-    function esc(s){return (s??'').toString().replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]))}
-    function showToast(text,type='success'){ toast.textContent=text; toast.className=`notification show ${type}`; setTimeout(()=>{toast.classList.remove('show')},1600); }
+
+    function normalizeTitleCase(value) {
+      const trimmed = normalizeText(value);
+      if (!trimmed) return '';
+      return trimmed
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    }
+
+    function noteId(date, student) {
+      return `${date}_${slug(student)}`;
+    }
+
+    function slug(str) {
+      return String(str).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+    function parseDate(input) {
+      if (!input && input !== 0) return null;
+      if (input instanceof Date) return isNaN(input.getTime()) ? null : input;
+      if (typeof input?.toDate === 'function') {
+        const d = input.toDate();
+        return d instanceof Date && !isNaN(d.getTime()) ? d : null;
+      }
+      const str = String(input).trim();
+      const iso = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (iso) {
+        const [, y, m, d] = iso;
+        const dt = new Date(Number(y), Number(m) - 1, Number(d));
+        return isNaN(dt.getTime()) ? null : dt;
+      }
+      return null;
+    }
+
+    function toLocalISODate(value) {
+      const date = value instanceof Date ? value : parseDate(value);
+      if (!date) return '';
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+
+    function formatDisplayDate(value) {
+      const date = parseDate(value);
+      if (!date) return value ?? '';
+      if (state.locale.format === 'YYYY-MM-DD') return toLocalISODate(date);
+      return `${date.getDate()} ${MONTH_LABELS[date.getMonth()]} ${date.getFullYear()}`;
+    }
+
+    function formatMonthYear(monthValue) {
+      if (!monthValue) return '';
+      const [year, month] = String(monthValue).split('-');
+      const monthIndex = Number(month) - 1;
+      if (Number.isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) return monthValue;
+      return `${MONTH_LABELS[monthIndex]} ${year}`;
+    }
+
+    function getMonthDateRange(monthValue) {
+      if (!monthValue) return null;
+      const [year, month] = String(monthValue).split('-');
+      const monthIndex = Number(month) - 1;
+      if (Number.isNaN(monthIndex)) return null;
+      const lastDay = new Date(Number(year), monthIndex + 1, 0).getDate();
+      return {
+        start: `${year}-${month.padStart(2, '0')}-01`,
+        end: `${year}-${month.padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`
+      };
+    }
+
+    function loadTemplates() {
+      try {
+        const raw = localStorage.getItem(TEMPLATE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveTemplates() {
+      localStorage.setItem(TEMPLATE_KEY, JSON.stringify(state.templates));
+    }
+
+    function loadDensity() {
+      return localStorage.getItem(DENSITY_KEY) || 'comfort';
+    }
+
+    function applyDensity() {
+      if (state.density === 'compact') {
+        document.body.dataset.density = 'compact';
+        densityToggle.textContent = 'Compact';
+      } else {
+        delete document.body.dataset.density;
+        densityToggle.textContent = 'Comfort';
+      }
+    }
+
+    function toggleDensity() {
+      state.density = state.density === 'comfort' ? 'compact' : 'comfort';
+      applyDensity();
+      localStorage.setItem(DENSITY_KEY, state.density);
+    }
+
+    function loadLocale() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(LOCALE_KEY) || '{}');
+        return { format: stored.format || 'D MMM YYYY', firstDay: Number(stored.firstDay ?? 0) };
+      } catch {
+        return { format: 'D MMM YYYY', firstDay: 0 };
+      }
+    }
+
+    function saveLocale() {
+      localStorage.setItem(LOCALE_KEY, JSON.stringify(state.locale));
+    }
+
+    function applyLocaleSelectors() {
+      localeSelect.value = state.locale.format;
+      firstDaySelect.value = String(state.locale.firstDay ?? 0);
+    }
+
+    function loadReminder() {
+      try {
+        return JSON.parse(localStorage.getItem(REMINDER_KEY) || '{}') || { enabled: false, day: 5, time: '15:00', last: null };
+      } catch {
+        return { enabled: false, day: 5, time: '15:00', last: null };
+      }
+    }
+
+    function saveReminderState() {
+      localStorage.setItem(REMINDER_KEY, JSON.stringify(state.reminder));
+    }
+
+    function applyReminderState() {
+      reminderToggle.checked = Boolean(state.reminder.enabled);
+      reminderDay.value = String(state.reminder.day ?? 5);
+      reminderTime.value = state.reminder.time || '15:00';
+    }
+
+    function checkReminder() {
+      if (!state.reminder.enabled) return;
+      const now = new Date();
+      if (now.getDay() !== Number(state.reminder.day ?? 5)) return;
+      const [hours, minutes] = (state.reminder.time || '15:00').split(':').map(Number);
+      const targetMinutes = (hours || 0) * 60 + (minutes || 0);
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+      const todayKey = toLocalISODate(now);
+      if (nowMinutes >= targetMinutes && state.reminder.last !== todayKey) {
+        showToast("Don't forget to log today!", 'success');
+        state.reminder.last = todayKey;
+        saveReminderState();
+      }
+    }
+
+    function loadInitialFilters() {
+      const params = new URLSearchParams(location.search);
+      return {
+        student: params.get('student') || '',
+        date: params.get('date') || '',
+        status: params.get('status') || '',
+        text: params.get('q') || ''
+      };
+    }
+
+    function updateQueryParams() {
+      const params = new URLSearchParams();
+      if (state.filters.student) params.set('student', state.filters.student);
+      if (state.filters.date) params.set('date', state.filters.date);
+      if (state.filters.status) params.set('status', state.filters.status);
+      if (state.filters.text) params.set('q', state.filters.text);
+      const url = `${location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+      history.replaceState(null, '', url);
+    }
+    function onFilterChange() {
+      state.filters.student = filterStudent.value;
+      state.filters.date = filterDate.value;
+      state.filters.status = filterStatus.value;
+      state.filters.text = searchText.value.trim();
+      updateQueryParams();
+      refreshHistory(true);
+    }
+
+    async function refreshHistory(reset) {
+      if (reset) {
+        state.historyRecent = [];
+        state.historyOlder = [];
+        state.historyAll = [];
+        state.lastCursor = null;
+        state.hasMore = true;
+      }
+      await loadHistoryPage({ append: false });
+    }
+
+    async function loadHistoryPage({ append }) {
+      if (!state.hasMore && append) return;
+      const constraints = [];
+      if (state.filters.student) constraints.push(where('student', '==', state.filters.student));
+      if (state.filters.date) constraints.push(where('date', '==', state.filters.date));
+      constraints.push(orderBy('date', 'desc'));
+      constraints.push(orderBy('updatedAt', 'desc'));
+      constraints.push(qLimit(HISTORY_PAGE_SIZE));
+      let qRef = query(notesCol, ...constraints);
+      if (append && state.lastCursor) {
+        qRef = query(notesCol, ...constraints.slice(0, -1), startAfter(state.lastCursor), qLimit(HISTORY_PAGE_SIZE));
+      }
+      try {
+        const snap = await getDocs(qRef);
+        const rows = snap.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data(), _cursor: docSnap }));
+        if (append) {
+          state.historyOlder = [...state.historyOlder, ...rows];
+        } else {
+          state.historyRecent = rows;
+          state.historyOlder = [];
+        }
+        state.lastCursor = snap.docs[snap.docs.length - 1] || null;
+        state.hasMore = snap.size === HISTORY_PAGE_SIZE;
+        applyFiltersAndRender();
+      } catch (err) {
+        console.error(err);
+        if (err?.code === 'failed-precondition') {
+          showToast('Add Firestore indexes for faster filtering.', 'error');
+        } else {
+          showToast('Loading history failed', 'error');
+        }
+      }
+    }
+
+    function applyFiltersAndRender() {
+      const allRows = [...state.historyRecent, ...state.historyOlder];
+      state.historyAll = allRows;
+      state.lastEntryByStudent.clear();
+      const filtered = allRows.filter((row) => {
+        if (state.filters.status && !(row.statuses || []).includes(state.filters.status)) return false;
+        if (state.filters.text) {
+          const haystack = [row.student, row.quran, row.surah, row.lawsOfSalah, row.qamar, row.anythingElse, (row.tags || []).join(' ')].join(' ').toLowerCase();
+          if (!haystack.includes(state.filters.text.toLowerCase())) return false;
+        }
+        if (!state.lastEntryByStudent.has(row.student)) {
+          state.lastEntryByStudent.set(row.student, row);
+        }
+        return true;
+      });
+      renderHistory(filtered);
+      updateSuggestions();
+      renderMonthlyReport();
+      state.insightNeedsRefresh = true;
+      renderInsights();
+      updateCommandPaletteItems();
+    }
+
+    function renderHistory(rows) {
+      historyBody.innerHTML = '';
+      historyCards.innerHTML = '';
+      if (!rows.length) {
+        emptyState.classList.remove('hidden');
+        countInfo.textContent = '0 notes';
+        streakInfo.textContent = '';
+        return;
+      }
+      emptyState.classList.add('hidden');
+      rows.forEach((row) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="px-6 py-3 font-medium" data-field="date" data-id="${row.id}">${esc(formatDisplayDate(row.date))}</td>
+          <td class="px-6 py-3 font-medium flex items-center gap-3" data-field="student" data-id="${row.id}">
+            ${renderAvatar(row.student)}
+            <span>${esc(row.student || '')}</span>
+          </td>
+          <td class="px-6 py-3" data-field="statuses" data-id="${row.id}">${renderStatusBadges(row.statuses)}</td>
+          <td class="px-6 py-3" data-field="quran" data-id="${row.id}">${esc(row.quran || '')}</td>
+          <td class="px-6 py-3" data-field="surah" data-id="${row.id}">${esc(row.surah || '')}</td>
+          <td class="px-6 py-3" data-field="lawsOfSalah" data-id="${row.id}">${esc(row.lawsOfSalah || '')}</td>
+          <td class="px-6 py-3" data-field="qamar" data-id="${row.id}">${esc(row.qamar || '')}</td>
+          <td class="px-6 py-3" data-field="anythingElse" data-id="${row.id}">${esc(row.anythingElse || '')}</td>
+          <td class="px-6 py-3" data-field="tags" data-id="${row.id}">${esc((row.tags || []).join(', '))}</td>
+          <td class="px-6 py-3 whitespace-nowrap">
+            <button class="px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800" data-action="edit" data-id="${row.id}">Edit</button>
+            <button class="px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20" data-action="delete" data-id="${row.id}">Delete</button>
+          </td>`;
+        historyBody.appendChild(tr);
+
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            ${renderAvatar(row.student)}
+            <div>
+              <div class="font-semibold" data-field="student" data-id="${row.id}">${esc(row.student || '')}</div>
+              <div class="text-xs text-slate-500" data-field="date" data-id="${row.id}">${esc(formatDisplayDate(row.date))}</div>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2 text-xs">${renderStatusBadges(row.statuses, true)}</div>
+          <div class="grid grid-cols-1 gap-2 text-sm">
+            ${renderCardRow('📖 Quran', row.quran, 'quran', row.id)}
+            ${renderCardRow('🕌 Surah', row.surah, 'surah', row.id)}
+            ${renderCardRow('🤲 Salah', row.lawsOfSalah, 'lawsOfSalah', row.id)}
+            ${renderCardRow('🌙 Qamar', row.qamar, 'qamar', row.id)}
+            ${renderCardRow('💭 Notes', row.anythingElse, 'anythingElse', row.id)}
+            ${renderCardRow('Tags', (row.tags || []).join(', '), 'tags', row.id)}
+            ${renderCardRow('Attendance', renderAttendanceBadge(row.attendance), 'attendance', row.id, true)}
+            ${renderCardRow('Behaviour', renderBehaviourBadge(row.behaviour), 'behaviour', row.id, true)}
+          </div>
+          <div class="history-card-actions">
+            <button class="flex-1 px-3 py-2 rounded-xl bg-emerald-500/90 text-white" data-action="edit" data-id="${row.id}">Edit</button>
+            <button class="flex-1 px-3 py-2 rounded-xl bg-red-500/80 text-white" data-action="delete" data-id="${row.id}">Delete</button>
+          </div>`;
+        historyCards.appendChild(card);
+      });
+      countInfo.textContent = `${rows.length} note${rows.length === 1 ? '' : 's'} shown`;
+      streakInfo.textContent = `Entries loaded: ${state.historyAll.length}`;
+    }
+    function renderStatusBadges(statuses = [], compact = false) {
+      if (!statuses?.length) return compact ? '' : '<span class="text-xs text-slate-400">—</span>';
+      return statuses.map((status) => `<span class="status-badge" style="color:${statusColor(status)}">${esc(status)}</span>`).join(' ');
+    }
+
+    function renderAttendanceBadge(attendance) {
+      const opt = ATTENDANCE_OPTIONS.find((o) => o.value === attendance);
+      return opt ? `${opt.icon} ${opt.label}` : '';
+    }
+
+    function renderBehaviourBadge(behaviour) {
+      const opt = BEHAVIOUR_OPTIONS.find((o) => o.value === behaviour);
+      return opt ? `${opt.icon} ${opt.label}` : '';
+    }
+
+    function renderCardRow(label, value, field, id, allowHtml = false) {
+      const content = allowHtml ? value || '' : esc(value || '');
+      return `<div><span class="text-xs uppercase tracking-wide text-slate-400">${label}</span><div data-field="${field}" data-id="${id}" class="text-sm">${content || '<span class=\"text-xs text-slate-400\">—</span>'}</div></div>`;
+    }
+
+    function renderAvatar(name) {
+      const initials = getInitials(name);
+      const color = getAvatarColor(name);
+      return `<span class="avatar-chip" style="background:${color}">${esc(initials)}</span>`;
+    }
+
+    function getInitials(name) {
+      return String(name || '')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part.charAt(0).toUpperCase())
+        .join('') || 'S';
+    }
+
+    function hashString(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash);
+    }
+
+    function getAvatarColor(name) {
+      const hue = hashString(name || 'student') % 360;
+      return `hsl(${hue},70%,45%)`;
+    }
+
+    function statusColor(status) {
+      const index = STATUS_OPTIONS.indexOf(status);
+      const hues = [140, 220, 25];
+      const hue = hues[index >= 0 ? index : 0];
+      return `hsl(${hue},70%,40%)`;
+    }
+
+    function onHistoryClick(event) {
+      const button = event.target.closest('button[data-action]');
+      if (button) {
+        const id = button.getAttribute('data-id');
+        const action = button.getAttribute('data-action');
+        const note = state.historyAll.find((row) => row.id === id);
+        if (!note) return;
+        if (action === 'edit') {
+          setEditMode(note);
+          notesForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else if (action === 'delete') {
+          deleteNote(id);
+        }
+        return;
+      }
+      const target = event.target.closest('[data-field][data-id]');
+      if (target) {
+        openInlineEditor(target.getAttribute('data-id'), target.getAttribute('data-field'));
+      }
+    }
+
+    async function deleteNote(id) {
+      if (!confirm('Delete this note?')) return;
+      try {
+        await deleteDoc(doc(notesCol, id));
+        showToast('Deleted', 'success');
+        refreshHistory(true);
+      } catch (err) {
+        console.error(err);
+        showToast('Delete failed', 'error');
+      }
+    }
+
+    function openInlineEditor(id, field) {
+      const note = state.historyAll.find((row) => row.id === id);
+      if (!note) return;
+      state.inlineTarget = { id, field };
+      inlineLabel.textContent = `Edit ${fieldLabel(field)}`;
+      if (field === 'statuses') {
+        inlineInput.value = (note.statuses || []).join(', ');
+      } else if (field === 'tags') {
+        inlineInput.value = (note.tags || []).join(', ');
+      } else if (field === 'attendance') {
+        inlineInput.value = renderAttendanceBadge(note.attendance) || '';
+      } else if (field === 'behaviour') {
+        inlineInput.value = renderBehaviourBadge(note.behaviour) || '';
+      } else {
+        inlineInput.value = note[field] || '';
+      }
+      inlineEditor.dataset.open = 'true';
+      setTimeout(() => inlineInput.focus(), 10);
+    }
+
+    function closeInlineEditor() {
+      inlineEditor.dataset.open = 'false';
+      state.inlineTarget = null;
+    }
+
+    async function saveInlineEdit() {
+      if (!state.inlineTarget) return;
+      const { id, field } = state.inlineTarget;
+      const note = state.historyAll.find((row) => row.id === id);
+      if (!note) return;
+      const value = inlineInput.value.trim();
+      const updates = {};
+      if (field === 'statuses') {
+        updates.statuses = splitTags(value);
+      } else if (field === 'tags') {
+        updates.tags = splitTags(value);
+      } else if (field === 'attendance') {
+        updates.attendance = parseAttendance(value);
+      } else if (field === 'behaviour') {
+        updates.behaviour = parseBehaviour(value);
+      } else {
+        updates[field] = value;
+      }
+      closeInlineEditor();
+      await queueInlineUpdate(id, updates);
+      Object.assign(note, updates);
+      note.updatedAt = new Date();
+      applyFiltersAndRender();
+      showToast('Updated ✓', 'success');
+    }
+
+    function parseAttendance(value) {
+      const lower = value.toLowerCase();
+      const opt = ATTENDANCE_OPTIONS.find((o) => o.label.toLowerCase() === lower || o.icon === value);
+      return opt ? opt.value : null;
+    }
+
+    function parseBehaviour(value) {
+      const lower = value.toLowerCase();
+      const opt = BEHAVIOUR_OPTIONS.find((o) => o.label.toLowerCase() === lower || o.icon === value);
+      return opt ? opt.value : null;
+    }
+
+    const inlineQueue = new Map();
+    function queueInlineUpdate(id, updates) {
+      return new Promise((resolve, reject) => {
+        const entry = inlineQueue.get(id) || { data: {}, timer: null, resolvers: [] };
+        inlineQueue.set(id, entry);
+        Object.assign(entry.data, updates);
+        entry.resolvers.push({ resolve, reject });
+        clearTimeout(entry.timer);
+        entry.timer = setTimeout(async () => {
+          const payload = { ...entry.data, updatedAt: serverTimestamp() };
+          entry.data = {};
+          try {
+            await setDoc(doc(notesCol, id), payload, { merge: true });
+            entry.resolvers.forEach((r) => r.resolve());
+          } catch (err) {
+            entry.resolvers.forEach((r) => r.reject(err));
+          }
+          entry.resolvers = [];
+        }, 350);
+      });
+    }
+    function fieldLabel(field) {
+      const map = {
+        quran: 'Quran',
+        surah: 'Surah',
+        lawsOfSalah: 'Laws of Salah',
+        qamar: 'Qamar',
+        anythingElse: 'Notes',
+        statuses: 'Status',
+        attendance: 'Attendance',
+        behaviour: 'Behaviour',
+        tags: 'Tags'
+      };
+      return map[field] || field;
+    }
+
+    function renderMonthlyReport() {
+      if (!reportStudent || !reportMonth) return;
+      const student = reportStudent.value;
+      const monthValue = reportMonth.value;
+      if (!student) {
+        reportTableWrapper.classList.add('hidden');
+        reportEmpty.classList.remove('hidden');
+        reportEmptyText.textContent = 'Select a student to see their monthly report.';
+        reportInfo.textContent = '';
+        reportDownload.disabled = true;
+        reportParentDownload.disabled = true;
+        return;
+      }
+      const range = getMonthDateRange(monthValue);
+      if (!range) {
+        reportTableWrapper.classList.add('hidden');
+        reportEmpty.classList.remove('hidden');
+        reportEmptyText.textContent = 'Pick a month to see entries.';
+        reportDownload.disabled = true;
+        reportParentDownload.disabled = true;
+        return;
+      }
+      const rows = state.historyAll
+        .filter((row) => row.student === student && row.date >= range.start && row.date <= range.end)
+        .sort((a, b) => a.date.localeCompare(b.date));
+      state.currentReportRows = rows;
+      if (!rows.length) {
+        reportTableWrapper.classList.add('hidden');
+        reportEmpty.classList.remove('hidden');
+        reportEmptyText.textContent = 'No entries for this month yet.';
+        reportInfo.textContent = '';
+        reportDownload.disabled = true;
+        reportParentDownload.disabled = true;
+        return;
+      }
+      reportTableWrapper.classList.remove('hidden');
+      reportEmpty.classList.add('hidden');
+      reportBody.innerHTML = rows
+        .map((row) => `
+          <tr>
+            <td class="px-6 py-3">${esc(formatDisplayDate(row.date))}</td>
+            <td class="px-6 py-3">${renderStatusBadges(row.statuses)}</td>
+            <td class="px-6 py-3">${esc(renderAttendanceBadge(row.attendance) || '')}</td>
+            <td class="px-6 py-3">${esc(renderBehaviourBadge(row.behaviour) || '')}</td>
+            <td class="px-6 py-3">${esc(row.quran || '')}</td>
+            <td class="px-6 py-3">${esc(row.surah || '')}</td>
+            <td class="px-6 py-3">${esc(row.lawsOfSalah || '')}</td>
+            <td class="px-6 py-3">${esc(row.qamar || '')}</td>
+            <td class="px-6 py-3">${esc(row.anythingElse || '')}</td>
+            <td class="px-6 py-3">${esc((row.tags || []).join(', '))}</td>
+          </tr>`)
+        .join('');
+      reportInfo.textContent = `${rows.length} entry${rows.length === 1 ? '' : 'ies'} for ${student} in ${formatMonthYear(monthValue)}`;
+      reportDownload.disabled = false;
+      reportParentDownload.disabled = false;
+      updateReportDownloadLabel();
+    }
+
+    async function downloadMonthlyReport() {
+      if (reportDownload.disabled) return;
+      if (reportFormat.value === 'pdf') {
+        await downloadMonthlyPdf();
+      } else {
+        downloadMonthlyCsv();
+      }
+    }
+
+    function downloadMonthlyCsv() {
+      const rows = [['Date', 'Status', 'Attendance', 'Behaviour', 'Quran', 'Surah', 'Laws of Salah', 'Qamar', 'Notes', 'Tags']];
+      state.currentReportRows.forEach((row) => {
+        rows.push([
+          formatDisplayDate(row.date),
+          (row.statuses || []).join(' | '),
+          renderAttendanceBadge(row.attendance) || '',
+          renderBehaviourBadge(row.behaviour) || '',
+          row.quran || '',
+          row.surah || '',
+          row.lawsOfSalah || '',
+          row.qamar || '',
+          row.anythingElse || '',
+          (row.tags || []).join(' | ')
+        ]);
+      });
+      const csv = rows.map((row) => row.map(toCsvValue).join(',')).join('\r\n');
+      downloadBlob(csv, buildReportFilename(reportStudent.value, reportMonth.value, 'csv'), 'text/csv;charset=utf-8;');
+      showToast('CSV downloaded ✓', 'success');
+    }
+
+    async function downloadMonthlyPdf() {
+      const module = await ensureJsPdf();
+      const jsPdfConstructor = module?.jsPDF || module?.default?.jsPDF || module?.default;
+      const doc = new jsPdfConstructor({ orientation: 'portrait', unit: 'pt' });
+      const margin = 40;
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const maxWidth = doc.internal.pageSize.getWidth() - margin * 2;
+      let y = margin;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(18);
+      doc.text('Monthly Report', margin, y);
+      y += 24;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.text(`Student: ${reportStudent.value}`, margin, y);
+      y += 16;
+      doc.text(`Month: ${formatMonthYear(reportMonth.value)}`, margin, y);
+      y += 24;
+      state.currentReportRows.forEach((row, index) => {
+        if (y > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${index + 1}. ${formatDisplayDate(row.date)}`, margin, y);
+        y += 18;
+        doc.setFont('helvetica', 'normal');
+        const sections = [
+          ['Status', (row.statuses || []).join(', ') || '-'],
+          ['Attendance', renderAttendanceBadge(row.attendance) || '-'],
+          ['Behaviour', renderBehaviourBadge(row.behaviour) || '-'],
+          ['Quran', row.quran || '-'],
+          ['Surah', row.surah || '-'],
+          ['Laws of Salah', row.lawsOfSalah || '-'],
+          ['Qamar', row.qamar || '-'],
+          ['Notes', row.anythingElse || '-'],
+          ['Tags', (row.tags || []).join(', ') || '-']
+        ];
+        sections.forEach(([label, value]) => {
+          const lines = doc.splitTextToSize(`${label}: ${value}`, maxWidth);
+          lines.forEach((line) => {
+            if (y > pageHeight - margin) {
+              doc.addPage();
+              y = margin;
+            }
+            doc.text(line, margin + 16, y);
+            y += 14;
+          });
+        });
+        y += 6;
+      });
+      doc.save(buildReportFilename(reportStudent.value, reportMonth.value, 'pdf'));
+      showToast('PDF downloaded ✓', 'success');
+    }
+
+    async function downloadParentReport() {
+      if (reportParentDownload.disabled) return;
+      const module = await ensureJsPdf();
+      const jsPdfConstructor = module?.jsPDF || module?.default?.jsPDF || module?.default;
+      const doc = new jsPdfConstructor({ orientation: 'portrait', unit: 'pt' });
+      const margin = 48;
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const maxWidth = doc.internal.pageSize.getWidth() - margin * 2;
+      let y = margin;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.text('Family Progress Summary', margin, y);
+      y += 28;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(14);
+      doc.text(`Learner: ${reportStudent.value}`, margin, y);
+      y += 20;
+      doc.text(`Month: ${formatMonthYear(reportMonth.value)}`, margin, y);
+      y += 24;
+      doc.setFontSize(12);
+      state.currentReportRows.forEach((row) => {
+        if (y > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.text(formatDisplayDate(row.date), margin, y);
+        y += 18;
+        doc.setFont('helvetica', 'normal');
+        const sections = [
+          ['Focus', (row.statuses || []).join(', ') || '—'],
+          ['Attendance', renderAttendanceBadge(row.attendance) || '—'],
+          ['Behaviour', renderBehaviourBadge(row.behaviour) || '—'],
+          ['Highlights', row.anythingElse || '—'],
+          ['Tags', (row.tags || []).join(', ') || '—']
+        ];
+        sections.forEach(([label, value]) => {
+          const lines = doc.splitTextToSize(`${label}: ${value}`, maxWidth);
+          lines.forEach((line) => {
+            if (y > pageHeight - margin) {
+              doc.addPage();
+              y = margin;
+            }
+            doc.text(line, margin + 12, y);
+            y += 14;
+          });
+        });
+        y += 8;
+      });
+      doc.save(buildReportFilename(reportStudent.value, reportMonth.value, 'parent.pdf'));
+      showToast('Parent PDF ready ✓', 'success');
+    }
+
+    function updateReportDownloadLabel() {
+      if (!reportDownload) return;
+      if (reportDownload.disabled) {
+        reportDownload.textContent = '⬇️ Download';
+        reportParentDownload.textContent = '👪 Parent PDF';
+        return;
+      }
+      reportDownload.textContent = reportFormat.value === 'pdf' ? '⬇️ Teacher PDF' : '⬇️ CSV';
+      reportParentDownload.textContent = '👪 Parent PDF';
+    }
+
+    function buildReportFilename(student, monthValue, extension) {
+      const safeStudent = slug(student || 'student') || 'student';
+      const safeMonth = monthValue || 'report';
+      return `${safeStudent}-${safeMonth}-report.${extension}`;
+    }
+
+    async function ensureJsPdf() {
+      if (window.jspdf?.jsPDF) return window.jspdf;
+      if (!ensureJsPdf.promise) {
+        ensureJsPdf.promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+          script.async = true;
+          script.crossOrigin = 'anonymous';
+          script.onload = () => (window.jspdf?.jsPDF ? resolve(window.jspdf) : reject(new Error('PDF library failed to load')));
+          script.onerror = () => reject(new Error('Failed to load PDF library'));
+          document.head.appendChild(script);
+        }).catch((err) => {
+          ensureJsPdf.promise = null;
+          throw err;
+        });
+      }
+      return ensureJsPdf.promise;
+    }
+    function renderInsights() {
+      if (!state.insightNeedsRefresh) return;
+      state.insightNeedsRefresh = false;
+      const rows = state.historyAll;
+      renderSparklineList(rows);
+      renderStreaks(rows);
+      renderRadar(rows);
+    }
+
+    function renderSparklineList(rows) {
+      sparklineList.innerHTML = '';
+      const grouped = new Map();
+      rows.forEach((row) => {
+        const month = row.month || row.date.slice(0, 7);
+        const key = `${row.student}|${month}`;
+        grouped.set(key, (grouped.get(key) || 0) + 1);
+      });
+      const perStudent = new Map();
+      grouped.forEach((count, key) => {
+        const [student, month] = key.split('|');
+        if (!perStudent.has(student)) perStudent.set(student, []);
+        perStudent.get(student).push({ month, count });
+      });
+      Array.from(perStudent.keys())
+        .sort()
+        .forEach((student) => {
+          const series = perStudent.get(student).sort((a, b) => a.month.localeCompare(b.month)).slice(-6);
+          const maxCount = Math.max(...series.map((s) => s.count), 1);
+          const points = series
+            .map((item, index) => {
+              const x = (index / Math.max(series.length - 1, 1)) * 120;
+              const y = 40 - (item.count / maxCount) * 36 - 2;
+              return `${x},${y}`;
+            })
+            .join(' ');
+          const wrapper = document.createElement('div');
+          wrapper.className = 'flex items-center justify-between gap-4';
+          wrapper.innerHTML = `
+            <div class="flex items-center gap-3">
+              ${renderAvatar(student)}
+              <div>
+                <div class="font-semibold">${esc(student)}</div>
+                <div class="text-xs text-slate-500">${series.map((s) => s.month).join(' → ')}</div>
+              </div>
+            </div>
+            <svg class="sparkline" viewBox="0 0 120 40" preserveAspectRatio="none">
+              <polyline fill="none" stroke="hsl(160,70%,45%)" stroke-width="2" points="${points}" />
+            </svg>`;
+          sparklineList.appendChild(wrapper);
+        });
+    }
+
+    function renderStreaks(rows) {
+      if (!rows.length) {
+        streakCounter.textContent = '0 days';
+        return;
+      }
+      const dates = Array.from(new Set(rows.map((row) => row.date))).sort();
+      let maxStreak = 0;
+      let currentStreak = 0;
+      let lastDate = null;
+      dates.forEach((iso) => {
+        const date = parseDate(iso);
+        if (!date) return;
+        if (!lastDate) {
+          currentStreak = 1;
+        } else {
+          const diff = (date - lastDate) / (1000 * 60 * 60 * 24);
+          if (diff === 1) {
+            currentStreak += 1;
+          } else if (diff > 1) {
+            currentStreak = 1;
+          }
+        }
+        lastDate = date;
+        maxStreak = Math.max(maxStreak, currentStreak);
+      });
+      streakCounter.textContent = `${maxStreak} day${maxStreak === 1 ? '' : 's'}`;
+    }
+
+    function renderRadar(rows) {
+      radarWrapper.innerHTML = '';
+      if (!rows.length) return;
+      const totals = {
+        quran: rows.filter((r) => r.quran).length,
+        surah: rows.filter((r) => r.surah).length,
+        laws: rows.filter((r) => r.lawsOfSalah).length,
+        qamar: rows.filter((r) => r.qamar).length,
+        notes: rows.filter((r) => r.anythingElse).length
+      };
+      const values = Object.values(totals);
+      const max = Math.max(...values, 1);
+      const points = values
+        .map((value, index) => {
+          const angle = (Math.PI * 2 * index) / values.length - Math.PI / 2;
+          const radius = 90 * (value / max);
+          const x = 110 + radius * Math.cos(angle);
+          const y = 110 + radius * Math.sin(angle);
+          return `${x},${y}`;
+        })
+        .join(' ');
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 220 220');
+      svg.setAttribute('class', 'radar-chart');
+      svg.innerHTML = `
+        <polygon points="${points}" fill="rgba(16, 185, 129, 0.25)" stroke="rgba(16, 185, 129, 0.8)" stroke-width="2"></polygon>
+        <g font-size="10" fill="currentColor">
+          <text x="110" y="20" text-anchor="middle">Quran</text>
+          <text x="200" y="120" text-anchor="middle">Surah</text>
+          <text x="160" y="210" text-anchor="middle">Salah</text>
+          <text x="60" y="210" text-anchor="middle">Qamar</text>
+          <text x="20" y="120" text-anchor="middle">Notes</text>
+        </g>`;
+      radarWrapper.appendChild(svg);
+    }
+    function updateSuggestions() {
+      const student = inputs.student.value;
+      if (!student) {
+        suggestions.innerHTML = '';
+        return;
+      }
+      const last = state.lastEntryByStudent.get(student);
+      if (!last) {
+        suggestions.innerHTML = '';
+        return;
+      }
+      const chips = [];
+      ['quran', 'surah', 'lawsOfSalah', 'qamar'].forEach((field) => {
+        if (last[field]) {
+          const label = fieldLabel(field);
+          chips.push(`<button data-suggest-field="${field}" class="px-3 py-1.5 rounded-xl bg-slate-200/80 dark:bg-slate-700/70">Use ${label}</button>`);
+        }
+      });
+      if (last.anythingElse) chips.push('<button data-suggest-field="anythingElse" class="px-3 py-1.5 rounded-xl bg-slate-200/80 dark:bg-slate-700/70">Use notes</button>');
+      if ((last.tags || []).length) chips.push('<button data-suggest-field="tags" class="px-3 py-1.5 rounded-xl bg-slate-200/80 dark:bg-slate-700/70">Use tags</button>');
+      suggestions.innerHTML = chips.join(' ');
+      suggestions.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const field = btn.dataset.suggestField;
+          if (field === 'tags') {
+            inputs.tags.value = (last.tags || []).join(', ');
+          } else {
+            const key = field === 'anythingElse' ? 'anything' : field;
+            if (inputs[key]) inputs[key].value = last[field] || '';
+          }
+        });
+      });
+    }
+
+    function updateCommandPaletteItems() {
+      const items = [];
+      students.forEach((name) => {
+        items.push({ type: 'student', label: name, hint: 'Filter student', action: () => { filterStudent.value = name; onFilterChange(); closeCommandPalette(); } });
+      });
+      state.historyAll.slice(0, 30).forEach((row) => {
+        items.push({ type: 'entry', label: `${formatDisplayDate(row.date)} — ${row.student}`, hint: 'Edit entry', action: () => { setEditMode(row); closeCommandPalette(); } });
+      });
+      state.commandItems = items;
+      renderCommandResults();
+    }
+
+    function openCommandPalette() {
+      state.commandOpen = true;
+      commandPalette.dataset.open = 'true';
+      commandSearch.value = '';
+      renderCommandResults();
+      setTimeout(() => commandSearch.focus(), 10);
+    }
+
+    function closeCommandPalette() {
+      state.commandOpen = false;
+      commandPalette.dataset.open = 'false';
+    }
+
+    function renderCommandResults() {
+      const term = commandSearch.value.trim().toLowerCase();
+      const matches = state.commandItems.filter((item) => item.label.toLowerCase().includes(term));
+      if (!matches.length) {
+        commandResults.innerHTML = '<div class="p-4 text-sm text-slate-500">No matches.</div>';
+        return;
+      }
+      commandResults.innerHTML = matches
+        .map((item, index) => `
+          <button class="w-full text-left px-4 py-3 flex justify-between items-center hover:bg-slate-100 dark:hover:bg-slate-800" data-index="${index}">
+            <span>${esc(item.label)}</span>
+            <span class="text-xs text-slate-400">${esc(item.hint)}</span>
+          </button>`)
+        .join('');
+      commandResults.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.dataset.index);
+          const item = matches[idx];
+          item?.action();
+        });
+      });
+    }
+
+    function markAutosaveDirty() {
+      state.autosaveDirty = true;
+    }
+
+    function getDraftKey() {
+      return `${AUTOSAVE_KEY}:${auth.currentUser?.uid || 'anon'}`;
+    }
+
+    function saveDraft() {
+      state.autosaveDirty = false;
+      const data = collectFormData();
+      localStorage.setItem(getDraftKey(), JSON.stringify({ ...data, selectedAttendance: state.selectedAttendance, selectedBehaviour: state.selectedBehaviour }));
+      saveStatus.textContent = 'Draft saved 💾';
+      setTimeout(() => {
+        if (saveStatus.textContent === 'Draft saved 💾') saveStatus.textContent = '';
+      }, 1200);
+    }
+
+    function restoreDraft() {
+      try {
+        const stored = localStorage.getItem(getDraftKey());
+        if (!stored) return;
+        const draft = JSON.parse(stored);
+        entryDateInput.value = draft.date || todayKey;
+        inputs.student.value = draft.student || '';
+        inputs.quran.value = draft.quran || '';
+        inputs.surah.value = draft.surah || '';
+        inputs.laws.value = draft.lawsOfSalah || '';
+        inputs.qamar.value = draft.qamar || '';
+        inputs.anything.value = draft.anythingElse || '';
+        inputs.tags.value = (draft.tags || []).join(', ');
+        state.selectedStatuses = new Set(draft.statuses || []);
+        state.selectedAttendance = draft.selectedAttendance || null;
+        state.selectedBehaviour = draft.selectedBehaviour || null;
+        updateStatusSelections();
+        updateAttendanceSelections();
+        updateBehaviourSelections();
+        updateSuggestions();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function clearDraft() {
+      localStorage.removeItem(getDraftKey());
+    }
+
+    function handleGlobalShortcuts(event) {
+      if (event.defaultPrevented) return;
+      const active = document.activeElement;
+      const isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+      if (event.key === '/' && !event.metaKey && !event.ctrlKey && !isTyping) {
+        event.preventDefault();
+        openCommandPalette();
+        return;
+      }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault();
+        notesForm.requestSubmit();
+        return;
+      }
+      if (event.key === 'Escape') {
+        if (state.commandOpen) {
+          event.preventDefault();
+          closeCommandPalette();
+          return;
+        }
+        if (inlineEditor.dataset.open === 'true') {
+          event.preventDefault();
+          closeInlineEditor();
+          return;
+        }
+        if (state.editing) {
+          event.preventDefault();
+          setEditMode(null);
+        }
+      }
+      if (!isTyping && event.key.toLowerCase() === 'n') {
+        event.preventDefault();
+        setEditMode(null);
+        inputs.student.focus();
+      }
+      if (!isTyping && event.key.toLowerCase() === 'f') {
+        event.preventDefault();
+        filterStudent.focus();
+      }
+    }
+    function toCsvValue(value) {
+      const str = (value ?? '').toString().replace(/"/g, '""').replace(/\r?\n/g, ' ');
+      return `"${str}"`;
+    }
+
+    function downloadBlob(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      requestAnimationFrame(() => {
+        URL.revokeObjectURL(url);
+        link.remove();
+      });
+    }
+
+    function esc(value) {
+      return (value ?? '').toString().replace(/[&<>\"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[char]));
+    }
+
+    function showToast(text, type = 'success') {
+      toast.textContent = text;
+      toast.className = `notification show ${type}`;
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1600);
+    }
+
+    function addDemoEntry() {
+      const sample = {
+        date: todayKey,
+        student: students[0],
+        quran: 'Juz 1',
+        surah: 'Al-Fatiha',
+        lawsOfSalah: 'Wudu steps',
+        qamar: 'Moon phases',
+        anythingElse: 'Great focus today!',
+        statuses: new Set(['Memorised']),
+        attendance: 'present',
+        behaviour: 'great',
+        tags: ['Demo', 'Sample']
+      };
+      saveEntry(sample);
+    }
+
+    async function pasteFromClipboard() {
+      if (!navigator.clipboard) {
+        showToast('Clipboard not available', 'error');
+        return;
+      }
+      try {
+        const text = await navigator.clipboard.readText();
+        const entries = parseClipboard(text);
+        if (!entries.length) {
+          showToast('Nothing to import', 'error');
+          return;
+        }
+        await Promise.all(entries.map((entry) => saveEntry({ ...entry, statuses: new Set(entry.statuses || []) })));
+        showToast('Clipboard imported ✓', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Clipboard import failed', 'error');
+      }
+    }
+
+    function parseClipboard(text) {
+      return text
+        .split(/\r?\n/)
+        .map((line) => line.split(/\t|,/))
+        .filter((cells) => cells.filter(Boolean).length >= 2)
+        .map((cells) => ({
+          date: entryDateInput.value || todayKey,
+          student: cells[0].trim(),
+          quran: cells[1]?.trim() || '',
+          surah: cells[2]?.trim() || '',
+          lawsOfSalah: cells[3]?.trim() || '',
+          qamar: cells[4]?.trim() || '',
+          anythingElse: cells[5]?.trim() || '',
+          statuses: cells[6]?.split('|').map((s) => s.trim()).filter(Boolean) || [],
+          attendance: parseAttendance(cells[7]?.trim() || '') || null,
+          behaviour: parseBehaviour(cells[8]?.trim() || '') || null,
+          tags: splitTags(cells[9] || '')
+        }))
+        .filter((entry) => entry.student);
+    }
+
+    function openBulkModal() {
+      bulkModal.dataset.open = 'true';
+      renderBulkRows();
+      setTimeout(() => bulkModal.querySelector('input, textarea')?.focus(), 10);
+    }
+
+    function closeBulkModal() {
+      bulkModal.dataset.open = 'false';
+      bulkStatus.textContent = '';
+    }
+
+    function renderBulkRows() {
+      bulkBody.innerHTML = '';
+      const template = document.getElementById('bulkRowTemplate');
+      students.forEach((student) => {
+        const clone = template.content.cloneNode(true);
+        clone.querySelector('.avatar-chip').textContent = getInitials(student);
+        clone.querySelector('.avatar-chip').style.background = getAvatarColor(student);
+        clone.querySelector('.font-semibold').textContent = student;
+        clone.querySelectorAll('[data-field]').forEach((input) => {
+          input.dataset.student = student;
+        });
+        bulkBody.appendChild(clone);
+      });
+    }
+
+    async function saveBulkEntries() {
+      const date = bulkDate.value || todayKey;
+      const entries = [];
+      bulkBody.querySelectorAll('[data-field]').forEach((input) => {
+        const student = input.dataset.student;
+        if (!entries.find((e) => e.student === student)) {
+          entries.push({
+            date,
+            student,
+            quran: '',
+            surah: '',
+            lawsOfSalah: '',
+            qamar: '',
+            anythingElse: '',
+            statuses: new Set(),
+            attendance: null,
+            behaviour: null,
+            tags: []
+          });
+        }
+        const entry = entries.find((e) => e.student === student);
+        const field = input.dataset.field;
+        if (field === 'anythingElse' || field === 'tags') {
+          entry[field] = input.value.trim();
+        } else {
+          entry[field] = input.value.trim();
+        }
+      });
+      const validEntries = entries.filter((entry) => entry.student && (entry.quran || entry.surah || entry.lawsOfSalah || entry.qamar || entry.anythingElse));
+      if (!validEntries.length) {
+        bulkStatus.textContent = 'Nothing to save.';
+        return;
+      }
+      bulkStatus.textContent = 'Saving…';
+      try {
+        for (const entry of validEntries) {
+          await saveEntry({
+            ...entry,
+            tags: splitTags(entry.tags),
+            statuses: new Set()
+          });
+        }
+        bulkStatus.textContent = 'Saved ✓';
+        closeBulkModal();
+      } catch (err) {
+        console.error(err);
+        bulkStatus.textContent = 'Bulk save failed';
+      }
+    }
+
+    function reRenderAll() {
+      applyFiltersAndRender();
+      renderMonthlyReport();
+      renderInsights();
+    }
+    function applyTemplateFromSelect() {
+      const name = templateSelect.value;
+      if (!name) return;
+      const template = state.templates.find((tpl) => tpl.name === name);
+      if (!template) return;
+      inputs.quran.value = template.quran || '';
+      inputs.surah.value = template.surah || '';
+      inputs.laws.value = template.lawsOfSalah || '';
+      inputs.qamar.value = template.qamar || '';
+      inputs.anything.value = template.anythingElse || '';
+      inputs.tags.value = (template.tags || []).join(', ');
+      state.selectedStatuses = new Set(template.statuses || []);
+      state.selectedAttendance = template.attendance || null;
+      state.selectedBehaviour = template.behaviour || null;
+      updateStatusSelections();
+      updateAttendanceSelections();
+      updateBehaviourSelections();
+      updateSuggestions();
+    }
+
+    function onSaveTemplate() {
+      const name = templateNameInput.value.trim();
+      if (!name) {
+        showToast('Name your template', 'error');
+        return;
+      }
+      const data = collectFormData();
+      const template = {
+        name,
+        quran: data.quran,
+        surah: data.surah,
+        lawsOfSalah: data.lawsOfSalah,
+        qamar: data.qamar,
+        anythingElse: data.anythingElse,
+        statuses: Array.from(data.statuses),
+        attendance: data.attendance,
+        behaviour: data.behaviour,
+        tags: data.tags
+      };
+      const existing = state.templates.findIndex((tpl) => tpl.name === name);
+      if (existing >= 0) state.templates[existing] = template;
+      else state.templates.push(template);
+      saveTemplates();
+      populateTemplateSelect();
+      templateSelect.value = name;
+      showToast('Template saved', 'success');
+    }
+
+    function onDeleteTemplate() {
+      const name = templateSelect.value;
+      if (!name) return;
+      state.templates = state.templates.filter((tpl) => tpl.name !== name);
+      saveTemplates();
+      populateTemplateSelect();
+      showToast('Template removed', 'success');
+    }
+
+    function populateTemplateSelect() {
+      templateSelect.innerHTML = '<option value="">Apply template…</option>';
+      state.templates.forEach((tpl) => {
+        const opt = document.createElement('option');
+        opt.value = tpl.name;
+        opt.textContent = tpl.name;
+        templateSelect.appendChild(opt);
+      });
+    }
+
   </script>
 </body>
 </html>
