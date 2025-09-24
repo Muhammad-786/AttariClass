@@ -158,6 +158,7 @@
                   <label class="block text-sm font-semibold mb-1" for="qamar">🌙 Qamar</label>
                   <input id="qamar" name="qamar" type="text" maxlength="120" class="density-target w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-pink-500 focus:ring-0" />
                 </div>
+
               </div>
 
               <div>
@@ -166,6 +167,7 @@
               </div>
 
               <div>
+>>>>>>> master
                 <span class="block text-sm font-semibold mb-2">🎯 Status</span>
                 <div id="statusChips" class="flex flex-wrap gap-2"></div>
               </div>
@@ -193,6 +195,7 @@
                   <button id="saveTemplate" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-500/90 text-white text-sm">Save template</button>
                   <button id="deleteTemplate" type="button" class="px-3 py-1.5 rounded-xl bg-red-500/80 text-white text-sm">Delete</button>
                 </div>
+
               </div>
 
               <div class="space-y-2">
@@ -200,6 +203,7 @@
                 <div id="suggestions" class="flex flex-wrap gap-2 text-sm"></div>
               </div>
 
+>>>>>>> master
               <div class="flex flex-col sm:flex-row gap-4">
                 <button id="saveBtn" type="submit" class="btn-primary flex-1 px-6 py-4 rounded-2xl text-white font-bold inline-flex items-center justify-center gap-3"><span id="saveText">💾 Save Entry</span><div id="saveSpinner" class="spinner hidden"></div></button>
                 <button id="cancelEditBtn" type="button" class="hidden px-6 py-4 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium border border-slate-300/40 dark:border-slate-600/40">✖️ Cancel</button>
@@ -586,6 +590,8 @@
     populateStatusFilter();
     populateTemplateSelect();
 
+>>>>>>> master
+
     Array.from(document.querySelectorAll('[data-date-chip]')).forEach((chip) => {
       chip.addEventListener('click', () => {
         const key = chip.dataset.dateChip;
@@ -732,6 +738,7 @@
       if (state.autosaveDirty) saveDraft();
     }, 4000);
 
+>>>>>>> master
     state.reminderCheckTimer = setInterval(checkReminder, 60000);
     checkReminder();
 
@@ -819,6 +826,7 @@
         saveSpinner.classList.add('hidden');
         saveText.textContent = isEdit ? '✅ Update Entry' : '💾 Save Entry';
       }
+
     }
 
     function collectFormData() {
@@ -973,6 +981,7 @@
       };
     }
 
+>>>>>>> master
     function loadTemplates() {
       try {
         const raw = localStorage.getItem(TEMPLATE_KEY);
@@ -1096,6 +1105,7 @@
       await loadHistoryPage({ append: false });
     }
 
+>>>>>>> master
     async function loadHistoryPage({ append }) {
       if (!state.hasMore && append) return;
       const constraints = [];
@@ -1270,6 +1280,7 @@
       return `hsl(${hue},70%,40%)`;
     }
 
+>>>>>>> master
     function onHistoryClick(event) {
       const button = event.target.closest('button[data-action]');
       if (button) {
@@ -1412,7 +1423,9 @@
         reportEmptyText.textContent = 'Select a student to see their monthly report.';
         reportInfo.textContent = '';
         reportDownload.disabled = true;
+
         reportParentDownload.disabled = true;
+
         return;
       }
       const range = getMonthDateRange(monthValue);
@@ -1421,7 +1434,9 @@
         reportEmpty.classList.remove('hidden');
         reportEmptyText.textContent = 'Pick a month to see entries.';
         reportDownload.disabled = true;
+
         reportParentDownload.disabled = true;
+
         return;
       }
       const rows = state.historyAll
@@ -1434,7 +1449,9 @@
         reportEmptyText.textContent = 'No entries for this month yet.';
         reportInfo.textContent = '';
         reportDownload.disabled = true;
+
         reportParentDownload.disabled = true;
+
         return;
       }
       reportTableWrapper.classList.remove('hidden');
@@ -1456,6 +1473,7 @@
         .join('');
       reportInfo.textContent = `${rows.length} entry${rows.length === 1 ? '' : 'ies'} for ${student} in ${formatMonthYear(monthValue)}`;
       reportDownload.disabled = false;
+
       reportParentDownload.disabled = false;
       updateReportDownloadLabel();
     }
@@ -1546,6 +1564,7 @@
     }
 
     async function downloadParentReport() {
+
       if (reportParentDownload.disabled) return;
       const module = await ensureJsPdf();
       const jsPdfConstructor = module?.jsPDF || module?.default?.jsPDF || module?.default;
@@ -1602,6 +1621,7 @@
       if (!reportDownload) return;
       if (reportDownload.disabled) {
         reportDownload.textContent = '⬇️ Download';
+
         reportParentDownload.textContent = '👪 Parent PDF';
         return;
       }
@@ -1641,6 +1661,8 @@
       renderStreaks(rows);
       renderRadar(rows);
     }
+
+
 
     function renderSparklineList(rows) {
       sparklineList.innerHTML = '';
