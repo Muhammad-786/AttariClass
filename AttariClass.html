@@ -116,7 +116,7 @@
             <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
               <div>
                 <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">📊 Progress History</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400">Real‑time per‑student notes (latest first)</p>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Real-time per-student notes (latest first)</p>
               </div>
               <div class="flex flex-wrap gap-3">
                 <select id="filterStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500">
@@ -166,7 +166,7 @@
                 <p class="text-sm text-slate-600 dark:text-slate-400">Review per-student progress and export it as a CSV or PDF file.</p>
               </div>
               <div class="flex flex-wrap gap-3 items-center">
-                <select id="reportStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500">
+                <select id="reportStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus-border-emerald-500">
                   <option value="" disabled selected>Select a student…</option>
                 </select>
                 <input id="reportMonth" type="month" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500" />
@@ -268,7 +268,16 @@
     const reportDownload=document.getElementById('reportDownload');
 
     // Populate selects
-    function populateStudents(){inputs.student.innerHTML='<option value="" disabled selected>Choose a student…</option>';filterStudent.innerHTML='<option value="">All students</option>';reportStudent.innerHTML='<option value="" disabled selected>Select a student…</option>';students.forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;inputs.student.appendChild(o);const o2=document.createElement('option');o2.value=o.value;o2.textContent=n;filterStudent.appendChild(o2);const o3=document.createElement('option');o3.value=o.value;o3.textContent=n;reportStudent.appendChild(o3);});}
+    function populateStudents(){
+      inputs.student.innerHTML='<option value="" disabled selected>Choose a student…</option>';
+      filterStudent.innerHTML='<option value="">All students</option>';
+      reportStudent.innerHTML='<option value="" disabled selected>Select a student…</option>';
+      students.forEach(n=>{
+        const o=document.createElement('option');o.value=n;o.textContent=n;inputs.student.appendChild(o);
+        const o2=document.createElement('option');o2.value=o.value;o2.textContent=n;filterStudent.appendChild(o2);
+        const o3=document.createElement('option');o3.value=o.value;o3.textContent=n;reportStudent.appendChild(o3);
+      });
+    }
     populateStudents();
 
     const now=new Date();
@@ -285,8 +294,24 @@
     // Edit mode
     let editingKey=null;
     function setEditMode(n=null){
-      if(n){editingKey=n.id;formTitle.textContent='✏️ Edit Entry';saveText.textContent='✅ Update Entry';cancelEditBtn.classList.remove('hidden');inputs.student.value=n.student;inputs.quran.value=n.quran||'';inputs.surah.value=n.surah||'';inputs.laws.value=n.lawsOfSalah||'';inputs.qamar.value=n.qamar||'';inputs.anything.value=n.anythingElse||n.other||'';}
-      else{editingKey=null;formTitle.textContent='✨ New Entry';saveText.textContent='💾 Save Entry';cancelEditBtn.classList.add('hidden');document.getElementById('notesForm').reset();}
+      if(n){
+        editingKey=n.id;
+        formTitle.textContent='✏️ Edit Entry';
+        saveText.textContent='✅ Update Entry';
+        cancelEditBtn.classList.remove('hidden');
+        inputs.student.value=n.student;
+        inputs.quran.value=n.quran||'';
+        inputs.surah.value=n.surah||'';
+        inputs.laws.value=n.lawsOfSalah||'';
+        inputs.qamar.value=n.qamar||'';
+        inputs.anything.value=n.anythingElse||n.other||'';
+      } else {
+        editingKey=null;
+        formTitle.textContent='✨ New Entry';
+        saveText.textContent='💾 Save Entry';
+        cancelEditBtn.classList.add('hidden');
+        document.getElementById('notesForm').reset();
+      }
     }
     cancelEditBtn.addEventListener('click',()=>setEditMode(null));
 
@@ -300,7 +325,18 @@
       const entryDate=editingKey?extractDateFromId(editingKey)||defaultDate:defaultDate;
       const id=editingKey||noteId(entryDate,student);
       const ref=doc(notesCol,id);
-      const payload={id,date:entryDate,student,quran:inputs.quran.value.trim(),surah:inputs.surah.value.trim(),lawsOfSalah:inputs.laws.value.trim(),qamar:inputs.qamar.value.trim(),anythingElse:inputs.anything.value.trim(),updatedAt:serverTimestamp(),ownerUid:auth.currentUser?.uid||null};
+      const payload={
+        id,
+        date:entryDate,
+        student,
+        quran:inputs.quran.value.trim(),
+        surah:inputs.surah.value.trim(),
+        lawsOfSalah:inputs.laws.value.trim(),
+        qamar:inputs.qamar.value.trim(),
+        anythingElse:inputs.anything.value.trim(),
+        updatedAt:serverTimestamp(),
+        ownerUid:auth.currentUser?.uid||null
+      };
       const snap=await getDoc(ref);
       if(!snap.exists())payload.createdAt=serverTimestamp();
       await setDoc(ref,payload,{merge:true});
@@ -315,9 +351,31 @@
     let unsub=null, historyRows=[], currentReportRows=[];
     let reportRequestToken=0;
     let jsPdfModulePromise=null;
-    function startHistoryStream(){ if(unsub)unsub(); const q=query(notesCol,orderBy('date','desc'),qLimit(200)); unsub=onSnapshot(q,(snap)=>{historyRows=snap.docs.map(d=>({id:d.id,...d.data()})); applyFilters(); renderMonthlyReport();}); }
-    function applyFilters(){const s=filterStudent.value;const d=filterDate.value;let list=historyRows;if(s)list=list.filter(r=>r.student===s);if(d)list=list.filter(r=>r.date===d);renderHistory(list);renderMonthlyReport();}
-    filterStudent.addEventListener('change',applyFilters); filterDate.addEventListener('change',applyFilters); document.getElementById('clearFilters').addEventListener('click',()=>{filterStudent.value='';filterDate.value='';applyFilters();}); document.getElementById('reload').addEventListener('click',applyFilters);
+
+    function startHistoryStream(){
+      if(unsub)unsub();
+      const q=query(notesCol,orderBy('date','desc'),qLimit(200));
+      unsub=onSnapshot(q,(snap)=>{
+        historyRows=snap.docs.map(d=>({id:d.id,...d.data()}));
+        applyFilters();
+        renderMonthlyReport();
+      });
+    }
+
+    function applyFilters(){
+      const s=filterStudent.value;
+      const d=filterDate.value;
+      let list=historyRows;
+      if(s)list=list.filter(r=>r.student===s);
+      if(d)list=list.filter(r=>r.date===d);
+      renderHistory(list);
+      renderMonthlyReport();
+    }
+    filterStudent.addEventListener('change',applyFilters);
+    filterDate.addEventListener('change',applyFilters);
+    document.getElementById('clearFilters').addEventListener('click',()=>{filterStudent.value='';filterDate.value='';applyFilters();});
+    document.getElementById('reload').addEventListener('click',applyFilters);
+
     async function fetchMonthlyRows(student,range){
       const baseConstraints=[where('date','>=',range.start),where('date','<=',range.end),orderBy('date','asc')];
       const mapSnap=snap=>snap.docs.map(docSnap=>({id:docSnap.id,...docSnap.data()}));
@@ -329,6 +387,7 @@
         const snap=await getDocs(query(notesCol,where('student','==',student),...baseConstraints));
         return mapSnap(snap);
       }catch(err){
+        // fallback if composite index is missing
         if(err?.code==='failed-precondition'||/index/i.test(err?.message||'')){
           const snap=await getDocs(query(notesCol,...baseConstraints));
           return mapSnap(snap).filter(r=>r.student===student);
@@ -340,11 +399,24 @@
     reportStudent?.addEventListener('change',renderMonthlyReport);
     reportMonth?.addEventListener('change',renderMonthlyReport);
     reportFormat?.addEventListener('change',updateReportDownloadLabel);
-    reportDownload?.addEventListener('click',async()=>{if(reportDownload.disabled)return;await downloadMonthlyReport();});
-    updateReportDownloadLabel();
+    reportDownload?.addEventListener('click',async()=>{
+      if(reportDownload.disabled)return;
+      await downloadMonthlyReport();
+    });
     renderMonthlyReport();
+    updateReportDownloadLabel();
 
-    function renderHistory(rows){historyBody.innerHTML=''; if(!rows.length){emptyState.classList.remove('hidden');countInfo.textContent='0 notes';return;} emptyState.classList.add('hidden'); rows.forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`
+    function renderHistory(rows){
+      historyBody.innerHTML='';
+      if(!rows.length){
+        emptyState.classList.remove('hidden');
+        countInfo.textContent='0 notes';
+        return;
+      }
+      emptyState.classList.add('hidden');
+      rows.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`
           <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
           <td class='px-6 py-3'>${esc(r.student||'')}</td>
           <td class='px-6 py-3'>${esc(r.quran||'')}</td>
@@ -355,40 +427,54 @@
           <td class='px-6 py-3 whitespace-nowrap'>
             <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800' data-action='edit' data-id='${r.id}'>Edit</button>
             <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20' data-action='delete' data-id='${r.id}'>Delete</button>
-          </td>`;historyBody.appendChild(tr);}); countInfo.textContent=`${rows.length} note${rows.length===1?'':'s'} shown`;}
+          </td>`;
+        historyBody.appendChild(tr);
+      });
+      countInfo.textContent=`${rows.length} note${rows.length===1?'':'s'} shown`;
+    }
 
     async function renderMonthlyReport(){
       if(!reportStudent||!reportMonth)return;
       const student=reportStudent.value;
       const monthValue=reportMonth.value;
+
       currentReportRows=[];
       reportBody.innerHTML='';
       reportInfo.textContent='';
+
       if(reportDownload){
         reportDownload.disabled=true;
         updateReportDownloadLabel();
       }
       reportTableWrapper.classList.add('hidden');
       reportEmpty.classList.remove('hidden');
+
       if(!student){reportEmptyText.textContent='Select a student to see their monthly report.';return;}
       if(!monthValue){reportEmptyText.textContent='Choose a month to view the report.';return;}
+
       const requestId=++reportRequestToken;
       reportEmptyText.textContent='Loading report…';
+
       try{
         const range=getMonthDateRange(monthValue);
-        if(!range){
-          reportEmptyText.textContent='Choose a valid month to view the report.';
-          return;
-        }
+        if(!range){reportEmptyText.textContent='Choose a valid month to view the report.';return;}
+
         const rows=await fetchMonthlyRows(student,range);
         if(requestId!==reportRequestToken)return;
+
         const filtered=rows.filter(r=>r.student===student&&isInMonth(r.date,monthValue));
         if(!filtered.length){
           if(requestId===reportRequestToken){reportEmptyText.textContent=`No entries found for ${student} in ${formatMonthYear(monthValue)}.`;}
           return;
         }
-        const sorted=filtered.slice().sort((a,b)=>{const da=parseDate(a.date);const db=parseDate(b.date);if(da&&db)return da-db;return (a.date||'').localeCompare(b.date||'');});
+
+        const sorted=filtered.slice().sort((a,b)=>{
+          const da=parseDate(a.date);const db=parseDate(b.date);
+          if(da&&db)return da-db;
+          return (a.date||'').localeCompare(b.date||'');
+        });
         if(requestId!==reportRequestToken)return;
+
         reportBody.innerHTML=sorted.map(r=>`
           <tr>
             <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
@@ -398,6 +484,7 @@
             <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
             <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
           </tr>`).join('');
+
         reportTableWrapper.classList.remove('hidden');
         reportEmpty.classList.add('hidden');
         reportInfo.textContent=`${sorted.length} entr${sorted.length===1?'y':'ies'} for ${student} in ${formatMonthYear(monthValue)}.`;
@@ -420,9 +507,11 @@
       const monthValue=reportMonth.value;
       if(!student||!monthValue)return;
       const format=(reportFormat?.value||'csv').toLowerCase();
+
       reportDownload.dataset.loading='true';
       reportDownload.disabled=true;
       updateReportDownloadLabel();
+
       try{
         if(format==='pdf'){
           await downloadMonthlyPdf(student,monthValue);
@@ -434,15 +523,16 @@
         showToast('Download failed','error');
       }finally{
         if(reportDownload.dataset.loading)delete reportDownload.dataset.loading;
-        const shouldDisable=!currentReportRows.length;
-        reportDownload.disabled=shouldDisable;
+        reportDownload.disabled=!currentReportRows.length;
         updateReportDownloadLabel();
       }
     }
 
     function downloadMonthlyCsv(student,monthValue){
       const rows=[['Date','Student','Quran','Surah','Laws of Salah','Qamar','Notes']];
-      currentReportRows.forEach(r=>{rows.push([formatDisplayDate(r.date),r.student||'',r.quran||'',r.surah||'',r.lawsOfSalah||'',r.qamar||'',r.anythingElse||'']);});
+      currentReportRows.forEach(r=>{
+        rows.push([formatDisplayDate(r.date),r.student||'',r.quran||'',r.surah||'',r.lawsOfSalah||'',r.qamar||'',r.anythingElse||'']);
+      });
       const csv=rows.map(row=>row.map(toCsvValue).join(',')).join('\r\n');
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
       const url=URL.createObjectURL(blob);
@@ -459,30 +549,40 @@
       const module=await ensureJsPdf();
       const jsPdfConstructor=module?.jsPDF||module?.default?.jsPDF||module?.default;
       if(typeof jsPdfConstructor!=='function')throw new Error('PDF library failed to load');
+
       const doc=new jsPdfConstructor({orientation:'portrait',unit:'pt'});
       const margin=40;
       const pageHeight=doc.internal.pageSize.getHeight();
       const maxWidth=doc.internal.pageSize.getWidth()-margin*2;
+
       const monthLabel=formatMonthYear(monthValue)||monthValue;
       let y=margin;
+
       doc.setFont('helvetica','bold');
       doc.setFontSize(18);
       doc.text('Monthly Report',margin,y);
       y+=24;
+
       doc.setFont('helvetica','normal');
       doc.setFontSize(12);
-      doc.text(`Student: ${student}`,margin,y);
-      y+=16;
-      doc.text(`Month: ${monthLabel}`,margin,y);
-      y+=24;
+      doc.text(`Student: ${student}`,margin,y); y+=16;
+      doc.text(`Month: ${monthLabel}`,margin,y); y+=24;
+
       const lineHeight=14;
       currentReportRows.forEach((row,index)=>{
         if(y>pageHeight-margin){doc.addPage();y=margin;}
         doc.setFont('helvetica','bold');
         doc.text(`${index+1}. ${formatDisplayDate(row.date)}`,margin,y);
         y+=lineHeight;
+
         doc.setFont('helvetica','normal');
-        const sections=[['Quran',row.quran],['Surah',row.surah],['Laws of Salah',row.lawsOfSalah],['Qamar',row.qamar],['Notes',row.anythingElse]];
+        const sections=[
+          ['Quran',row.quran],
+          ['Surah',row.surah],
+          ['Laws of Salah',row.lawsOfSalah],
+          ['Qamar',row.qamar],
+          ['Notes',row.anythingElse],
+        ];
         sections.forEach(([label,value])=>{
           const text=`• ${label}: ${value||'-'}`;
           const lines=doc.splitTextToSize(text,Math.max(maxWidth-20,0));
@@ -494,16 +594,14 @@
         });
         y+=lineHeight/2;
       });
+
       doc.save(buildReportFilename(student,monthValue,'pdf'));
       showToast('PDF report downloaded ✓','success');
     }
 
     function updateReportDownloadLabel(){
       if(!reportDownload)return;
-      if(reportDownload.dataset.loading){
-        reportDownload.textContent='Preparing…';
-        return;
-      }
+      if(reportDownload.dataset.loading){reportDownload.textContent='Preparing…';return;}
       const format=(reportFormat?.value||'csv').toUpperCase();
       reportDownload.textContent=`⬇️ Download ${format}`;
     }
@@ -516,24 +614,97 @@
 
     function ensureJsPdf(){
       if(!jsPdfModulePromise){
-        jsPdfModulePromise=import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.es.min.js').catch(err=>{jsPdfModulePromise=null;throw err;});
+        jsPdfModulePromise=import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.es.min.js')
+          .catch(err=>{jsPdfModulePromise=null;throw err;});
       }
       return jsPdfModulePromise;
     }
 
-    historyBody.addEventListener('click',async(e)=>{const btn=e.target.closest('button'); if(!btn) return; const id=btn.getAttribute('data-id'); if(btn.getAttribute('data-action')==='edit'){const snap=await getDoc(doc(notesCol,id)); if(snap.exists()) setEditMode(snap.data());} else if(btn.getAttribute('data-action')==='delete'){ if(!confirm('Delete this note?')) return; await deleteDoc(doc(notesCol,id)); showToast('Deleted','success'); }});
+    historyBody.addEventListener('click',async(e)=>{
+      const btn=e.target.closest('button'); if(!btn) return;
+      const id=btn.getAttribute('data-id');
+      if(btn.getAttribute('data-action')==='edit'){
+        const snap=await getDoc(doc(notesCol,id));
+        if(snap.exists()) setEditMode(snap.data());
+      } else if(btn.getAttribute('data-action')==='delete'){
+        if(!confirm('Delete this note?')) return;
+        await deleteDoc(doc(notesCol,id));
+        showToast('Deleted','success');
+      }
+    });
 
     // Auth gate
-    onAuthStateChanged(auth,(user)=>{ if(user){authGate.classList.add('hidden'); appShell.classList.remove('hidden'); whoami.textContent=user.email||user.uid; authStatus.textContent='Online'; dot.className='w-2 h-2 rounded-full bg-emerald-400'; startHistoryStream(); } else { appShell.classList.add('hidden'); authGate.classList.remove('hidden'); whoami.textContent='Not signed in'; authStatus.textContent='Signed out'; dot.className='w-2 h-2 rounded-full bg-amber-400'; }});
+    onAuthStateChanged(auth,(user)=>{
+      if(user){
+        authGate.classList.add('hidden');
+        appShell.classList.remove('hidden');
+        whoami.textContent=user.email||user.uid;
+        authStatus.textContent='Online';
+        dot.className='w-2 h-2 rounded-full bg-emerald-400';
+        startHistoryStream();
+      } else {
+        appShell.classList.add('hidden');
+        authGate.classList.remove('hidden');
+        whoami.textContent='Not signed in';
+        authStatus.textContent='Signed out';
+        dot.className='w-2 h-2 rounded-full bg-amber-400';
+      }
+    });
 
     // Utils
-    function extractDateFromId(id){if(!id)return null;const match=String(id).match(/^(\d{4}-\d{2}-\d{2})_/);return match?match[1]:null;}
-    function parseDate(input){if(!input&&input!==0)return null;if(input instanceof Date)return isNaN(input.getTime())?null:input;if(typeof input?.toDate==='function'){const date=input.toDate();return date instanceof Date&&!isNaN(date.getTime())?date:null;}const str=String(input).trim();const iso=str.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(iso){const[,y,m,d]=iso;const date=new Date(Number(y),Number(m)-1,Number(d));return isNaN(date.getTime())?null:date;}const slash=str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(slash){const[,d,m,y]=slash;const date=new Date(Number(y),Number(m)-1,Number(d));return isNaN(date.getTime())?null:date;}const parsed=new Date(str);return isNaN(parsed.getTime())?null:parsed;}
-    function toLocalISODate(value){const date=value instanceof Date?value:parseDate(value);if(!date)return '';const year=date.getFullYear();const month=String(date.getMonth()+1).padStart(2,'0');const day=String(date.getDate()).padStart(2,'0');return `${year}-${month}-${day}`;}
-    function formatDisplayDate(value){const date=value instanceof Date?value:parseDate(value);if(!date)return value??'';const day=date.getDate();const month=MONTH_LABELS[date.getMonth()]||'';const year=date.getFullYear();return month?`${day} ${month} ${year}`:value??'';}
-    function formatMonthYear(monthValue){if(!monthValue)return '';const parts=String(monthValue).split('-');if(parts.length<2)return monthValue;const year=Number(parts[0]);const monthIndex=Number(parts[1])-1;if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return monthValue;const month=MONTH_LABELS[monthIndex]||'';return month?`${month} ${year}`:monthValue;}
-    function getMonthDateRange(monthValue){if(!monthValue)return null;const parts=String(monthValue).split('-');if(parts.length<2)return null;const yearStr=parts[0];const monthNum=Number(parts[1]);const monthIndex=monthNum-1;const year=Number(yearStr);if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return null;const monthStr=String(monthIndex+1).padStart(2,'0');const lastDay=new Date(year,monthIndex+1,0).getDate();const endDay=String(lastDay).padStart(2,'0');return {start:`${yearStr}-${monthStr}-01`,end:`${yearStr}-${monthStr}-${endDay}`};}
-    function isInMonth(dateValue,monthValue){const date=parseDate(dateValue);if(!date||!monthValue)return false;const [yearStr,monthStr]=String(monthValue).split('-');const year=Number(yearStr);const month=Number(monthStr);if(Number.isNaN(year)||Number.isNaN(month))return false;return date.getFullYear()===year&&date.getMonth()+1===month;}
+    function extractDateFromId(id){if(!id)return null;const m=String(id).match(/^(\d{4}-\d{2}-\d{2})_/);return m?m[1]:null;}
+    function parseDate(input){
+      if(!input&&input!==0)return null;
+      if(input instanceof Date)return isNaN(input.getTime())?null:input;
+      if(typeof input?.toDate==='function'){const d=input.toDate();return d instanceof Date&&!isNaN(d.getTime())?d:null;}
+      const str=String(input).trim();
+      const iso=str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if(iso){const[,y,m,d]=iso;const dt=new Date(Number(y),Number(m)-1,Number(d));return isNaN(dt.getTime())?null:dt;}
+      const slash=str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if(slash){const[,d,m,y]=slash;const dt=new Date(Number(y),Number(m)-1,Number(d));return isNaN(dt.getTime())?null:dt;}
+      const parsed=new Date(str);return isNaN(parsed.getTime())?null:parsed;
+    }
+    function toLocalISODate(value){
+      const date=value instanceof Date?value:parseDate(value);
+      if(!date)return '';
+      const year=date.getFullYear();
+      const month=String(date.getMonth()+1).padStart(2,'0');
+      const day=String(date.getDate()).padStart(2,'0');
+      return `${year}-${month}-${day}`;
+    }
+    function formatDisplayDate(value){
+      const date=value instanceof Date?value:parseDate(value);
+      if(!date)return value??'';
+      const day=date.getDate();
+      const month=MONTH_LABELS[date.getMonth()]||'';
+      const year=date.getFullYear();
+      return month?`${day} ${month} ${year}`:value??'';
+    }
+    function formatMonthYear(monthValue){
+      if(!monthValue)return '';
+      const parts=String(monthValue).split('-');
+      if(parts.length<2)return monthValue;
+      const year=Number(parts[0]); const monthIndex=Number(parts[1])-1;
+      if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return monthValue;
+      const month=MONTH_LABELS[monthIndex]||''; return month?`${month} ${year}`:monthValue;
+    }
+    function getMonthDateRange(monthValue){
+      if(!monthValue)return null;
+      const parts=String(monthValue).split('-'); if(parts.length<2)return null;
+      const yearStr=parts[0]; const monthNum=Number(parts[1]); const monthIndex=monthNum-1; const year=Number(yearStr);
+      if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return null;
+      const monthStr=String(monthIndex+1).padStart(2,'0');
+      const lastDay=new Date(year,monthIndex+1,0).getDate();
+      const endDay=String(lastDay).padStart(2,'0');
+      return {start:`${yearStr}-${monthStr}-01`,end:`${yearStr}-${monthStr}-${endDay}`};
+    }
+    function isInMonth(dateValue,monthValue){
+      const date=parseDate(dateValue); if(!date||!monthValue)return false;
+      const [yearStr,monthStr]=String(monthValue).split('-');
+      const year=Number(yearStr); const month=Number(monthStr);
+      if(Number.isNaN(year)||Number.isNaN(month))return false;
+      return date.getFullYear()===year&&date.getMonth()+1===month;
+    }
     function toCsvValue(value){const str=(value??'').toString().replace(/"/g,'""').replace(/\r?\n/g,' ');return `"${str}"`;}
     function esc(s){return (s??'').toString().replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]))}
     function showToast(text,type='success'){ toast.textContent=text; toast.className=`notification show ${type}`; setTimeout(()=>{toast.classList.remove('show')},1600); }
