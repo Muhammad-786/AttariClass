@@ -613,9 +613,44 @@
     }
 
     function ensureJsPdf(){
+      if(window.jspdf?.jsPDF)return Promise.resolve(window.jspdf);
       if(!jsPdfModulePromise){
-        jsPdfModulePromise=import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.es.min.js')
-          .catch(err=>{jsPdfModulePromise=null;throw err;});
+        jsPdfModulePromise=new Promise((resolve,reject)=>{
+          let script=null;
+          const cleanup=()=>{script?.removeEventListener('error',onError);script?.removeEventListener('load',onLoad);};
+          const onLoad=()=>{
+            cleanup();
+            if(window.jspdf?.jsPDF){
+              resolve(window.jspdf);
+            }else{
+              script?.remove();
+              jsPdfModulePromise=null;
+              reject(new Error('PDF library failed to load'));
+            }
+          };
+          const onError=()=>{
+            cleanup();
+            script?.remove();
+            jsPdfModulePromise=null;
+            reject(new Error('Failed to load PDF library'));
+          };
+          const existing=document.querySelector('script[data-jspdf-loader]');
+          if(existing){
+            script=existing;
+            existing.addEventListener('load',onLoad,{once:true});
+            existing.addEventListener('error',onError,{once:true});
+            return;
+          }
+          script=document.createElement('script');
+          script.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+          script.async=true;
+          script.crossOrigin='anonymous';
+          script.dataset.jspdfLoader='true';
+          script.addEventListener('load',onLoad,{once:true});
+          script.addEventListener('error',onError,{once:true});
+          document.head.appendChild(script);
+        });
+        jsPdfModulePromise=jsPdfModulePromise.catch(err=>{jsPdfModulePromise=null;throw err;});
       }
       return jsPdfModulePromise;
     }
