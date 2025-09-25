@@ -7,626 +7,457 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root{
       color-scheme: light dark;
-      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      --emerald-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      --purple-gradient: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      --orange-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      --pink-gradient: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
-      --glass-bg: rgba(255, 255, 255, 0.1);
-      --glass-border: rgba(255, 255, 255, 0.2);
-      --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      --card-shadow-hover: 0 35px 60px -12px rgba(0, 0, 0, 0.35);
-      --glow-emerald: 0 0 40px rgba(16, 185, 129, 0.4);
-      --glow-purple: 0 0 40px rgba(139, 92, 246, 0.4);
-      --glow-blue: 0 0 40px rgba(79, 172, 254, 0.4);
-      --animate-duration: 0.3s;
+      --grad-1: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+      --grad-2: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);
+      --grad-emerald: linear-gradient(135deg,#10b981 0%,#059669 100%);
+      --grad-purple: linear-gradient(135deg,#8b5cf6 0%,#a855f7 100%);
+      --grad-blue: linear-gradient(135deg,#3b82f6 0%,#1d4ed8 100%);
+      --glow: 0 0 30px rgba(102,126,234,.35);
+      --glow-emerald: 0 0 30px rgba(16,185,129,.35);
+      --glow-purple: 0 0 30px rgba(139,92,246,.35);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
-
-    html, body {
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-      scroll-behavior: smooth;
+    
+    html,body{
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      scroll-behavior:smooth;
       overflow-x: hidden;
     }
-
-    .font-display { font-family: 'Poppins', sans-serif; }
-
-    /* Enhanced Glass Effect */
-    .glass {
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.15) 0%, 
-        rgba(255, 255, 255, 0.05) 100%);
+    
+    .glass{
+      backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);
+      background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
-
-    .glass-dark {
-      background: linear-gradient(135deg, 
-        rgba(15, 23, 42, 0.8) 0%, 
-        rgba(15, 23, 42, 0.6) 100%);
-      border: 1px solid rgba(71, 85, 105, 0.3);
-    }
-
-    /* Enhanced Animations */
-    .gradient-animated {
-      background: linear-gradient(-45deg, #667eea, #764ba2, #4facfe, #00f2fe, #8b5cf6, #ec4899);
-      background-size: 400% 400%;
-      animation: gradientFlow 15s ease infinite;
-    }
-
-    @keyframes gradientFlow {
-      0% { background-position: 0% 50%; }
-      25% { background-position: 100% 50%; }
-      50% { background-position: 100% 100%; }
-      75% { background-position: 0% 100%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .float {
-      animation: float 8s ease-in-out infinite;
-    }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      33% { transform: translateY(-15px) rotate(1deg); }
-      66% { transform: translateY(-5px) rotate(-1deg); }
-    }
-
-    .pulse-slow {
-      animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    .fade-in {
-      animation: fadeIn 0.6s ease-out forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Enhanced Button Styles */
-    .btn-primary {
-      background: var(--emerald-gradient);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-    }
-
-    .btn-primary::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      left: -100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-      transition: left 0.6s ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: var(--glow-emerald);
-    }
-
-    .btn-primary:hover::before {
-      left: 100%;
-    }
-
-    .btn-primary:active {
-      transform: translateY(-1px) scale(0.98);
-    }
-
-    .btn-secondary {
-      background: var(--purple-gradient);
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
-    }
-
-    .btn-secondary:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--glow-purple);
-    }
-
-    .btn-accent {
-      background: var(--secondary-gradient);
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
-    }
-
-    .btn-accent:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--glow-blue);
-    }
-
-    /* Enhanced Form Styles */
-    .form-input {
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.8);
-      border: 2px solid rgba(148, 163, 184, 0.3);
-      backdrop-filter: blur(10px);
-    }
-
-    .form-input:focus {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(16, 185, 129, 0.1);
-      border-color: #10b981;
-      background: rgba(255, 255, 255, 0.95);
-    }
-
-    .dark .form-input {
+    
+    .dark .glass{
       background: rgba(15, 23, 42, 0.8);
-      border-color: rgba(71, 85, 105, 0.5);
-      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .gradient-animated{
+      background:linear-gradient(-45deg,#667eea,#764ba2,#4facfe,#00f2fe,#10b981,#8b5cf6);
+      background-size:600% 600%;
+      animation:gradShift 15s ease infinite;
+    }
+    
+    @keyframes gradShift{
+      0%{background-position:0% 50%}
+      25%{background-position:100% 0%}
+      50%{background-position:100% 100%}
+      75%{background-position:0% 100%}
+      100%{background-position:0% 50%}
+    }
+    
+    .float{
+      animation:float 8s ease-in-out infinite;
+    }
+    
+    @keyframes float{
+      0%, 100%{transform:translateY(0px) rotate(0deg)}
+      25%{transform:translateY(-8px) rotate(1deg)}
+      50%{transform:translateY(-15px) rotate(0deg)}
+      75%{transform:translateY(-8px) rotate(-1deg)}
+    }
+    
+    .btn-primary{
+      background:var(--grad-emerald);
+      position:relative;
+      overflow:hidden;
+      transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform:translateZ(0);
+    }
+    
+    .btn-primary::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      left:-100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);
+      transition:left .6s ease;
+    }
+    
+    .btn-primary:hover{
+      transform:translateY(-3px) scale(1.02);
+      box-shadow:var(--glow-emerald), var(--shadow-2xl);
+    }
+    
+    .btn-primary:hover::before{
+      left:100%;
+    }
+    
+    .btn-primary:active{
+      transform:translateY(-1px) scale(1.01);
+    }
+    
+    .btn-secondary{
+      background:var(--grad-purple);
+      position:relative;
+      overflow:hidden;
+      transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .btn-secondary:hover{
+      transform:translateY(-2px);
+      box-shadow:var(--glow-purple);
+    }
+    
+    .card{
+      transition:all .3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform:translateZ(0);
+    }
+    
+    .card:hover{
+      transform:translateY(-5px) scale(1.02);
+      box-shadow:var(--shadow-2xl);
+    }
+    
+    .input-field{
+      transition:all .3s ease;
+      position:relative;
+    }
+    
+    .input-field:focus{
+      transform:scale(1.02);
+      box-shadow:0 0 0 3px rgba(16,185,129,.1);
+    }
+    
+    .spinner{
+      width:18px;
+      height:18px;
+      border:2px solid rgba(16,185,129,.35);
+      border-top:2px solid #10b981;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+    }
+    
+    @keyframes spin{
+      to{transform:rotate(360deg)}
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar{
+      height:8px;
+      width:8px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track{
+      background:rgba(148,163,184,.1);
+      border-radius:4px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb{
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      border-radius:4px;
+      transition:background .3s ease;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover{
+      background:linear-gradient(135deg,#4f46e5,#6366f1);
+    }
+    
+    .notification{
+      position:fixed;
+      top:24px;
+      right:24px;
+      padding:16px 20px;
+      border-radius:16px;
+      color:#fff;
+      font-weight:600;
+      z-index:50;
+      transform:translateX(400px);
+      transition:all .4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow:var(--shadow-xl);
+      backdrop-filter:blur(10px);
+    }
+    
+    .notification.show{
+      transform:translateX(0) scale(1.05);
+    }
+    
+    .notification.success{
+      background:linear-gradient(135deg,#10b981,#059669);
+      box-shadow:var(--glow-emerald);
+    }
+    
+    .notification.error{
+      background:linear-gradient(135deg,#ef4444,#dc2626);
+      box-shadow:0 0 30px rgba(239,68,68,.35);
+    }
+    
+    .table-row{
+      transition:all .2s ease;
+    }
+    
+    .table-row:hover{
+      background:rgba(16,185,129,.05);
+      transform:scale(1.01);
+    }
+    
+    .loading-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.5);
+      backdrop-filter:blur(4px);
+      z-index:40;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .3s ease;
+    }
+    
+    .loading-overlay.show{
+      opacity:1;
+      pointer-events:all;
+    }
+    
+    .pulse{
+      animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    
+    @keyframes pulse{
+      0%, 100%{opacity:1}
+      50%{opacity:.5}
+    }
+    
+    .fade-in{
+      animation:fadeIn .6s ease-out forwards;
+    }
+    
+    @keyframes fadeIn{
+      from{opacity:0;transform:translateY(20px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+    
+    .slide-up{
+      animation:slideUp .5s ease-out forwards;
+    }
+    
+    @keyframes slideUp{
+      from{transform:translateY(30px);opacity:0}
+      to{transform:translateY(0);opacity:1}
     }
 
-    .dark .form-input:focus {
-      background: rgba(15, 23, 42, 0.95);
-      border-color: #10b981;
-    }
-
-    /* Enhanced Card Styles */
-    .card-enhanced {
-      background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.9) 0%, 
-        rgba(255, 255, 255, 0.7) 100%);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: var(--card-shadow);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-enhanced::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 2px;
-      background: var(--primary-gradient);
-      transition: left 0.6s ease;
-    }
-
-    .card-enhanced:hover {
-      transform: translateY(-5px) scale(1.01);
-      box-shadow: var(--card-shadow-hover);
-    }
-
-    .card-enhanced:hover::before {
-      left: 100%;
-    }
-
-    .dark .card-enhanced {
-      background: linear-gradient(135deg, 
-        rgba(15, 23, 42, 0.9) 0%, 
-        rgba(15, 23, 42, 0.7) 100%);
-      border-color: rgba(71, 85, 105, 0.4);
-    }
-
-    /* Enhanced Table Styles */
-    .table-enhanced {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .table-enhanced th {
-      background: linear-gradient(135deg, 
-        rgba(99, 102, 241, 0.1) 0%, 
-        rgba(139, 92, 246, 0.1) 100%);
-      backdrop-filter: blur(10px);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-size: 0.75rem;
-    }
-
-    .table-enhanced tr {
-      transition: all 0.2s ease;
-    }
-
-    .table-enhanced tr:hover {
-      background: rgba(16, 185, 129, 0.05);
-      transform: scale(1.01);
-    }
-
-    /* Enhanced Scrollbar */
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 12px;
-      height: 12px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(148, 163, 184, 0.1);
-      border-radius: 6px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: var(--primary-gradient);
-      border-radius: 6px;
-      border: 2px solid transparent;
-      background-clip: padding-box;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: var(--emerald-gradient);
-      background-clip: padding-box;
-    }
-
-    /* Enhanced Notification */
-    .notification {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      padding: 16px 24px;
-      border-radius: 16px;
-      color: white;
-      font-weight: 600;
-      z-index: 50;
-      transform: translateX(400px);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-
-    .notification.show {
-      transform: translateX(0) translateY(0);
-      animation: notificationBounce 0.6s ease;
-    }
-
-    @keyframes notificationBounce {
-      0% { transform: translateX(400px) scale(0.9); }
-      60% { transform: translateX(-10px) scale(1.05); }
-      100% { transform: translateX(0) scale(1); }
-    }
-
-    .notification.success {
-      background: var(--emerald-gradient);
-    }
-
-    .notification.error {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
-
-    /* Loading Spinner Enhancement */
-    .spinner {
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(16, 185, 129, 0.2);
-      border-top: 3px solid #10b981;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Status Indicators */
-    .status-indicator {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .status-indicator::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      animation: shimmer 2s infinite;
-    }
-
-    @keyframes shimmer {
-      0% { left: -100%; }
-      100% { left: 100%; }
-    }
-
-    /* Icon Enhancements */
-    .icon-gradient {
-      background: var(--primary-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    /* Responsive Enhancements */
-    @media (max-width: 640px) {
-      .card-enhanced {
-        margin: 0.5rem;
-        border-radius: 1.5rem;
+    /* Enhanced Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .card:hover{
+        transform:none;
+        box-shadow:var(--shadow-xl);
       }
       
-      .notification {
-        right: 16px;
-        left: 16px;
-        transform: translateY(-100px);
+      .notification{
+        right:16px;
+        left:16px;
+        transform:translateY(-100px);
       }
       
-      .notification.show {
-        transform: translateY(0);
+      .notification.show{
+        transform:translateY(0);
       }
-    }
-
-    /* Dark mode enhancements */
-    .dark .glass {
-      background: linear-gradient(135deg, 
-        rgba(15, 23, 42, 0.8) 0%, 
-        rgba(15, 23, 42, 0.6) 100%);
-    }
-
-    /* Accessibility improvements */
-    .focus-ring:focus {
-      outline: 3px solid rgba(16, 185, 129, 0.5);
-      outline-offset: 2px;
-    }
-
-    /* Performance optimization */
-    .gpu-accelerated {
-      transform: translateZ(0);
-      will-change: transform;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100 min-h-screen">
-  <div id="toast" class="notification" role="status" aria-live="polite"></div>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100 min-h-screen">
   
-  <!-- Animated Background Elements -->
-  <div class="fixed inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 blur-3xl animate-pulse"></div>
-    <div class="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-tr from-blue-400/20 to-cyan-400/20 blur-3xl animate-pulse delay-1000"></div>
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-gradient-to-r from-emerald-400/10 to-teal-400/10 blur-3xl animate-pulse delay-500"></div>
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="text-center">
+      <div class="spinner mx-auto mb-4" style="width:32px;height:32px;border-width:3px;"></div>
+      <p class="text-white font-medium">Loading...</p>
+    </div>
   </div>
 
-  <div class="max-w-7xl mx-auto p-4 md:p-8 relative z-10">
+  <div id="toast" class="notification" role="status" aria-live="polite"></div>
+  
+  <div class="max-w-7xl mx-auto p-4 md:p-8 relative">
     <!-- Enhanced Header -->
     <header class="text-center mb-12 fade-in">
       <div class="float">
-        <div class="inline-flex items-center gap-4 mb-6">
-          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-2xl">
-            <i class="fas fa-graduation-cap text-2xl text-white"></i>
-          </div>
-          <h1 class="text-5xl md:text-7xl font-display font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">
-            Attari
-          </h1>
-        </div>
-        <div class="w-32 h-1.5 gradient-animated mx-auto rounded-full shadow-lg"></div>
-        <p class="mt-6 text-xl text-slate-600 dark:text-slate-400 font-medium">
-          Beautiful, intelligent progress tracking for your Islamic studies class
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600 mb-6">
+          Attari Class Tracker
+        </h1>
+        <div class="w-32 h-2 gradient-animated mx-auto mb-6 rounded-full"></div>
+        <p class="text-xl text-slate-600 dark:text-slate-400 mb-4 max-w-2xl mx-auto leading-relaxed">
+          Beautiful, intelligent progress tracking for Islamic education
         </p>
-        <div class="mt-4 inline-flex items-center gap-3 px-6 py-3 rounded-2xl glass card-enhanced status-indicator">
-          <div class="flex items-center gap-2">
-            <span class="w-3 h-3 rounded-full bg-amber-400 pulse-slow" id="dot"></span>
-            <span id="whoami" class="font-semibold">Not signed in</span>
-          </div>
-          <div class="w-px h-4 bg-slate-300 dark:bg-slate-600"></div>
-          <span id="todayDisplay" class="text-sm font-medium"></span>
+        <div class="inline-flex items-center gap-3 px-6 py-3 rounded-2xl glass shadow-lg">
+          <span class="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-green-500 pulse" id="statusDot"></span>
+          <span id="whoami" class="font-medium">Connecting...</span>
+          <span class="text-slate-400">•</span>
+          <span id="todayDisplay" class="text-sm"></span>
         </div>
       </div>
     </header>
 
     <!-- Enhanced AUTH GATE -->
-    <div id="authGate" class="max-w-md mx-auto fade-in">
-      <div class="card-enhanced rounded-3xl shadow-2xl">
-        <div class="p-8 border-b border-slate-200/50 dark:border-slate-700/50">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                <i class="fas fa-sign-in-alt text-white"></i>
-              </div>
-              <h2 class="text-2xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">
-                Welcome Back
-              </h2>
+    <div id="authGate" class="max-w-md mx-auto slide-up">
+      <div class="card glass rounded-3xl shadow-2xl border border-white/30 dark:border-slate-700/30 overflow-hidden">
+        <div class="p-8 border-b border-white/20 dark:border-slate-700/30">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+              </svg>
             </div>
-            <button id="showSignup" class="text-sm text-emerald-600 hover:text-emerald-700 font-semibold transition-colors">
-              Create account
+            <h2 id="authTitle" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">Welcome Back</h2>
+            <p class="text-slate-600 dark:text-slate-400 mt-2">Sign in to continue your journey</p>
+          </div>
+          
+          <div class="flex bg-slate-100 dark:bg-slate-800 rounded-2xl p-1 mb-6">
+            <button id="showSigninTab" class="flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all duration-200 bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm">
+              Sign In
+            </button>
+            <button id="showSignupTab" class="flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-400">
+              Sign Up
             </button>
           </div>
-          <p class="mt-2 text-slate-600 dark:text-slate-400 text-sm">
-            Sign in to manage your class progress
-          </p>
         </div>
         
         <form id="signinForm" class="p-8 space-y-6">
           <div class="space-y-4">
-            <div class="relative">
-              <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-              <input id="siEmail" type="email" placeholder="Enter your email" 
-                class="form-input w-full pl-12 pr-4 py-4 rounded-2xl focus-ring" required />
+            <div>
+              <input id="siEmail" type="email" placeholder="Email address" 
+                     class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 text-base focus:border-emerald-500 focus:ring-0 placeholder-slate-400" 
+                     required />
             </div>
-            <div class="relative">
-              <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-              <input id="siPass" type="password" placeholder="Enter your password" 
-                class="form-input w-full pl-12 pr-4 py-4 rounded-2xl focus-ring" required />
+            <div>
+              <input id="siPass" type="password" placeholder="Password" 
+                     class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 text-base focus:border-emerald-500 focus:ring-0 placeholder-slate-400" 
+                     required />
             </div>
           </div>
-          <button class="btn-primary w-full px-6 py-4 rounded-2xl text-white font-bold text-lg gpu-accelerated">
-            <i class="fas fa-sign-in-alt mr-2"></i>
-            Sign In
+          
+          <button id="signinBtn" type="submit" class="btn-primary w-full px-6 py-4 rounded-2xl text-white font-bold text-lg shadow-lg">
+            <span id="signinText">Sign In</span>
+            <div id="signinSpinner" class="spinner hidden inline-block ml-2"></div>
           </button>
-          <p id="siMsg" class="text-sm text-center"></p>
+          
+          <p id="siMsg" class="text-sm text-center text-red-500 dark:text-red-400 min-h-[20px]"></p>
         </form>
         
         <form id="signupForm" class="hidden p-8 space-y-6">
-          <div class="text-center mb-4">
-            <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-3">
-              <i class="fas fa-user-plus text-2xl text-white"></i>
-            </div>
-            <h3 class="text-lg font-semibold text-slate-700 dark:text-slate-300">Create Teacher Account</h3>
-            <p class="text-sm text-slate-500">Join our community of educators</p>
+          <div class="text-center text-slate-600 dark:text-slate-400 mb-6">
+            Create your teacher account to get started
           </div>
+          
           <div class="space-y-4">
-            <div class="relative">
-              <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-              <input id="suEmail" type="email" placeholder="Enter your email" 
-                class="form-input w-full pl-12 pr-4 py-4 rounded-2xl focus-ring" required />
+            <div>
+              <input id="suEmail" type="email" placeholder="Email address" 
+                     class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 text-base focus:border-emerald-500 focus:ring-0 placeholder-slate-400" 
+                     required />
             </div>
-            <div class="relative">
-              <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-              <input id="suPass" type="password" placeholder="Create a password (min 6 characters)" 
-                class="form-input w-full pl-12 pr-4 py-4 rounded-2xl focus-ring" minlength="6" required />
+            <div>
+              <input id="suPass" type="password" placeholder="Password (minimum 6 characters)" minlength="6"
+                     class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 text-base focus:border-emerald-500 focus:ring-0 placeholder-slate-400" 
+                     required />
             </div>
           </div>
-          <button class="btn-primary w-full px-6 py-4 rounded-2xl text-white font-bold text-lg">
-            <i class="fas fa-user-plus mr-2"></i>
-            Create Account
+          
+          <button id="signupBtn" type="submit" class="btn-primary w-full px-6 py-4 rounded-2xl text-white font-bold text-lg shadow-lg">
+            <span id="signupText">Create Account</span>
+            <div id="signupSpinner" class="spinner hidden inline-block ml-2"></div>
           </button>
-          <p id="suMsg" class="text-sm text-center"></p>
-          <div class="text-center">
-            <button id="showSignin" type="button" class="text-emerald-600 hover:text-emerald-700 font-semibold text-sm transition-colors">
-              <i class="fas fa-arrow-left mr-1"></i>
-              Back to sign in
-            </button>
-          </div>
+          
+          <p id="suMsg" class="text-sm text-center text-red-500 dark:text-red-400 min-h-[20px]"></p>
         </form>
       </div>
     </div>
 
     <!-- Enhanced APP -->
-    <div id="app" class="hidden">
+    <div id="app" class="hidden fade-in">
       <div class="grid grid-cols-1 xl:grid-cols-5 gap-8">
         <!-- Enhanced Form Card -->
-        <section class="xl:col-span-2 fade-in">
-          <div class="card-enhanced rounded-3xl shadow-2xl">
-            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                    <i class="fas fa-plus text-white"></i>
-                  </div>
-                  <h2 class="text-2xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600">
-                    <span id="formTitle">New Entry</span>
-                  </h2>
-                </div>
-                <button id="signOutBtn" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-300/80 dark:hover:bg-slate-600/80 transition-all">
-                  <i class="fas fa-sign-out-alt mr-2"></i>
-                  Sign out
-                </button>
+        <section class="xl:col-span-2 slide-up">
+          <div class="card glass rounded-3xl shadow-2xl border border-white/30 dark:border-slate-700/30">
+            <div class="p-8 border-b border-white/20 dark:border-slate-700/30 flex items-center justify-between">
+              <div>
+                <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600">
+                  <span id="formTitle">✨ New Entry</span>
+                </h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Track student progress</p>
               </div>
+              <button id="signOutBtn" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 hover:bg-slate-300/80 dark:hover:bg-slate-600/80 text-sm font-medium transition-all duration-200">
+                Sign out
+              </button>
             </div>
             
-            <form id="notesForm" class="p-6 md:p-8 space-y-8">
-              <div class="space-y-6">
+            <form id="notesForm" class="p-8 space-y-6">
+              <div>
+                <label class="block text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">👤 Student</label>
+                <select id="student" class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 focus:border-emerald-500 focus:ring-0 text-base" required>
+                  <option value="" disabled selected>Choose a student…</option>
+                </select>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label class="flex items-center gap-2 text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
-                    <i class="fas fa-user-graduate text-purple-500"></i>
-                    Student Name
-                  </label>
-                  <select id="student" class="form-input w-full px-4 py-4 rounded-2xl focus-ring" required>
-                    <option value="" disabled selected>Choose a student…</option>
-                  </select>
+                  <label class="block text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">📖 Quran</label>
+                  <input id="quran" type="text" placeholder="Current progress..." 
+                         class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 focus:border-blue-500 focus:ring-0 text-base placeholder-slate-400" />
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label class="flex items-center gap-2 text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
-                      <i class="fas fa-quran text-blue-500"></i>
-                      Quran Progress
-                    </label>
-                    <input id="quran" type="text" placeholder="e.g., Page 15-20" 
-                      class="form-input w-full px-4 py-4 rounded-2xl focus-ring" />
-                  </div>
-                  
-                  <div>
-                    <label class="flex items-center gap-2 text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
-                      <i class="fas fa-mosque text-purple-500"></i>
-                      Surah Study
-                    </label>
-                    <input id="surah" type="text" placeholder="e.g., Al-Fatiha verses 1-3" 
-                      class="form-input w-full px-4 py-4 rounded-2xl focus-ring" />
-                  </div>
-                  
-                  <div>
-                    <label class="flex items-center gap-2 text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
-                      <i class="fas fa-praying-hands text-indigo-500"></i>
-                      Laws of Salah
-                    </label>
-                    <input id="laws" type="text" placeholder="e.g., Wudu requirements" 
-                      class="form-input w-full px-4 py-4 rounded-2xl focus-ring" />
-                  </div>
-                  
-                  <div>
-                    <label class="flex items-center gap-2 text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
-                      <i class="fas fa-moon text-pink-500"></i>
-                      Qamar Studies
-                    </label>
-                    <input id="qamar" type="text" placeholder="e.g., Chapter 2 exercises" 
-                      class="form-input w-full px-4 py-4 rounded-2xl focus-ring" />
-                  </div>
-                </div>
-                
                 <div>
-                  <label class="flex items-center gap-2 text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
-                    <i class="fas fa-sticky-note text-teal-500"></i>
-                    Additional Notes
-                  </label>
-                  <textarea id="anything" rows="4" placeholder="Add any additional observations, achievements, or areas for improvement..." 
-                    class="form-input w-full px-4 py-4 rounded-2xl focus-ring resize-none"></textarea>
+                  <label class="block text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">🕌 Surah</label>
+                  <input id="surah" type="text" placeholder="Surah name/progress..." 
+                         class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 focus:border-purple-500 focus:ring-0 text-base placeholder-slate-400" />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">🤲 Laws of Salah</label>
+                  <input id="laws" type="text" placeholder="Current topic..." 
+                         class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 focus:border-indigo-500 focus:ring-0 text-base placeholder-slate-400" />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">🌙 Qamar</label>
+                  <input id="qamar" type="text" placeholder="Progress notes..." 
+                         class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 focus:border-pink-500 focus:ring-0 text-base placeholder-slate-400" />
                 </div>
               </div>
               
-              <div class="flex flex-col sm:flex-row gap-4">
-                <button id="saveBtn" type="submit" 
-                  class="btn-primary flex-1 px-6 py-4 rounded-2xl text-white font-bold text-lg inline-flex items-center justify-center gap-3 gpu-accelerated">
-                  <span id="saveText">
-                    <i class="fas fa-save mr-2"></i>
-                    Save Entry
-                  </span>
+              <div>
+                <label class="block text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">💭 Additional Notes</label>
+                <textarea id="anything" rows="4" placeholder="Any additional observations or notes..." 
+                          class="input-field w-full rounded-2xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-6 py-4 focus:border-teal-500 focus:ring-0 text-base placeholder-slate-400 resize-none"></textarea>
+              </div>
+              
+              <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                <button id="saveBtn" type="submit" class="btn-primary flex-1 px-8 py-4 rounded-2xl text-white font-bold text-lg inline-flex items-center justify-center gap-3 shadow-lg">
+                  <span id="saveText">💾 Save Entry</span>
                   <div id="saveSpinner" class="spinner hidden"></div>
                 </button>
-                <button id="cancelEditBtn" type="button" 
-                  class="hidden px-6 py-4 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-semibold border border-slate-300/40 dark:border-slate-600/40 hover:bg-slate-300/80 dark:hover:bg-slate-600/80 transition-all">
-                  <i class="fas fa-times mr-2"></i>
-                  Cancel Edit
+                <button id="cancelEditBtn" type="button" class="hidden px-8 py-4 rounded-2xl bg-slate-300/80 dark:bg-slate-700/80 hover:bg-slate-400/80 dark:hover:bg-slate-600/80 text-slate-700 dark:text-slate-200 font-bold text-lg transition-all duration-200">
+                  ✖️ Cancel
                 </button>
               </div>
-              <div id="saveStatus" class="text-center text-sm font-medium"></div>
+              
+              <div id="saveStatus" class="text-center text-sm font-medium min-h-[20px]"></div>
             </form>
           </div>
         </section>
 
         <!-- Enhanced History Card -->
-        <section class="xl:col-span-3 fade-in">
-          <div class="card-enhanced rounded-3xl shadow-2xl">
-            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50">
-              <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+        <section class="xl:col-span-3 slide-up" style="animation-delay: 0.2s;">
+          <div class="card glass rounded-3xl shadow-2xl border border-white/30 dark:border-slate-700/30">
+            <div class="p-8 border-b border-white/20 dark:border-slate-700/30">
+              <div class="flex flex-col lg:flex-row gap-6 lg:items-center lg:justify-between">
                 <div>
-                  <div class="flex items-center gap-3 mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                      <i class="fas fa-chart-line text-white"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                      Progress History
-                    </h2>
-                  </div>
-                  <p class="text-sm text-slate-600 dark:text-slate-400">
-                    Real-time tracking of student progress and achievements
-                  </p>
+                  <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-2">
+                    📊 Progress History
+                  </h2>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">Real-time student progress tracking</p>
                 </div>
+                
                 <div class="flex flex-wrap gap-3">
-                  <div class="relative">
-                    <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <select id="filterStudent" class="form-input pl-10 pr-4 py-3 rounded-xl text-sm font-medium min-w-[140px]">
-                      <option value="">All students</option>
-                    </select>
-                  </div>
-                  <div class="relative">
-                    <i class="fas fa-calendar absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input id="filterDate" type="date" class="form-input pl-10 pr-4 py-3 rounded-xl text-sm font-medium" />
-                  </div>
-                  <button id="clearFilters" class="btn-accent px-4 py-3 rounded-xl text-white font-medium text-sm">
-                    <i class="fas fa-refresh mr-2"></i>Clear
+                  <select id="filterStudent" class="rounded-xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500 transition-all duration-200">
+                    <option value="">All students</option>
+                  </select>
+                  <input id="filterDate" type="date" class="rounded-xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500 transition-all duration-200" />
+                  <button id="clearFilters" class="px-4 py-2 rounded-xl bg-slate-300/80 dark:bg-slate-700/80 hover:bg-slate-400/80 dark:hover:bg-slate-600/80 text-slate-700 dark:text-slate-200 font-medium transition-all duration-200">
+                    🔄 Clear
                   </button>
                 </div>
               </div>
@@ -634,144 +465,90 @@
             
             <div class="overflow-hidden">
               <div class="overflow-x-auto custom-scrollbar max-h-96">
-                <div class="table-enhanced">
-                  <table class="min-w-full text-left text-sm">
-                    <thead class="sticky top-0">
-                      <tr>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-calendar-day mr-2 text-slate-500"></i>Date
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-user-graduate mr-2 text-slate-500"></i>Student
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-quran mr-2 text-slate-500"></i>Quran
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-mosque mr-2 text-slate-500"></i>Surah
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-praying-hands mr-2 text-slate-500"></i>Salah
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-moon mr-2 text-slate-500"></i>Qamar
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-sticky-note mr-2 text-slate-500"></i>Notes
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-cog mr-2 text-slate-500"></i>Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
-                  </table>
-                </div>
+                <table class="min-w-full text-left text-sm">
+                  <thead class="sticky top-0 backdrop-blur-md bg-slate-100/90 dark:bg-slate-800/90">
+                    <tr>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">📅 Date</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">👤 Student</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">📖 Quran</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">🕌 Surah</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">🤲 Salah</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">🌙 Qamar</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">💭 Notes</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">⚡ Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
+                </table>
               </div>
               
               <div id="emptyState" class="hidden text-center py-16">
-                <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center mb-4">
-                  <i class="fas fa-clipboard-list text-3xl text-slate-400"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400 mb-2">No entries yet</h3>
-                <p class="text-slate-500 max-w-sm mx-auto">Start tracking student progress by adding your first entry using the form on the left.</p>
+                <div class="text-8xl mb-6 opacity-50">📝</div>
+                <h3 class="text-xl font-semibold text-slate-600 dark:text-slate-400 mb-2">No entries yet</h3>
+                <p class="text-slate-500">Start tracking student progress by adding your first entry above.</p>
               </div>
             </div>
             
-            <div class="p-6 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50">
+            <div class="p-6 flex items-center justify-between border-t border-white/20 dark:border-slate-700/30 bg-slate-50/50 dark:bg-slate-800/30">
               <div id="countInfo" class="text-sm text-slate-600 dark:text-slate-400 font-medium"></div>
-              <button id="reload" class="btn-secondary px-4 py-2 rounded-xl text-white font-medium text-sm">
-                <i class="fas fa-sync-alt mr-2"></i>Refresh
+              <button id="reload" class="btn-secondary px-6 py-2 rounded-xl text-white font-medium shadow-lg">
+                🔄 Refresh
               </button>
             </div>
           </div>
         </section>
 
         <!-- Enhanced Monthly Reports Card -->
-        <section class="xl:col-span-5 fade-in">
-          <div class="card-enhanced rounded-3xl shadow-2xl">
-            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50">
-              <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+        <section class="xl:col-span-5 slide-up" style="animation-delay: 0.4s;">
+          <div class="card glass rounded-3xl shadow-2xl border border-white/30 dark:border-slate-700/30">
+            <div class="p-8 border-b border-white/20 dark:border-slate-700/30">
+              <div class="flex flex-col lg:flex-row gap-6 lg:items-center lg:justify-between">
                 <div>
-                  <div class="flex items-center gap-3 mb-2">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-blue-600 flex items-center justify-center">
-                      <i class="fas fa-file-chart-column text-white"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600">
-                      Monthly Reports
-                    </h2>
-                  </div>
-                  <p class="text-sm text-slate-600 dark:text-slate-400">
-                    Generate comprehensive progress reports and export them in multiple formats
-                  </p>
+                  <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600 mb-2">
+                    🗓️ Monthly Reports
+                  </h2>
+                  <p class="text-sm text-slate-600 dark:text-slate-400">Generate detailed progress reports for export</p>
                 </div>
+                
                 <div class="flex flex-wrap gap-3 items-center">
-                  <div class="relative">
-                    <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <select id="reportStudent" class="form-input pl-10 pr-4 py-3 rounded-xl text-sm font-medium min-w-[160px]">
-                      <option value="" disabled selected>Select student…</option>
-                    </select>
-                  </div>
-                  <div class="relative">
-                    <i class="fas fa-calendar-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input id="reportMonth" type="month" class="form-input pl-10 pr-4 py-3 rounded-xl text-sm font-medium" />
-                  </div>
-                  <div class="relative">
-                    <i class="fas fa-file-export absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <select id="reportFormat" class="form-input pl-10 pr-4 py-3 rounded-xl text-sm font-medium">
-                      <option value="csv">CSV Format</option>
-                      <option value="pdf">PDF Format</option>
-                    </select>
-                  </div>
-                  <button id="reportDownload" type="button" 
-                    class="btn-primary px-6 py-3 rounded-xl text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed gpu-accelerated" 
-                    disabled>
-                    <i class="fas fa-download mr-2"></i>
-                    Download CSV
+                  <select id="reportStudent" class="rounded-xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500 transition-all duration-200">
+                    <option value="" disabled selected>Select a student…</option>
+                  </select>
+                  <input id="reportMonth" type="month" class="rounded-xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500 transition-all duration-200" />
+                  <select id="reportFormat" class="rounded-xl bg-white/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500 transition-all duration-200">
+                    <option value="csv" selected>CSV</option>
+                    <option value="pdf">PDF</option>
+                  </select>
+                  <button id="reportDownload" type="button" class="btn-primary px-6 py-2 rounded-xl text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" disabled>
+                    ⬇️ Download CSV
                   </button>
                 </div>
               </div>
             </div>
             
-            <div class="p-6 md:p-8 space-y-6">
-              <div id="reportInfo" class="text-sm text-slate-600 dark:text-slate-400 bg-slate-100/50 dark:bg-slate-800/50 rounded-xl p-4"></div>
+            <div class="p-8 space-y-6">
+              <div id="reportInfo" class="text-sm text-slate-600 dark:text-slate-400 font-medium"></div>
               
-              <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden">
-                <div class="table-enhanced">
-                  <table class="min-w-full text-left text-sm">
-                    <thead>
-                      <tr>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-calendar-day mr-2 text-slate-500"></i>Date
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-quran mr-2 text-slate-500"></i>Quran
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-mosque mr-2 text-slate-500"></i>Surah
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-praying-hands mr-2 text-slate-500"></i>Salah
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-moon mr-2 text-slate-500"></i>Qamar
-                        </th>
-                        <th class="px-6 py-4 font-semibold">
-                          <i class="fas fa-sticky-note mr-2 text-slate-500"></i>Notes
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody id="reportBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
-                  </table>
-                </div>
+              <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden rounded-2xl border border-slate-200/60 dark:border-slate-700/60">
+                <table class="min-w-full text-left text-sm">
+                  <thead class="bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700">
+                    <tr>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">📅 Date</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">📖 Quran</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">🕌 Surah</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">🤲 Salah</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">🌙 Qamar</th>
+                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">💭 Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
+                </table>
               </div>
               
               <div id="reportEmpty" class="text-center text-slate-500 py-16">
-                <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center mb-4">
-                  <i class="fas fa-chart-bar text-3xl text-slate-400"></i>
-                </div>
-                <h3 class="text-lg font-semibold mb-2">Generate Your First Report</h3>
-                <p id="reportEmptyText" class="max-w-md mx-auto">Select a student and month above to generate a comprehensive progress report that you can export and share.</p>
+                <div class="text-8xl mb-6 opacity-50">📂</div>
+                <h3 class="text-xl font-semibold mb-2">Ready to Generate Reports</h3>
+                <p id="reportEmptyText" class="text-slate-600 dark:text-slate-400">Select a student and month to view their progress report.</p>
               </div>
             </div>
           </div>
@@ -779,303 +556,559 @@
       </div>
 
       <!-- Enhanced Footer -->
-      <footer class="mt-16 text-center fade-in">
-        <div class="card-enhanced rounded-2xl px-8 py-6 inline-block">
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-              <i class="fas fa-shield-alt text-emerald-500"></i>
-              <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Secure Data Storage</span>
-            </div>
-            <div class="w-px h-4 bg-slate-300 dark:bg-slate-600"></div>
-            <span class="text-xs text-slate-500 font-mono">classes/Attari/notes</span>
-            <div class="w-px h-4 bg-slate-300 dark:bg-slate-600"></div>
-            <span class="text-xs text-slate-500">Unique per date + student</span>
-          </div>
+      <footer class="mt-16 text-center slide-up" style="animation-delay: 0.6s;">
+        <div class="glass rounded-2xl px-8 py-6 inline-block shadow-lg">
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">
+            🔒 Secure Data Storage: <span class="font-mono font-semibold text-emerald-600">classes/Attari/notes</span>
+          </p>
+          <p class="text-xs text-slate-500">Unique entries per date and student • Real-time synchronization</p>
         </div>
       </footer>
     </div>
   </div>
 
-  <!-- Firebase SDKs and JavaScript (keeping the same functionality) -->
+  <!-- Firebase SDKs & Enhanced JavaScript -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
     import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, orderBy, where, limit as qLimit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-    const firebaseConfig = { apiKey:"AIzaSyCTGIoNNey_0GwRxg_85Xv-jEQtQDjzehw", authDomain:"attari-579d2.firebaseapp.com", projectId:"attari-579d2", storageBucket:"attari-579d2.firebasestorage.app", messagingSenderId:"765966619098", appId:"1:765966619098:web:9ab852c4881426472b70e3" };
+    const firebaseConfig = { 
+      apiKey:"AIzaSyCTGIoNNey_0GwRxg_85Xv-jEQtQDjzehw", 
+      authDomain:"attari-579d2.firebaseapp.com", 
+      projectId:"attari-579d2", 
+      storageBucket:"attari-579d2.firebasestorage.app", 
+      messagingSenderId:"765966619098", 
+      appId:"1:765966619098:web:9ab852c4881426472b70e3" 
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // UI refs
+    // Enhanced UI refs
     const authGate = document.getElementById('authGate');
     const appShell = document.getElementById('app');
-    const authStatus = document.getElementById('authStatus');
-    const dot = document.getElementById('dot');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const statusDot = document.getElementById('statusDot');
     const whoami = document.getElementById('whoami');
     const signOutBtn = document.getElementById('signOutBtn');
     const toast = document.getElementById('toast');
 
-    // Forms
+    // Enhanced forms
     const signinForm = document.getElementById('signinForm');
     const signupForm = document.getElementById('signupForm');
-    document.getElementById('showSignup').addEventListener('click',()=>{signinForm.classList.add('hidden');signupForm.classList.remove('hidden')});
-    document.getElementById('showSignin').addEventListener('click',()=>{signupForm.classList.add('hidden');signinForm.classList.remove('hidden')});
+    const showSigninTab = document.getElementById('showSigninTab');
+    const showSignupTab = document.getElementById('showSignupTab');
+    const authTitle = document.getElementById('authTitle');
+    const signinBtn = document.getElementById('signinBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const signinText = document.getElementById('signinText');
+    const signupText = document.getElementById('signupText');
+    const signinSpinner = document.getElementById('signinSpinner');
+    const signupSpinner = document.getElementById('signupSpinner');
+    const siMsg = document.getElementById('siMsg');
+    const suMsg = document.getElementById('suMsg');
 
-    signinForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=siEmail.value.trim();const pass=siPass.value;siMsg.textContent='';try{await signInWithEmailAndPassword(auth,email,pass);}catch(err){siMsg.textContent=err.message;showToast(err.message,'error')}});
-    signupForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=suEmail.value.trim();const pass=suPass.value;suMsg.textContent='';try{await createUserWithEmailAndPassword(auth,email,pass);suMsg.textContent='Account created. Signed in.';showToast('Welcome to Attari Class Tracker!','success')}catch(err){suMsg.textContent=err.message;showToast(err.message,'error')}});
-    signOutBtn?.addEventListener('click', ()=>signOut(auth));
+    // Show loading initially
+    showLoading(true);
 
-    // Students and elements
+    // Enhanced tab switching
+    showSigninTab?.addEventListener('click', () => {
+      signupForm.classList.add('hidden');
+      signinForm.classList.remove('hidden');
+      showSigninTab.classList.add('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+      showSigninTab.classList.remove('text-slate-600', 'dark:text-slate-400');
+      showSignupTab.classList.remove('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+      showSignupTab.classList.add('text-slate-600', 'dark:text-slate-400');
+      authTitle.textContent = 'Welcome Back';
+      clearMessages();
+    });
+
+    showSignupTab?.addEventListener('click', () => {
+      signinForm.classList.add('hidden');
+      signupForm.classList.remove('hidden');
+      showSignupTab.classList.add('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+      showSignupTab.classList.remove('text-slate-600', 'dark:text-slate-400');
+      showSigninTab.classList.remove('bg-white', 'dark:bg-slate-700', 'text-slate-900', 'dark:text-white', 'shadow-sm');
+      showSigninTab.classList.add('text-slate-600', 'dark:text-slate-400');
+      authTitle.textContent = 'Create Account';
+      clearMessages();
+    });
+
+    function clearMessages() {
+      siMsg.textContent = '';
+      suMsg.textContent = '';
+    }
+
+    function showLoading(show) {
+      if (show) {
+        loadingOverlay.classList.add('show');
+      } else {
+        loadingOverlay.classList.remove('show');
+      }
+    }
+
+    function setButtonLoading(button, spinner, textEl, loading, loadingText, normalText) {
+      if (loading) {
+        button.disabled = true;
+        spinner.classList.remove('hidden');
+        textEl.textContent = loadingText;
+      } else {
+        button.disabled = false;
+        spinner.classList.add('hidden');
+        textEl.textContent = normalText;
+      }
+    }
+
+    // Enhanced auth handlers
+    signinForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('siEmail').value.trim();
+      const pass = document.getElementById('siPass').value;
+      
+      clearMessages();
+      setButtonLoading(signinBtn, signinSpinner, signinText, true, 'Signing in...', 'Sign In');
+      
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        showToast('Welcome back! 🎉', 'success');
+      } catch (err) {
+        console.error('Sign in error:', err);
+        siMsg.textContent = err.message;
+        showToast(err.message, 'error');
+      } finally {
+        setButtonLoading(signinBtn, signinSpinner, signinText, false, 'Signing in...', 'Sign In');
+      }
+    });
+
+    signupForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('suEmail').value.trim();
+      const pass = document.getElementById('suPass').value;
+      
+      clearMessages();
+      setButtonLoading(signupBtn, signupSpinner, signupText, true, 'Creating account...', 'Create Account');
+      
+      try {
+        await createUserWithEmailAndPassword(auth, email, pass);
+        suMsg.textContent = 'Account created successfully!';
+        suMsg.className = 'text-sm text-center text-emerald-600 dark:text-emerald-400 min-h-[20px]';
+        showToast('Account created! Welcome! 🎉', 'success');
+      } catch (err) {
+        console.error('Sign up error:', err);
+        suMsg.textContent = err.message;
+        suMsg.className = 'text-sm text-center text-red-500 dark:text-red-400 min-h-[20px]';
+        showToast(err.message, 'error');
+      } finally {
+        setButtonLoading(signupBtn, signupSpinner, signupText, false, 'Creating account...', 'Create Account');
+      }
+    });
+
+    signOutBtn?.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        showToast('Signed out successfully', 'success');
+      } catch (err) {
+        showToast('Error signing out', 'error');
+      }
+    });
+
+    // Students and other existing functionality
     const students=["Siyaam Azar","Hussain Ali","Hamza Razzaq","Subhan Hussain","Milad Raza","Murtaza Arfan","Zeeshan Hussain","Mohammed Subhan Ramzan","Onees Usman","Mohammed Hassan Hussain","Ali Hussein"];
     const MONTH_LABELS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const inputs={student:document.getElementById('student'),quran:document.getElementById('quran'),surah:document.getElementById('surah'),laws:document.getElementById('laws'),qamar:document.getElementById('qamar'),anything:document.getElementById('anything')};
-    const filterStudent=document.getElementById('filterStudent');
-    const filterDate=document.getElementById('filterDate');
-    const historyBody=document.getElementById('historyBody');
-    const emptyState=document.getElementById('emptyState');
-    const countInfo=document.getElementById('countInfo');
-    const formTitle=document.getElementById('formTitle');
-    const cancelEditBtn=document.getElementById('cancelEditBtn');
-    const saveBtn=document.getElementById('saveBtn');
-    const saveText=document.getElementById('saveText');
-    const saveSpinner=document.getElementById('saveSpinner');
-    const saveStatus=document.getElementById('saveStatus');
-    const reportStudent=document.getElementById('reportStudent');
-    const reportMonth=document.getElementById('reportMonth');
-    const reportFormat=document.getElementById('reportFormat');
-    const reportBody=document.getElementById('reportBody');
-    const reportTableWrapper=document.getElementById('reportTableWrapper');
-    const reportEmpty=document.getElementById('reportEmpty');
-    const reportEmptyText=document.getElementById('reportEmptyText');
-    const reportInfo=document.getElementById('reportInfo');
-    const reportDownload=document.getElementById('reportDownload');
+    
+    const inputs = {
+      student: document.getElementById('student'),
+      quran: document.getElementById('quran'),
+      surah: document.getElementById('surah'),
+      laws: document.getElementById('laws'),
+      qamar: document.getElementById('qamar'),
+      anything: document.getElementById('anything')
+    };
+    
+    const filterStudent = document.getElementById('filterStudent');
+    const filterDate = document.getElementById('filterDate');
+    const historyBody = document.getElementById('historyBody');
+    const emptyState = document.getElementById('emptyState');
+    const countInfo = document.getElementById('countInfo');
+    const formTitle = document.getElementById('formTitle');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const saveText = document.getElementById('saveText');
+    const saveSpinner = document.getElementById('saveSpinner');
+    const saveStatus = document.getElementById('saveStatus');
+    const reportStudent = document.getElementById('reportStudent');
+    const reportMonth = document.getElementById('reportMonth');
+    const reportFormat = document.getElementById('reportFormat');
+    const reportBody = document.getElementById('reportBody');
+    const reportTableWrapper = document.getElementById('reportTableWrapper');
+    const reportEmpty = document.getElementById('reportEmpty');
+    const reportEmptyText = document.getElementById('reportEmptyText');
+    const reportInfo = document.getElementById('reportInfo');
+    const reportDownload = document.getElementById('reportDownload');
 
     // Populate selects
-    function populateStudents(){
-      inputs.student.innerHTML='<option value="" disabled selected>Choose a student…</option>';
-      filterStudent.innerHTML='<option value="">All students</option>';
-      reportStudent.innerHTML='<option value="" disabled selected>Select a student…</option>';
-      students.forEach(n=>{
-        const o=document.createElement('option');o.value=n;o.textContent=n;inputs.student.appendChild(o);
-        const o2=document.createElement('option');o2.value=o.value;o2.textContent=n;filterStudent.appendChild(o2);
-        const o3=document.createElement('option');o3.value=o.value;o3.textContent=n;reportStudent.appendChild(o3);
+    function populateStudents() {
+      inputs.student.innerHTML = '<option value="" disabled selected>Choose a student…</option>';
+      filterStudent.innerHTML = '<option value="">All students</option>';
+      reportStudent.innerHTML = '<option value="" disabled selected>Select a student…</option>';
+      
+      students.forEach(name => {
+        // Main form select
+        const option1 = document.createElement('option');
+        option1.value = name;
+        option1.textContent = name;
+        inputs.student.appendChild(option1);
+        
+        // Filter select
+        const option2 = document.createElement('option');
+        option2.value = name;
+        option2.textContent = name;
+        filterStudent.appendChild(option2);
+        
+        // Report select
+        const option3 = document.createElement('option');
+        option3.value = name;
+        option3.textContent = name;
+        reportStudent.appendChild(option3);
       });
     }
+    
     populateStudents();
 
-    const now=new Date();
-    const todayKey=toLocalISODate(now);
-    document.getElementById('todayDisplay').textContent=formatDisplayDate(todayKey);
-    if(reportMonth)reportMonth.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    const now = new Date();
+    const todayKey = toLocalISODate(now);
+    document.getElementById('todayDisplay').textContent = formatDisplayDate(todayKey);
+    if (reportMonth) reportMonth.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-    const CLASS_ID='Attari';
-    const notesCol=collection(doc(db,'classes',CLASS_ID),'notes');
+    const CLASS_ID = 'Attari';
+    const notesCol = collection(doc(db, 'classes', CLASS_ID), 'notes');
 
-    const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-    const noteId=(date,student)=>`${date}_${slug(student)}`;
+    const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const noteId = (date, student) => `${date}_${slug(student)}`;
 
     // Edit mode
-    let editingKey=null;
-    function setEditMode(n=null){
-      if(n){
-        editingKey=n.id;
-        formTitle.innerHTML='<i class="fas fa-edit mr-2"></i>Edit Entry';
-        saveText.innerHTML='<i class="fas fa-check mr-2"></i>Update Entry';
+    let editingKey = null;
+    function setEditMode(note = null) {
+      if (note) {
+        editingKey = note.id;
+        formTitle.textContent = '✏️ Edit Entry';
+        saveText.textContent = '✅ Update Entry';
         cancelEditBtn.classList.remove('hidden');
-        inputs.student.value=n.student;
-        inputs.quran.value=n.quran||'';
-        inputs.surah.value=n.surah||'';
-        inputs.laws.value=n.lawsOfSalah||'';
-        inputs.qamar.value=n.qamar||'';
-        inputs.anything.value=n.anythingElse||n.other||'';
+        inputs.student.value = note.student;
+        inputs.quran.value = note.quran || '';
+        inputs.surah.value = note.surah || '';
+        inputs.laws.value = note.lawsOfSalah || '';
+        inputs.qamar.value = note.qamar || '';
+        inputs.anything.value = note.anythingElse || note.other || '';
       } else {
-        editingKey=null;
-        formTitle.innerHTML='<i class="fas fa-plus mr-2"></i>New Entry';
-        saveText.innerHTML='<i class="fas fa-save mr-2"></i>Save Entry';
+        editingKey = null;
+        formTitle.textContent = '✨ New Entry';
+        saveText.textContent = '💾 Save Entry';
         cancelEditBtn.classList.add('hidden');
         document.getElementById('notesForm').reset();
       }
     }
-    cancelEditBtn.addEventListener('click',()=>setEditMode(null));
+    
+    cancelEditBtn?.addEventListener('click', () => setEditMode(null));
 
-    // Save/Update
-    document.getElementById('notesForm').addEventListener('submit',async(e)=>{
+    // Enhanced save/update with better loading states
+    document.getElementById('notesForm')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const student=inputs.student.value;
-      if(!student){saveStatus.textContent='Please choose a student';return}
-      saveSpinner.classList.remove('hidden');
-      const defaultDate=toLocalISODate(new Date());
-      const entryDate=editingKey?extractDateFromId(editingKey)||defaultDate:defaultDate;
-      const id=editingKey||noteId(entryDate,student);
-      const ref=doc(notesCol,id);
-      const payload={
-        id,
-        date:entryDate,
-        student,
-        quran:inputs.quran.value.trim(),
-        surah:inputs.surah.value.trim(),
-        lawsOfSalah:inputs.laws.value.trim(),
-        qamar:inputs.qamar.value.trim(),
-        anythingElse:inputs.anything.value.trim(),
-        updatedAt:serverTimestamp(),
-        ownerUid:auth.currentUser?.uid||null
-      };
-      const snap=await getDoc(ref);
-      if(!snap.exists())payload.createdAt=serverTimestamp();
-      await setDoc(ref,payload,{merge:true});
-      saveSpinner.classList.add('hidden');
-      showToast(editingKey?'Entry updated successfully!':'Entry saved successfully!','success');
-      saveStatus.textContent=editingKey?'✅ Updated!':'✅ Saved!';
-      setTimeout(()=>saveStatus.textContent='',2000);
-      setEditMode(null);
+      const student = inputs.student.value;
+      if (!student) {
+        saveStatus.textContent = 'Please choose a student';
+        saveStatus.className = 'text-center text-sm font-medium text-red-500';
+        return;
+      }
+      
+      setButtonLoading(saveBtn, saveSpinner, saveText, true, 
+        editingKey ? 'Updating...' : 'Saving...', 
+        editingKey ? '✅ Update Entry' : '💾 Save Entry'
+      );
+      
+      try {
+        const defaultDate = toLocalISODate(new Date());
+        const entryDate = editingKey ? extractDateFromId(editingKey) || defaultDate : defaultDate;
+        const id = editingKey || noteId(entryDate, student);
+        const ref = doc(notesCol, id);
+        
+        const payload = {
+          id,
+          date: entryDate,
+          student,
+          quran: inputs.quran.value.trim(),
+          surah: inputs.surah.value.trim(),
+          lawsOfSalah: inputs.laws.value.trim(),
+          qamar: inputs.qamar.value.trim(),
+          anythingElse: inputs.anything.value.trim(),
+          updatedAt: serverTimestamp(),
+          ownerUid: auth.currentUser?.uid || null
+        };
+        
+        const snap = await getDoc(ref);
+        if (!snap.exists()) payload.createdAt = serverTimestamp();
+        
+        await setDoc(ref, payload, { merge: true });
+        
+        showToast(editingKey ? 'Entry updated successfully! ✅' : 'Entry saved successfully! ✅', 'success');
+        saveStatus.textContent = editingKey ? 'Updated ✅' : 'Saved ✅';
+        saveStatus.className = 'text-center text-sm font-medium text-emerald-600';
+        setTimeout(() => {
+          saveStatus.textContent = '';
+          saveStatus.className = 'text-center text-sm font-medium min-h-[20px]';
+        }, 2000);
+        setEditMode(null);
+      } catch (err) {
+        console.error('Save error:', err);
+        showToast('Failed to save entry. Please try again.', 'error');
+        saveStatus.textContent = 'Save failed ❌';
+        saveStatus.className = 'text-center text-sm font-medium text-red-500';
+      } finally {
+        setButtonLoading(saveBtn, saveSpinner, saveText, false, 
+          editingKey ? 'Updating...' : 'Saving...', 
+          editingKey ? '✅ Update Entry' : '💾 Save Entry'
+        );
+      }
     });
 
     // History stream & filters
-    let unsub=null, historyRows=[], currentReportRows=[];
-    let reportRequestToken=0;
-    let jsPdfModulePromise=null;
+    let unsub = null, historyRows = [], currentReportRows = [];
+    let reportRequestToken = 0;
+    let jsPdfModulePromise = null;
 
-    function startHistoryStream(){
-      if(unsub)unsub();
-      const q=query(notesCol,orderBy('date','desc'),qLimit(200));
-      unsub=onSnapshot(q,(snap)=>{
-        historyRows=snap.docs.map(d=>({id:d.id,...d.data()}));
+    function startHistoryStream() {
+      if (unsub) unsub();
+      const q = query(notesCol, orderBy('date', 'desc'), qLimit(200));
+      unsub = onSnapshot(q, (snap) => {
+        historyRows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         applyFilters();
         renderMonthlyReport();
+      }, (error) => {
+        console.error('History stream error:', error);
+        showToast('Failed to load history. Please refresh.', 'error');
       });
     }
 
-    function applyFilters(){
-      const s=filterStudent.value;
-      const d=filterDate.value;
-      let list=historyRows;
-      if(s)list=list.filter(r=>r.student===s);
-      if(d)list=list.filter(r=>r.date===d);
-      renderHistory(list);
-      renderMonthlyReport();
+    function applyFilters() {
+      const studentFilter = filterStudent.value;
+      const dateFilter = filterDate.value;
+      let filteredList = historyRows;
+      
+      if (studentFilter) filteredList = filteredList.filter(r => r.student === studentFilter);
+      if (dateFilter) filteredList = filteredList.filter(r => r.date === dateFilter);
+      
+      renderHistory(filteredList);
     }
-    filterStudent.addEventListener('change',applyFilters);
-    filterDate.addEventListener('change',applyFilters);
-    document.getElementById('clearFilters').addEventListener('click',()=>{filterStudent.value='';filterDate.value='';applyFilters();});
-    document.getElementById('reload').addEventListener('click',applyFilters);
+    
+    filterStudent?.addEventListener('change', applyFilters);
+    filterDate?.addEventListener('change', applyFilters);
+    document.getElementById('clearFilters')?.addEventListener('click', () => {
+      filterStudent.value = '';
+      filterDate.value = '';
+      applyFilters();
+    });
+    document.getElementById('reload')?.addEventListener('click', applyFilters);
 
-    async function fetchMonthlyRows(student,range){
-      const baseConstraints=[where('date','>=',range.start),where('date','<=',range.end),orderBy('date','asc')];
-      const mapSnap=snap=>snap.docs.map(docSnap=>({id:docSnap.id,...docSnap.data()}));
-      if(!student){
-        const snap=await getDocs(query(notesCol,...baseConstraints));
+    async function fetchMonthlyRows(student, range) {
+      const baseConstraints = [
+        where('date', '>=', range.start),
+        where('date', '<=', range.end),
+        orderBy('date', 'asc')
+      ];
+      
+      const mapSnap = snap => snap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+      
+      if (!student) {
+        const snap = await getDocs(query(notesCol, ...baseConstraints));
         return mapSnap(snap);
       }
-      try{
-        const snap=await getDocs(query(notesCol,where('student','==',student),...baseConstraints));
+      
+      try {
+        const snap = await getDocs(query(notesCol, where('student', '==', student), ...baseConstraints));
         return mapSnap(snap);
-      }catch(err){
-        // fallback if composite index is missing
-        if(err?.code==='failed-precondition'||/index/i.test(err?.message||'')){
-          const snap=await getDocs(query(notesCol,...baseConstraints));
-          return mapSnap(snap).filter(r=>r.student===student);
+      } catch (err) {
+        // Fallback if composite index is missing
+        if (err?.code === 'failed-precondition' || /index/i.test(err?.message || '')) {
+          const snap = await getDocs(query(notesCol, ...baseConstraints));
+          return mapSnap(snap).filter(r => r.student === student);
         }
         throw err;
       }
     }
 
-    reportStudent?.addEventListener('change',renderMonthlyReport);
-    reportMonth?.addEventListener('change',renderMonthlyReport);
-    reportFormat?.addEventListener('change',updateReportDownloadLabel);
-    reportDownload?.addEventListener('click',async()=>{
-      if(reportDownload.disabled)return;
+    reportStudent?.addEventListener('change', renderMonthlyReport);
+    reportMonth?.addEventListener('change', renderMonthlyReport);
+    reportFormat?.addEventListener('change', updateReportDownloadLabel);
+    reportDownload?.addEventListener('click', async () => {
+      if (reportDownload.disabled) return;
       await downloadMonthlyReport();
     });
+
     renderMonthlyReport();
     updateReportDownloadLabel();
 
-    function renderHistory(rows){
-      historyBody.innerHTML='';
-      if(!rows.length){
+    function renderHistory(rows) {
+      historyBody.innerHTML = '';
+      
+      if (!rows.length) {
         emptyState.classList.remove('hidden');
-        countInfo.textContent='0 entries found';
+        countInfo.textContent = '0 notes';
         return;
       }
+      
       emptyState.classList.add('hidden');
-      rows.forEach(r=>{
-        const tr=document.createElement('tr');
-        tr.className='hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-blue-50/50 dark:hover:from-emerald-900/20 dark:hover:to-blue-900/20 transition-all duration-200';
-        tr.innerHTML=`
-          <td class='px-6 py-4 font-semibold text-slate-700 dark:text-slate-300'>${esc(formatDisplayDate(r.date))}</td>
-          <td class='px-6 py-4'>
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-xs font-bold">
-                ${(r.student||'').charAt(0).toUpperCase()}
-              </div>
-              <span class="font-medium">${esc(r.student||'')}</span>
-            </div>
-          </td>
-          <td class='px-6 py-4'><span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-lg text-sm">${esc(r.quran||'—')}</span></td>
-          <td class='px-6 py-4'><span class="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 rounded-lg text-sm">${esc(r.surah||'—')}</span></td>
-          <td class='px-6 py-4'><span class="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200 rounded-lg text-sm">${esc(r.lawsOfSalah||'—')}</span></td>
-          <td class='px-6 py-4'><span class="px-2 py-1 bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-200 rounded-lg text-sm">${esc(r.qamar||'—')}</span></td>
-          <td class='px-6 py-4 max-w-xs'><span class="text-sm text-slate-600 dark:text-slate-400 truncate block">${esc(r.anythingElse||'—')}</span></td>
+      
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = 'table-row';
+        tr.innerHTML = `
+          <td class='px-6 py-4 font-medium text-slate-900 dark:text-slate-100'>${esc(formatDisplayDate(row.date))}</td>
+          <td class='px-6 py-4 text-slate-700 dark:text-slate-300'>${esc(row.student || '')}</td>
+          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(row.quran || '')}</td>
+          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(row.surah || '')}</td>
+          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(row.lawsOfSalah || '')}</td>
+          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(row.qamar || '')}</td>
+          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(row.anythingElse || '')}</td>
           <td class='px-6 py-4 whitespace-nowrap'>
-            <div class="flex gap-2">
-              <button class='px-3 py-1.5 text-xs rounded-lg bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-800/40 text-amber-800 dark:text-amber-200 font-medium transition-colors' data-action='edit' data-id='${r.id}'>
-                <i class="fas fa-edit mr-1"></i>Edit
-              </button>
-              <button class='px-3 py-1.5 text-xs rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-800/40 text-red-800 dark:text-red-200 font-medium transition-colors' data-action='delete' data-id='${r.id}'>
-                <i class="fas fa-trash mr-1"></i>Delete
-              </button>
-            </div>
+            <button class='px-3 py-1.5 text-xs rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 mr-2 transition-all duration-200 font-medium' data-action='edit' data-id='${row.id}'>Edit</button>
+            <button class='px-3 py-1.5 text-xs rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 transition-all duration-200 font-medium' data-action='delete' data-id='${row.id}'>Delete</button>
           </td>`;
         historyBody.appendChild(tr);
       });
-      countInfo.textContent=`${rows.length} entr${rows.length===1?'y':'ies'} found`;
+      
+      countInfo.textContent = `${rows.length} note${rows.length === 1 ? '' : 's'} shown`;
     }
 
-    async function renderMonthlyReport(){
-      if(!reportStudent||!reportMonth)return;
-      const student=reportStudent.value;
-      const monthValue=reportMonth.value;
+    async function renderMonthlyReport() {
+      if (!reportStudent || !reportMonth) return;
+      
+      const student = reportStudent.value;
+      const monthValue = reportMonth.value;
 
-      currentReportRows=[];
-      reportBody.innerHTML='';
-      reportInfo.textContent='';
+      currentReportRows = [];
+      reportBody.innerHTML = '';
+      reportInfo.textContent = '';
 
-      if(reportDownload){
-        reportDownload.disabled=true;
+      if (reportDownload) {
+        reportDownload.disabled = true;
         updateReportDownloadLabel();
       }
+      
       reportTableWrapper.classList.add('hidden');
       reportEmpty.classList.remove('hidden');
 
-      if(!student){reportEmptyText.textContent='Select a student above to generate their monthly progress report.';return;}
-      if(!monthValue){reportEmptyText.textContent='Choose a month to view the detailed progress report.';return;}
+      if (!student) {
+        reportEmptyText.textContent = 'Select a student to see their monthly report.';
+        return;
+      }
+      
+      if (!monthValue) {
+        reportEmptyText.textContent = 'Choose a month to view the report.';
+        return;
+      }
 
-      const requestId=++reportRequestToken;
-      reportEmptyText.textContent='Loading comprehensive report data…';
+      const requestId = ++reportRequestToken;
+      reportEmptyText.textContent = 'Loading report…';
 
-      try{
-        const range=getMonthDateRange(monthValue);
-        if(!range){reportEmptyText.textContent='Please choose a valid month to generate the report.';return;}
-
-        const rows=await fetchMonthlyRows(student,range);
-        if(requestId!==reportRequestToken)return;
-
-        const filtered=rows.filter(r=>r.student===student&&isInMonth(r.date,monthValue));
-        if(!filtered.length){
-          if(requestId===reportRequestToken){reportEmptyText.textContent=`No entries found for ${student} in ${formatMonthYear(monthValue)}. Add some progress entries first.`;}
+      try {
+        const range = getMonthDateRange(monthValue);
+        if (!range) {
+          reportEmptyText.textContent = 'Choose a valid month to view the report.';
           return;
         }
 
-        const sorted=filtered.slice().sort((a,b)=>{
-          const da=parseDate(a.date);const db=parseDate(b.date);
-          if(da&&db)return da-db;
-          return (a.date||'').localeCompare(b.date||'');
-        });
-        if(requestId!==reportRequestToken)return;
+        const rows = await fetchMonthlyRows(student, range);
+        if (requestId !== reportRequestToken) return;
 
-        reportBody.innerHTML=sorted.map((r,index)=>`
-          <tr class="hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-blue-50/50 dark:hover:from-emerald-900/20 dark:hover:to-blue-900/20 transition-all duration-200">
-            <td class='px-6 py-4 font-semibold'>${esc(formatDisplayDate(r.date))}</td>
-            <td class='px-6 py-4'><span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-lg text-sm font-medium">${esc(r.quran||'—')}</span></td>
-            <td class='px-6 py-4'><span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 rounded-lg text-sm font-medium">${esc(r.surah||'—')}</span
+        const filtered = rows.filter(r => r.student === student && isInMonth(r.date, monthValue));
+        if (!filtered.length) {
+          if (requestId === reportRequestToken) {
+            reportEmptyText.textContent = `No entries found for ${student} in ${formatMonthYear(monthValue)}.`;
+          }
+          return;
+        }
+
+        const sorted = filtered.slice().sort((a, b) => {
+          const da = parseDate(a.date);
+          const db = parseDate(b.date);
+          if (da && db) return da - db;
+          return (a.date || '').localeCompare(b.date || '');
+        });
+        
+        if (requestId !== reportRequestToken) return;
+
+        reportBody.innerHTML = sorted.map(r => `
+          <tr class="table-row">
+            <td class='px-6 py-4 font-medium text-slate-900 dark:text-slate-100'>${esc(formatDisplayDate(r.date))}</td>
+            <td class='px-6 py-4 text-slate-700 dark:text-slate-300'>${esc(r.quran || '')}</td>
+            <td class='px-6 py-4 text-slate-700 dark:text-slate-300'>${esc(r.surah || '')}</td>
+            <td class='px-6 py-4 text-slate-700 dark:text-slate-300'>${esc(r.lawsOfSalah || '')}</td>
+            <td class='px-6 py-4 text-slate-700 dark:text-slate-300'>${esc(r.qamar || '')}</td>
+            <td class='px-6 py-4 text-slate-700 dark:text-slate-300'>${esc(r.anythingElse || '')}</td>
+          </tr>`).join('');
+
+        reportTableWrapper.classList.remove('hidden');
+        reportEmpty.classList.add('hidden');
+        reportInfo.textContent = `${sorted.length} entr${sorted.length === 1 ? 'y' : 'ies'} for ${student} in ${formatMonthYear(monthValue)}.`;
+        
+        if (reportDownload) {
+          reportDownload.disabled = false;
+          updateReportDownloadLabel();
+        }
+        
+        currentReportRows = sorted;
+      } catch (err) {
+        if (requestId !== reportRequestToken) return;
+        console.error('Monthly report error:', err);
+        reportEmptyText.textContent = 'Unable to load monthly report.';
+        showToast('Failed to load monthly report', 'error');
+      }
+    }
+
+    async function downloadMonthlyReport() {
+      if (!currentReportRows.length || !reportStudent || !reportMonth || !reportDownload) return;
+      
+      const student = reportStudent.value;
+      const monthValue = reportMonth.value;
+      if (!student || !monthValue) return;
+      
+      const format = (reportFormat?.value || 'csv').toLowerCase();
+
+      reportDownload.dataset.loading = 'true';
+      reportDownload.disabled = true;
+      updateReportDownloadLabel();
+
+      try {
+        if (format === 'pdf') {
+          await downloadMonthlyPdf(student, monthValue);
+        } else {
+          downloadMonthlyCsv(student, monthValue);
+        }
+      } catch (err) {
+        console.error('Download error:', err);
+        showToast('Download failed', 'error');
+      } finally {
+        if (reportDownload.dataset.loading) delete reportDownload.dataset.loading;
+        reportDownload.disabled = !currentReportRows.length;
+        updateReportDownloadLabel();
+      }
+    }
+
+    function downloadMonthlyCsv(student, monthValue) {
+      const rows = [['Date', 'Student', 'Quran', 'Surah', 'Laws of Salah', 'Qamar', 'Notes']];
+      currentReportRows.forEach(r => {
+        rows.push([
+          formatDisplayDate(r.date),
+          r.student || '',
+          r.quran || '',
+          r.surah || '',
+          r.lawsOfSalah || '',
+          r.qamar || '',
+          r.anythingElse || ''
+        ]);
+      });
+      
+      const csv = rows.map(row => row.map(toCsvValue).join(',')).join('\r\n');
+      const blob = new Blob([csv], { type
