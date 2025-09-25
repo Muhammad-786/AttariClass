@@ -17,7 +17,7 @@
       --glow: 0 0 30px rgba(102,126,234,.35);
       --glow-emerald: 0 0 30px rgba(16,185,129,.35);
     }
-    html,body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;scroll-behavior:smooth;height:100vh;overflow-x:hidden}
+    html,body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;scroll-behavior:smooth}
     .glass{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
     .gradient-animated{background:linear-gradient(-45deg,#667eea,#764ba2,#4facfe,#00f2fe);background-size:400% 400%;animation:gradShift 10s ease infinite}
     @keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
@@ -35,29 +35,109 @@
     .notification.show{transform:translateX(0)}
     .notification.success{background:linear-gradient(135deg,#10b981,#059669)}
     .notification.error{background:linear-gradient(135deg,#ef4444,#dc2626)}
-    .app-container{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-    .header-compact{padding:1rem 0;margin-bottom:1rem}
-    .main-content{flex:1;overflow:hidden;display:flex;flex-direction:column}
-    .content-grid{display:grid;grid-template-columns:1fr;gap:1rem;flex:1;overflow:hidden}
-    @media (min-width: 1024px) {
-      .content-grid{grid-template-columns:380px 1fr}
+    
+    /* Improved responsive design */
+    @media (max-width: 768px) {
+      .grid-cols-1.xl\\:grid-cols-5 { grid-template-columns: 1fr; }
+      .overflow-x-auto { max-width: calc(100vw - 2rem); }
+      .xl\\:col-span-2, .xl\\:col-span-3, .xl\\:col-span-5 { grid-column: span 1; }
     }
-    .form-section{display:flex;flex-direction:column;min-height:0}
-    .history-section{display:flex;flex-direction:column;min-height:0;overflow:hidden}
-    .history-table-container{flex:1;overflow:auto}
-    .reports-section{margin-top:1rem}
-    @media (max-height: 800px) {
-      .header-compact h1{font-size:2.5rem}
-      .header-compact{margin-bottom:0.5rem}
+    
+    /* Better table responsiveness */
+    .table-container {
+      max-height: 70vh;
+      overflow: auto;
+    }
+    
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal.hidden { display: none; }
+    
+    /* Entry exists indicator */
+    .entry-exists-indicator {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      animation: pulse 2s infinite;
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100">
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
   <div id="toast" class="notification" role="status" aria-live="polite"></div>
   
-  <!-- AUTH GATE (styled) -->
-  <div id="authGate" class="min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-xl w-full">
+  <!-- Class Management Modal -->
+  <div id="classModal" class="modal hidden">
+    <div class="glass bg-white/90 dark:bg-slate-900/90 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="p-6 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+        <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">🏫 Class Management</h2>
+        <button id="closeClassModal" class="text-slate-500 hover:text-slate-700 text-2xl">&times;</button>
+      </div>
+      <div class="p-6 space-y-6">
+        <!-- Current Class Selection -->
+        <div>
+          <label class="block text-sm font-semibold mb-2">Current Class</label>
+          <select id="currentClassSelect" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0">
+            <option value="Attari">Attari (Default)</option>
+          </select>
+        </div>
+        
+        <!-- Create New Class -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold mb-4">Create New Class</h3>
+          <form id="newClassForm" class="space-y-4">
+            <input id="newClassName" type="text" placeholder="Class Name (e.g., Intermediate Arabic)" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+            <button type="submit" class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Create Class</button>
+          </form>
+        </div>
+        
+        <!-- Student Management -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold mb-4">Manage Students</h3>
+          <form id="addStudentForm" class="space-y-4 mb-4">
+            <input id="newStudentName" type="text" placeholder="Student Name" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" required />
+            <button type="submit" class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Add Student</button>
+          </form>
+          
+          <div id="studentsList" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+            <!-- Students will be populated here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="max-w-7xl mx-auto p-4 md:p-8 relative">
+    <!-- Header -->
+    <header class="text-center mb-10">
+      <div class="float">
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Attari Class Tracker</h1>
+        <div class="w-24 h-1 gradient-animated mx-auto mt-4 rounded-full"></div>
+        <p class="mt-4 text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your classes.</p>
+        <p class="mt-2 text-sm">
+          <span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700">
+            <span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> 
+            <span id="whoami">Not signed in</span> • 
+            <span id="currentClassDisplay">Class: Attari</span> • 
+            <span id="todayDisplay"></span>
+          </span>
+        </p>
+      </div>
+    </header>
+
+    <!-- AUTH GATE (styled) -->
+    <div id="authGate" class="max-w-xl mx-auto">
       <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
         <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
           <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">Sign in</h2>
@@ -79,150 +159,143 @@
         </form>
       </div>
     </div>
-  </div>
 
-  <!-- APP -->
-  <div id="app" class="hidden app-container max-w-7xl mx-auto p-4">
-    <!-- Compact Header -->
-    <header class="text-center header-compact">
-      <div class="float">
-        <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Attari Class Tracker</h1>
-        <div class="w-16 h-1 gradient-animated mx-auto mt-2 rounded-full"></div>
-        <p class="mt-2 text-sm"><span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> <span id="whoami">Not signed in</span> • <span id="todayDisplay"></span> • <button id="signOutBtn" class="text-emerald-700 hover:underline ml-2">Sign out</button></span></p>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <div class="main-content">
-      <div class="content-grid">
-        <!-- Form Section -->
-        <div class="form-section">
-          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/30 h-full flex flex-direction-column">
-            <div class="p-4 border-b border-slate-200/50 dark:border-slate-700/50">
-              <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"><span id="formTitle">✨ New Entry</span></h2>
+    <!-- APP -->
+    <div id="app" class="hidden">
+      <div class="grid grid-cols-1 xl:grid-cols-5 gap-8">
+        <!-- Form Card -->
+        <section class="xl:col-span-2">
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
+            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+              <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"><span id="formTitle">✨ New Entry</span></h2>
+              <div class="flex gap-2">
+                <button id="manageClassesBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🏫 Classes</button>
+                <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">Sign out</button>
+              </div>
             </div>
-            <form id="notesForm" class="p-4 space-y-4 flex-1">
+            <form id="notesForm" class="p-6 md:p-8 space-y-6">
               <div>
                 <label class="block text-sm font-semibold mb-1">👤 Student</label>
-                <select id="student" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-0" required>
+                <select id="student" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required>
                   <option value="" disabled selected>Choose a student…</option>
                 </select>
+                <div id="entryExistsIndicator" class="mt-2 hidden">
+                  <span class="entry-exists-indicator">📝 Entry already exists for today - showing existing data</span>
+                </div>
               </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div><label class="block text-xs font-semibold mb-1">📖 Quran</label><input id="quran" type="text" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-blue-500 focus:ring-0" /></div>
-                <div><label class="block text-xs font-semibold mb-1">🕌 Surah</label><input id="surah" type="text" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-purple-500 focus:ring-0" /></div>
-                <div><label class="block text-xs font-semibold mb-1">🤲 Laws of Salah</label><input id="laws" type="text" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-0" /></div>
-                <div><label class="block text-xs font-semibold mb-1">🌙 Qamar</label><input id="qamar" type="text" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-pink-500 focus:ring-0" /></div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-sm font-semibold mb-1">📖 Quran</label><input id="quran" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" /></div>
+                <div><label class="block text-sm font-semibold mb-1">🕌 Surah</label><input id="surah" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-purple-500 focus:ring-0" /></div>
+                <div><label class="block text-sm font-semibold mb-1">🤲 Laws of Salah</label><input id="laws" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-indigo-500 focus:ring-0" /></div>
+                <div><label class="block text-sm font-semibold mb-1">🌙 Qamar</label><input id="qamar" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-pink-500 focus:ring-0" /></div>
               </div>
               <div>
-                <label class="block text-xs font-semibold mb-1">💭 Additional Notes</label>
-                <textarea id="anything" rows="3" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-teal-500 focus:ring-0"></textarea>
+                <label class="block text-sm font-semibold mb-1">💭 Additional Notes</label>
+                <textarea id="anything" rows="4" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-teal-500 focus:ring-0"></textarea>
               </div>
-              <div class="flex gap-2">
-                <button id="saveBtn" type="submit" class="btn-primary flex-1 px-4 py-3 rounded-xl text-white font-bold inline-flex items-center justify-center gap-2 text-sm"><span id="saveText">💾 Save Entry</span><div id="saveSpinner" class="spinner hidden"></div></button>
-                <button id="cancelEditBtn" type="button" class="hidden px-4 py-3 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium border border-slate-300/40 dark:border-slate-600/40 text-sm">✖️ Cancel</button>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <button id="saveBtn" type="submit" class="btn-primary flex-1 px-6 py-4 rounded-2xl text-white font-bold inline-flex items-center justify-center gap-3"><span id="saveText">💾 Save Entry</span><div id="saveSpinner" class="spinner hidden"></div></button>
+                <button id="cancelEditBtn" type="button" class="hidden px-6 py-4 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium border border-slate-300/40 dark:border-slate-600/40">✖️ Cancel Edit</button>
               </div>
-              <div id="saveStatus" class="text-center text-xs font-medium"></div>
+              <div id="saveStatus" class="text-center text-sm font-medium"></div>
             </form>
           </div>
-        </div>
+        </section>
 
-        <!-- History Section -->
-        <div class="history-section">
-          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/30 h-full flex flex-direction-column">
-            <div class="p-4 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-2 lg:items-center lg:justify-between">
+        <!-- History Card -->
+        <section class="xl:col-span-3">
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 h-fit">
+            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
               <div>
-                <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">📊 Progress History</h2>
-                <p class="text-xs text-slate-600 dark:text-slate-400">Real-time per-student notes (latest first)</p>
+                <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">📊 Progress History</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Real-time per-student notes (latest first)</p>
               </div>
-              <div class="flex flex-wrap gap-2">
-                <select id="filterStudent" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus:border-blue-500">
+              <div class="flex flex-wrap gap-3">
+                <select id="filterStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500">
                   <option value="">All students</option>
                 </select>
-                <input id="filterDate" type="date" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus:border-blue-500" />
-                <button id="clearFilters" class="px-2 py-1 rounded-lg bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 text-xs">🔄</button>
+                <input id="filterDate" type="date" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500" />
+                <button id="clearFilters" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 text-sm">🔄 Clear</button>
               </div>
             </div>
-            <div class="history-table-container">
-              <div class="overflow-x-auto custom-scrollbar h-full">
-                <table class="min-w-full text-left text-xs">
-                  <thead class="sticky top-0 backdrop-blur bg-slate-100/90 dark:bg-slate-800/90">
-                    <tr>
-                      <th class="px-3 py-2 font-semibold">📅 Date</th>
-                      <th class="px-3 py-2 font-semibold">👤 Student</th>
-                      <th class="px-3 py-2 font-semibold">📖 Quran</th>
-                      <th class="px-3 py-2 font-semibold">🕌 Surah</th>
-                      <th class="px-3 py-2 font-semibold">🤲 Salah</th>
-                      <th class="px-3 py-2 font-semibold">🌙 Qamar</th>
-                      <th class="px-3 py-2 font-semibold">💭 Notes</th>
-                      <th class="px-3 py-2 font-semibold">⚡ Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
-                </table>
-              </div>
-              <div id="emptyState" class="hidden text-center py-8">
-                <div class="text-4xl mb-2">📝</div>
-                <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400">No entries yet</h3>
-                <p class="text-xs text-slate-500">Add your first note using the form.</p>
-              </div>
-            </div>
-            <div class="p-3 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50">
-              <div id="countInfo" class="text-xs text-slate-600 dark:text-slate-400"></div>
-              <button id="reload" class="px-3 py-1 rounded-lg text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xs">🔄 Refresh</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Monthly Reports Section -->
-      <div class="reports-section">
-        <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/30">
-          <div class="p-4 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-2 lg:items-center lg:justify-between">
-            <div>
-              <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600">🗓️ Monthly Reports</h2>
-              <p class="text-xs text-slate-600 dark:text-slate-400">Review per-student progress and export it as a CSV or PDF file.</p>
-            </div>
-            <div class="flex flex-wrap gap-2 items-center">
-              <select id="reportStudent" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus-border-emerald-500">
-                <option value="" disabled selected>Select a student…</option>
-              </select>
-              <input id="reportMonth" type="month" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus:border-emerald-500" />
-              <select id="reportFormat" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus:border-emerald-500">
-                <option value="csv" selected>CSV</option>
-                <option value="pdf">PDF</option>
-              </select>
-              <button id="reportDownload" type="button" class="px-3 py-1 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-xs" disabled>⬇️ Download CSV</button>
-            </div>
-          </div>
-          <div class="p-4 space-y-4">
-            <div id="reportInfo" class="text-xs text-slate-600 dark:text-slate-400"></div>
-            <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden max-h-48">
-              <table class="min-w-full text-left text-xs">
-                <thead class="bg-slate-100/80 dark:bg-slate-800/80">
+            <div class="table-container custom-scrollbar">
+              <table class="min-w-full text-left text-sm">
+                <thead class="sticky top-0 backdrop-blur bg-slate-100/90 dark:bg-slate-800/90">
                   <tr>
-                    <th class="px-3 py-2 font-semibold">📅 Date</th>
-                    <th class="px-3 py-2 font-semibold">📖 Quran</th>
-                    <th class="px-3 py-2 font-semibold">🕌 Surah</th>
-                    <th class="px-3 py-2 font-semibold">🤲 Salah</th>
-                    <th class="px-3 py-2 font-semibold">🌙 Qamar</th>
-                    <th class="px-3 py-2 font-semibold">💭 Notes</th>
+                    <th class="px-6 py-3 font-semibold">📅 Date</th>
+                    <th class="px-6 py-3 font-semibold">👤 Student</th>
+                    <th class="px-6 py-3 font-semibold">📖 Quran</th>
+                    <th class="px-6 py-3 font-semibold">🕌 Surah</th>
+                    <th class="px-6 py-3 font-semibold">🤲 Salah</th>
+                    <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
+                    <th class="px-6 py-3 font-semibold">💭 Notes</th>
+                    <th class="px-6 py-3 font-semibold">⚡ Actions</th>
                   </tr>
                 </thead>
-                <tbody id="reportBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
+                <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
               </table>
+              <div id="emptyState" class="hidden text-center py-14">
+                <div class="text-6xl mb-3">📝</div>
+                <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No entries yet</h3>
+                <p class="text-slate-500">Add your first note using the form.</p>
+              </div>
             </div>
-            <div id="reportEmpty" class="text-center text-slate-500 py-6">
-              <div class="text-3xl mb-2">📂</div>
-              <p id="reportEmptyText" class="text-xs">Select a student to see their monthly report.</p>
+            <div class="p-6 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50">
+              <div id="countInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
+              <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-sm">🔄 Refresh</button>
             </div>
           </div>
-        </div>
+        </section>
+
+        <!-- Monthly Reports Card -->
+        <section class="xl:col-span-5">
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
+            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+              <div>
+                <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600">🗓️ Monthly Reports</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Review per-student progress and export it as a CSV or PDF file.</p>
+              </div>
+              <div class="flex flex-wrap gap-3 items-center">
+                <select id="reportStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus-border-emerald-500">
+                  <option value="" disabled selected>Select a student…</option>
+                </select>
+                <input id="reportMonth" type="month" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500" />
+                <select id="reportFormat" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500">
+                  <option value="csv" selected>CSV</option>
+                  <option value="pdf">PDF</option>
+                </select>
+                <button id="reportDownload" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm" disabled>⬇️ Download CSV</button>
+              </div>
+            </div>
+            <div class="p-6 md:p-8 space-y-6">
+              <div id="reportInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
+              <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden max-h-96">
+                <table class="min-w-full text-left text-sm">
+                  <thead class="bg-slate-100/80 dark:bg-slate-800/80">
+                    <tr>
+                      <th class="px-6 py-3 font-semibold">📅 Date</th>
+                      <th class="px-6 py-3 font-semibold">📖 Quran</th>
+                      <th class="px-6 py-3 font-semibold">🕌 Surah</th>
+                      <th class="px-6 py-3 font-semibold">🤲 Salah</th>
+                      <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
+                      <th class="px-6 py-3 font-semibold">💭 Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
+                </table>
+              </div>
+              <div id="reportEmpty" class="text-center text-slate-500 py-10">
+                <div class="text-5xl mb-3">📂</div>
+                <p id="reportEmptyText">Select a student to see their monthly report.</p>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
-      <footer class="mt-4 text-center">
-        <div class="glass bg-white/60 dark:bg-slate-800/60 rounded-xl px-4 py-2 inline-block">
-          <p class="text-xs text-slate-600 dark:text-slate-400">🔒 Data: <span class="font-mono font-semibold">classes/Attari/notes</span> • Unique per <em>date + student</em></p>
+      <footer class="mt-12 text-center">
+        <div class="glass bg-white/60 dark:bg-slate-800/60 rounded-2xl px-6 py-4 inline-block">
+          <p class="text-xs text-slate-600 dark:text-slate-400">🔒 Data: <span class="font-mono font-semibold" id="dataPath">classes/Attari/notes</span> • Unique per <em>date + student</em></p>
         </div>
       </footer>
     </div>
@@ -248,6 +321,19 @@
     const whoami = document.getElementById('whoami');
     const signOutBtn = document.getElementById('signOutBtn');
     const toast = document.getElementById('toast');
+    const currentClassDisplay = document.getElementById('currentClassDisplay');
+    const dataPath = document.getElementById('dataPath');
+
+    // Class management
+    const classModal = document.getElementById('classModal');
+    const manageClassesBtn = document.getElementById('manageClassesBtn');
+    const closeClassModal = document.getElementById('closeClassModal');
+    const currentClassSelect = document.getElementById('currentClassSelect');
+    const newClassForm = document.getElementById('newClassForm');
+    const newClassName = document.getElementById('newClassName');
+    const addStudentForm = document.getElementById('addStudentForm');
+    const newStudentName = document.getElementById('newStudentName');
+    const studentsList = document.getElementById('studentsList');
 
     // Forms
     const signinForm = document.getElementById('signinForm');
@@ -259,8 +345,159 @@
     signupForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=suEmail.value.trim();const pass=suPass.value;suMsg.textContent='';try{await createUserWithEmailAndPassword(auth,email,pass);suMsg.textContent='Account created. Signed in.';showToast('Welcome!','success')}catch(err){suMsg.textContent=err.message;showToast(err.message,'error')}});
     signOutBtn?.addEventListener('click', ()=>signOut(auth));
 
+    // Global state
+    let currentClass = 'Attari';
+    let classes = { 'Attari': ["Siyaam Azar","Hussain Ali","Hamza Razzaq","Subhan Hussain","Milad Raza","Murtaza Arfan","Zeeshan Hussain","Mohammed Subhan Ramzan","Onees Usman","Mohammed Hassan Hussain","Ali Hussein"] };
+    let currentUser = null;
+
+    // Initialize user classes on auth
+    async function initializeUserClasses(user) {
+      currentUser = user;
+      const userClassesDoc = doc(db, 'userClasses', user.uid);
+      const userClassesSnap = await getDoc(userClassesDoc);
+      
+      if (userClassesSnap.exists()) {
+        const userData = userClassesSnap.data();
+        classes = userData.classes || { 'Attari': classes['Attari'] };
+        currentClass = userData.currentClass || 'Attari';
+      } else {
+        // Initialize with default class
+        await setDoc(userClassesDoc, {
+          classes: classes,
+          currentClass: currentClass,
+          createdAt: serverTimestamp()
+        });
+      }
+      
+      updateClassUI();
+      populateStudents();
+    }
+
+    // Save user classes to Firebase
+    async function saveUserClasses() {
+      if (!currentUser) return;
+      
+      const userClassesDoc = doc(db, 'userClasses', currentUser.uid);
+      await setDoc(userClassesDoc, {
+        classes: classes,
+        currentClass: currentClass,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    }
+
+    // Class management UI
+    function updateClassUI() {
+      currentClassDisplay.textContent = `Class: ${currentClass}`;
+      dataPath.textContent = `classes/${currentClass}/notes`;
+      
+      // Update class select dropdown
+      currentClassSelect.innerHTML = '';
+      Object.keys(classes).forEach(className => {
+        const option = document.createElement('option');
+        option.value = className;
+        option.textContent = className;
+        option.selected = className === currentClass;
+        currentClassSelect.appendChild(option);
+      });
+      
+      renderStudentsList();
+    }
+
+    function renderStudentsList() {
+      studentsList.innerHTML = '';
+      const currentStudents = classes[currentClass] || [];
+      
+      currentStudents.forEach(student => {
+        const studentDiv = document.createElement('div');
+        studentDiv.className = 'flex items-center justify-between p-3 bg-slate-50/80 dark:bg-slate-800/80 rounded-xl';
+        studentDiv.innerHTML = `
+          <span class="font-medium">${esc(student)}</span>
+          <button class="text-red-600 hover:text-red-800 text-sm" data-action="remove-student" data-student="${esc(student)}">Remove</button>
+        `;
+        studentsList.appendChild(studentDiv);
+      });
+      
+      if (currentStudents.length === 0) {
+        studentsList.innerHTML = '<div class="text-center text-slate-500 py-4">No students in this class</div>';
+      }
+    }
+
+    // Event listeners for class management
+    manageClassesBtn.addEventListener('click', () => {
+      classModal.classList.remove('hidden');
+    });
+
+    closeClassModal.addEventListener('click', () => {
+      classModal.classList.add('hidden');
+    });
+
+    classModal.addEventListener('click', (e) => {
+      if (e.target === classModal) {
+        classModal.classList.add('hidden');
+      }
+    });
+
+    currentClassSelect.addEventListener('change', async (e) => {
+      currentClass = e.target.value;
+      await saveUserClasses();
+      updateClassUI();
+      populateStudents();
+      if (unsub) startHistoryStream(); // Refresh data for new class
+      showToast(`Switched to ${currentClass}`, 'success');
+    });
+
+    newClassForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const className = newClassName.value.trim();
+      
+      if (!className) return;
+      if (classes[className]) {
+        showToast('Class already exists', 'error');
+        return;
+      }
+      
+      classes[className] = [];
+      await saveUserClasses();
+      updateClassUI();
+      newClassName.value = '';
+      showToast(`Created class: ${className}`, 'success');
+    });
+
+    addStudentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const studentName = newStudentName.value.trim();
+      
+      if (!studentName) return;
+      if (classes[currentClass].includes(studentName)) {
+        showToast('Student already exists in this class', 'error');
+        return;
+      }
+      
+      classes[currentClass].push(studentName);
+      await saveUserClasses();
+      renderStudentsList();
+      populateStudents();
+      newStudentName.value = '';
+      showToast(`Added student: ${studentName}`, 'success');
+    });
+
+    studentsList.addEventListener('click', async (e) => {
+      if (e.target.dataset.action === 'remove-student') {
+        const student = e.target.dataset.student;
+        if (confirm(`Remove ${student} from ${currentClass}?`)) {
+          const index = classes[currentClass].indexOf(student);
+          if (index > -1) {
+            classes[currentClass].splice(index, 1);
+            await saveUserClasses();
+            renderStudentsList();
+            populateStudents();
+            showToast(`Removed ${student}`, 'success');
+          }
+        }
+      }
+    });
+
     // Students and elements
-    const students=["Siyaam Azar","Hussain Ali","Hamza Razzaq","Subhan Hussain","Milad Raza","Murtaza Arfan","Zeeshan Hussain","Mohammed Subhan Ramzan","Onees Usman","Mohammed Hassan Hussain","Ali Hussein"];
     const MONTH_LABELS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const inputs={student:document.getElementById('student'),quran:document.getElementById('quran'),surah:document.getElementById('surah'),laws:document.getElementById('laws'),qamar:document.getElementById('qamar'),anything:document.getElementById('anything')};
     const filterStudent=document.getElementById('filterStudent');
@@ -283,61 +520,82 @@
     const reportEmptyText=document.getElementById('reportEmptyText');
     const reportInfo=document.getElementById('reportInfo');
     const reportDownload=document.getElementById('reportDownload');
+    const entryExistsIndicator = document.getElementById('entryExistsIndicator');
 
     // Populate selects
     function populateStudents(){
+      const currentStudents = classes[currentClass] || [];
+      
       inputs.student.innerHTML='<option value="" disabled selected>Choose a student…</option>';
       filterStudent.innerHTML='<option value="">All students</option>';
       reportStudent.innerHTML='<option value="" disabled selected>Select a student…</option>';
-      students.forEach(n=>{
-        const o=document.createElement('option');o.value=n;o.textContent=n;inputs.student.appendChild(o);
-        const o2=document.createElement('option');o2.value=o.value;o2.textContent=n;filterStudent.appendChild(o2);
-        const o3=document.createElement('option');o3.value=o.value;o3.textContent=n;reportStudent.appendChild(o3);
+      
+      currentStudents.forEach(name=>{
+        const o=document.createElement('option');o.value=name;o.textContent=name;inputs.student.appendChild(o);
+        const o2=document.createElement('option');o2.value=name;o2.textContent=name;filterStudent.appendChild(o2);
+        const o3=document.createElement('option');o3.value=name;o3.textContent=name;reportStudent.appendChild(o3);
       });
     }
-    populateStudents();
 
     const now=new Date();
     const todayKey=toLocalISODate(now);
     document.getElementById('todayDisplay').textContent=formatDisplayDate(todayKey);
     if(reportMonth)reportMonth.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 
-    const CLASS_ID='Attari';
-    const notesCol=collection(doc(db,'classes',CLASS_ID),'notes');
+    let notesCol = null;
+    function updateNotesCollection() {
+      notesCol = collection(doc(db,'classes',currentClass),'notes');
+    }
 
     const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
     const noteId=(date,student)=>`${date}_${slug(student)}`;
 
-    // NEW: Student selection handler to load existing data for today
-    inputs.student.addEventListener('change', async () => {
-      const selectedStudent = inputs.student.value;
-      if (!selectedStudent || editingKey) return; // Don't interfere with edit mode
+    // Check if entry exists for today and show existing data
+    async function checkExistingEntry(student) {
+      if (!student || !notesCol) return;
+      
+      const today = toLocalISODate(new Date());
+      const id = noteId(today, student);
+      const ref = doc(notesCol, id);
       
       try {
-        const todayId = noteId(todayKey, selectedStudent);
-        const docRef = doc(notesCol, todayId);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          // Pre-fill the form with existing data
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data();
+          // Show existing data in form
           inputs.quran.value = data.quran || '';
           inputs.surah.value = data.surah || '';
           inputs.laws.value = data.lawsOfSalah || '';
           inputs.qamar.value = data.qamar || '';
           inputs.anything.value = data.anythingElse || '';
           
-          showToast('Loaded existing data for today', 'success');
+          // Show indicator
+          entryExistsIndicator.classList.remove('hidden');
+          return true;
         } else {
-          // Clear form if no existing data
+          // Clear form for new entry
           inputs.quran.value = '';
           inputs.surah.value = '';
           inputs.laws.value = '';
           inputs.qamar.value = '';
           inputs.anything.value = '';
+          
+          // Hide indicator
+          entryExistsIndicator.classList.add('hidden');
+          return false;
         }
-      } catch (error) {
-        console.error('Error loading existing data:', error);
+      } catch (err) {
+        console.error('Error checking existing entry:', err);
+        entryExistsIndicator.classList.add('hidden');
+        return false;
+      }
+    }
+
+    // Student selection change event
+    inputs.student.addEventListener('change', async (e) => {
+      const selectedStudent = e.target.value;
+      if (selectedStudent && !editingKey) {
+        await checkExistingEntry(selectedStudent);
       }
     });
 
@@ -355,12 +613,14 @@
         inputs.laws.value=n.lawsOfSalah||'';
         inputs.qamar.value=n.qamar||'';
         inputs.anything.value=n.anythingElse||n.other||'';
+        entryExistsIndicator.classList.add('hidden'); // Hide during edit
       } else {
         editingKey=null;
         formTitle.textContent='✨ New Entry';
         saveText.textContent='💾 Save Entry';
         cancelEditBtn.classList.add('hidden');
         document.getElementById('notesForm').reset();
+        entryExistsIndicator.classList.add('hidden');
       }
     }
     cancelEditBtn.addEventListener('click',()=>setEditMode(null));
@@ -368,6 +628,11 @@
     // Save/Update
     document.getElementById('notesForm').addEventListener('submit',async(e)=>{
       e.preventDefault();
+      if (!notesCol) {
+        showToast('Please wait for initialization', 'error');
+        return;
+      }
+      
       const student=inputs.student.value;
       if(!student){saveStatus.textContent='Choose a student';return}
       saveSpinner.classList.remove('hidden');
@@ -404,6 +669,8 @@
 
     function startHistoryStream(){
       if(unsub)unsub();
+      if (!notesCol) return;
+      
       const q=query(notesCol,orderBy('date','desc'),qLimit(200));
       unsub=onSnapshot(q,(snap)=>{
         historyRows=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -427,6 +694,8 @@
     document.getElementById('reload').addEventListener('click',applyFilters);
 
     async function fetchMonthlyRows(student,range){
+      if (!notesCol) return [];
+      
       const baseConstraints=[where('date','>=',range.start),where('date','<=',range.end),orderBy('date','asc')];
       const mapSnap=snap=>snap.docs.map(docSnap=>({id:docSnap.id,...docSnap.data()}));
       if(!student){
@@ -453,8 +722,6 @@
       if(reportDownload.disabled)return;
       await downloadMonthlyReport();
     });
-    renderMonthlyReport();
-    updateReportDownloadLabel();
 
     function renderHistory(rows){
       historyBody.innerHTML='';
@@ -467,16 +734,16 @@
       rows.forEach(r=>{
         const tr=document.createElement('tr');
         tr.innerHTML=`
-          <td class='px-3 py-2 font-medium'>${esc(formatDisplayDate(r.date))}</td>
-          <td class='px-3 py-2'>${esc(r.student||'')}</td>
-          <td class='px-3 py-2'>${esc(r.quran||'')}</td>
-          <td class='px-3 py-2'>${esc(r.surah||'')}</td>
-          <td class='px-3 py-2'>${esc(r.lawsOfSalah||'')}</td>
-          <td class='px-3 py-2'>${esc(r.qamar||'')}</td>
-          <td class='px-3 py-2'>${esc(r.anythingElse||'')}</td>
-          <td class='px-3 py-2 whitespace-nowrap'>
-            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-1 hover:bg-slate-100 dark:hover:bg-slate-800' data-action='edit' data-id='${r.id}'>Edit</button>
-            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20' data-action='delete' data-id='${r.id}'>Del</button>
+          <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
+          <td class='px-6 py-3'>${esc(r.student||'')}</td>
+          <td class='px-6 py-3'>${esc(r.quran||'')}</td>
+          <td class='px-6 py-3'>${esc(r.surah||'')}</td>
+          <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
+          <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
+          <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
+          <td class='px-6 py-3 whitespace-nowrap'>
+            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800' data-action='edit' data-id='${r.id}'>Edit</button>
+            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20' data-action='delete' data-id='${r.id}'>Delete</button>
           </td>`;
         historyBody.appendChild(tr);
       });
@@ -527,12 +794,12 @@
 
         reportBody.innerHTML=sorted.map(r=>`
           <tr>
-            <td class='px-3 py-2 font-medium'>${esc(formatDisplayDate(r.date))}</td>
-            <td class='px-3 py-2'>${esc(r.quran||'')}</td>
-            <td class='px-3 py-2'>${esc(r.surah||'')}</td>
-            <td class='px-3 py-2'>${esc(r.lawsOfSalah||'')}</td>
-            <td class='px-3 py-2'>${esc(r.qamar||'')}</td>
-            <td class='px-3 py-2'>${esc(r.anythingElse||'')}</td>
+            <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
+            <td class='px-6 py-3'>${esc(r.quran||'')}</td>
+            <td class='px-6 py-3'>${esc(r.surah||'')}</td>
+            <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
+            <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
+            <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
           </tr>`).join('');
 
         reportTableWrapper.classList.remove('hidden');
@@ -719,36 +986,60 @@
     });
 
     // Auth gate
-    onAuthStateChanged(auth,(user)=>{
+    onAuthStateChanged(auth,async (user)=>{
       if(user){
         authGate.classList.add('hidden');
         appShell.classList.remove('hidden');
         whoami.textContent=user.email||user.uid;
         authStatus.textContent='Online';
         dot.className='w-2 h-2 rounded-full bg-emerald-400';
+        
+        await initializeUserClasses(user);
+        updateNotesCollection();
         startHistoryStream();
+        renderMonthlyReport();
+        updateReportDownloadLabel();
       } else {
         appShell.classList.add('hidden');
         authGate.classList.remove('hidden');
         whoami.textContent='Not signed in';
         authStatus.textContent='Signed out';
         dot.className='w-2 h-2 rounded-full bg-amber-400';
+        currentUser = null;
       }
     });
 
-    // Utils
-    function extractDateFromId(id){if(!id)return null;const m=String(id).match(/^(\d{4}-\d{2}-\d{2})_/);return m?m[1]:null;}
+        // Utils
+    function extractDateFromId(id){
+      if(!id)return null;
+      const m=String(id).match(/^(\d{4}-\d{2}-\d{2})_/);
+      return m?m[1]:null;
+    }
+    
     function parseDate(input){
       if(!input&&input!==0)return null;
       if(input instanceof Date)return isNaN(input.getTime())?null:input;
-      if(typeof input?.toDate==='function'){const d=input.toDate();return d instanceof Date&&!isNaN(d.getTime())?d:null;}
+      if(typeof input?.toDate==='function'){
+        const d=input.toDate();
+        return d instanceof Date&&!isNaN(d.getTime())?d:null;
+      }
       const str=String(input).trim();
       const iso=str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-      if(iso){const[,y,m,d]=iso;const dt=new Date(Number(y),Number(m)-1,Number(d));return isNaN(dt.getTime())?null:dt;}
+      if(iso){
+        const[,y,m,d]=iso;
+        const dt=new Date(Number(y),Number(m)-1,Number(d));
+        return isNaN(dt.getTime())?null:dt;
+      }
       const slash=str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if(slash){const[,d,m,y]=slash;const dt=new Date(Number(y),Number(m)-1,Number(d));return isNaN(dt.getTime())?null:dt;}
-      const parsed=new Date(str);return isNaN(parsed.getTime())?null:parsed;
+      if(slash){
+        const[,d,m,y]=slash;
+        const dt=new Date(Number(y),Number(m)-1,Number(d));
+        return isNaN(dt.getTime())?null:dt;
+      }
+      const parsed=new Date(str);
+      return isNaN(parsed.getTime())?null:parsed;
     }
+    
     function toLocalISODate(value){
       const date=value instanceof Date?value:parseDate(value);
       if(!date)return '';
@@ -757,6 +1048,7 @@
       const day=String(date.getDate()).padStart(2,'0');
       return `${year}-${month}-${day}`;
     }
+    
     function formatDisplayDate(value){
       const date=value instanceof Date?value:parseDate(value);
       if(!date)return value??'';
@@ -765,34 +1057,67 @@
       const year=date.getFullYear();
       return month?`${day} ${month} ${year}`:value??'';
     }
+    
     function formatMonthYear(monthValue){
       if(!monthValue)return '';
       const parts=String(monthValue).split('-');
       if(parts.length<2)return monthValue;
-      const year=Number(parts[0]); const monthIndex=Number(parts[1])-1;
+      const year=Number(parts[0]);
+      const monthIndex=Number(parts[1])-1;
       if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return monthValue;
-      const month=MONTH_LABELS[monthIndex]||''; return month?`${month} ${year}`:monthValue;
+      const month=MONTH_LABELS[monthIndex]||'';
+      return month?`${month} ${year}`:monthValue;
     }
+    
     function getMonthDateRange(monthValue){
       if(!monthValue)return null;
-      const parts=String(monthValue).split('-'); if(parts.length<2)return null;
-      const yearStr=parts[0]; const monthNum=Number(parts[1]); const monthIndex=monthNum-1; const year=Number(yearStr);
+      const parts=String(monthValue).split('-');
+      if(parts.length<2)return null;
+      const yearStr=parts[0];
+      const monthNum=Number(parts[1]);
+      const monthIndex=monthNum-1;
+      const year=Number(yearStr);
       if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return null;
       const monthStr=String(monthIndex+1).padStart(2,'0');
       const lastDay=new Date(year,monthIndex+1,0).getDate();
       const endDay=String(lastDay).padStart(2,'0');
-      return {start:`${yearStr}-${monthStr}-01`,end:`${yearStr}-${monthStr}-${endDay}`};
+      return {
+        start:`${yearStr}-${monthStr}-01`,
+        end:`${yearStr}-${monthStr}-${endDay}`
+      };
     }
+    
     function isInMonth(dateValue,monthValue){
-      const date=parseDate(dateValue); if(!date||!monthValue)return false;
+      const date=parseDate(dateValue);
+      if(!date||!monthValue)return false;
       const [yearStr,monthStr]=String(monthValue).split('-');
-      const year=Number(yearStr); const month=Number(monthStr);
+      const year=Number(yearStr);
+      const month=Number(monthStr);
       if(Number.isNaN(year)||Number.isNaN(month))return false;
       return date.getFullYear()===year&&date.getMonth()+1===month;
     }
-    function toCsvValue(value){const str=(value??'').toString().replace(/"/g,'""').replace(/\r?\n/g,' ');return `"${str}"`;}
-    function esc(s){return (s??'').toString().replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]))}
-    function showToast(text,type='success'){ toast.textContent=text; toast.className=`notification show ${type}`; setTimeout(()=>{toast.classList.remove('show')},1600); }
+    
+    function toCsvValue(value){
+      const str=(value??'').toString().replace(/"/g,'""').replace(/\r?\n/g,' ');
+      return `"${str}"`;
+    }
+    
+    function esc(s){
+      return (s??'').toString().replace(/[&<>\"]/g,c=>({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '\"':'&quot;'
+      }[c]));
+    }
+    
+    function showToast(text,type='success'){
+      toast.textContent=text;
+      toast.className=`notification show ${type}`;
+      setTimeout(()=>{
+        toast.classList.remove('show');
+      },1600);
+    }
   </script>
 </body>
 </html>
