@@ -17,7 +17,7 @@
       --glow: 0 0 30px rgba(102,126,234,.35);
       --glow-emerald: 0 0 30px rgba(16,185,129,.35);
     }
-    html,body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;scroll-behavior:smooth}
+    html,body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;scroll-behavior:smooth;height:100vh;overflow-x:hidden}
     .glass{backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
     .gradient-animated{background:linear-gradient(-45deg,#667eea,#764ba2,#4facfe,#00f2fe);background-size:400% 400%;animation:gradShift 10s ease infinite}
     @keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
@@ -35,23 +35,29 @@
     .notification.show{transform:translateX(0)}
     .notification.success{background:linear-gradient(135deg,#10b981,#059669)}
     .notification.error{background:linear-gradient(135deg,#ef4444,#dc2626)}
+    .app-container{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    .header-compact{padding:1rem 0;margin-bottom:1rem}
+    .main-content{flex:1;overflow:hidden;display:flex;flex-direction:column}
+    .content-grid{display:grid;grid-template-columns:1fr;gap:1rem;flex:1;overflow:hidden}
+    @media (min-width: 1024px) {
+      .content-grid{grid-template-columns:380px 1fr}
+    }
+    .form-section{display:flex;flex-direction:column;min-height:0}
+    .history-section{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+    .history-table-container{flex:1;overflow:auto}
+    .reports-section{margin-top:1rem}
+    @media (max-height: 800px) {
+      .header-compact h1{font-size:2.5rem}
+      .header-compact{margin-bottom:0.5rem}
+    }
   </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100">
   <div id="toast" class="notification" role="status" aria-live="polite"></div>
-  <div class="max-w-7xl mx-auto p-4 md:p-8 relative">
-    <!-- Header -->
-    <header class="text-center mb-10">
-      <div class="float">
-        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Attari Class Tracker</h1>
-        <div class="w-24 h-1 gradient-animated mx-auto mt-4 rounded-full"></div>
-        <p class="mt-4 text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your class.</p>
-        <p class="mt-2 text-sm"><span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> <span id="whoami">Not signed in</span> • <span id="todayDisplay"></span></span></p>
-      </div>
-    </header>
-
-    <!-- AUTH GATE (styled) -->
-    <div id="authGate" class="max-w-xl mx-auto">
+  
+  <!-- AUTH GATE (styled) -->
+  <div id="authGate" class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-xl w-full">
       <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
         <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
           <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">Sign in</h2>
@@ -73,138 +79,149 @@
         </form>
       </div>
     </div>
+  </div>
 
-    <!-- APP -->
-    <div id="app" class="hidden">
-      <div class="grid grid-cols-1 xl:grid-cols-5 gap-8">
-        <!-- Form Card -->
-        <section class="xl:col-span-2">
-          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
-            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
-              <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"><span id="formTitle">✨ New Entry</span></h2>
-              <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Sign out</button>
+  <!-- APP -->
+  <div id="app" class="hidden app-container max-w-7xl mx-auto p-4">
+    <!-- Compact Header -->
+    <header class="text-center header-compact">
+      <div class="float">
+        <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Attari Class Tracker</h1>
+        <div class="w-16 h-1 gradient-animated mx-auto mt-2 rounded-full"></div>
+        <p class="mt-2 text-sm"><span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> <span id="whoami">Not signed in</span> • <span id="todayDisplay"></span> • <button id="signOutBtn" class="text-emerald-700 hover:underline ml-2">Sign out</button></span></p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="content-grid">
+        <!-- Form Section -->
+        <div class="form-section">
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/30 h-full flex flex-direction-column">
+            <div class="p-4 border-b border-slate-200/50 dark:border-slate-700/50">
+              <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"><span id="formTitle">✨ New Entry</span></h2>
             </div>
-            <form id="notesForm" class="p-6 md:p-8 space-y-6">
+            <form id="notesForm" class="p-4 space-y-4 flex-1">
               <div>
                 <label class="block text-sm font-semibold mb-1">👤 Student</label>
-                <select id="student" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required>
+                <select id="student" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-0" required>
                   <option value="" disabled selected>Choose a student…</option>
                 </select>
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><label class="block text-sm font-semibold mb-1">📖 Quran</label><input id="quran" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" /></div>
-                <div><label class="block text-sm font-semibold mb-1">🕌 Surah</label><input id="surah" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-purple-500 focus:ring-0" /></div>
-                <div><label class="block text-sm font-semibold mb-1">🤲 Laws of Salah</label><input id="laws" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-indigo-500 focus:ring-0" /></div>
-                <div><label class="block text-sm font-semibold mb-1">🌙 Qamar</label><input id="qamar" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-pink-500 focus:ring-0" /></div>
+              <div class="grid grid-cols-2 gap-3">
+                <div><label class="block text-xs font-semibold mb-1">📖 Quran</label><input id="quran" type="text" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-blue-500 focus:ring-0" /></div>
+                <div><label class="block text-xs font-semibold mb-1">🕌 Surah</label><input id="surah" type="text" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-purple-500 focus:ring-0" /></div>
+                <div><label class="block text-xs font-semibold mb-1">🤲 Laws of Salah</label><input id="laws" type="text" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-0" /></div>
+                <div><label class="block text-xs font-semibold mb-1">🌙 Qamar</label><input id="qamar" type="text" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-pink-500 focus:ring-0" /></div>
               </div>
               <div>
-                <label class="block text-sm font-semibold mb-1">💭 Additional Notes</label>
-                <textarea id="anything" rows="4" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-teal-500 focus:ring-0"></textarea>
+                <label class="block text-xs font-semibold mb-1">💭 Additional Notes</label>
+                <textarea id="anything" rows="3" class="w-full rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-teal-500 focus:ring-0"></textarea>
               </div>
-              <div class="flex flex-col sm:flex-row gap-4">
-                <button id="saveBtn" type="submit" class="btn-primary flex-1 px-6 py-4 rounded-2xl text-white font-bold inline-flex items-center justify-center gap-3"><span id="saveText">💾 Save Entry</span><div id="saveSpinner" class="spinner hidden"></div></button>
-                <button id="cancelEditBtn" type="button" class="hidden px-6 py-4 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium border border-slate-300/40 dark:border-slate-600/40">✖️ Cancel Edit</button>
+              <div class="flex gap-2">
+                <button id="saveBtn" type="submit" class="btn-primary flex-1 px-4 py-3 rounded-xl text-white font-bold inline-flex items-center justify-center gap-2 text-sm"><span id="saveText">💾 Save Entry</span><div id="saveSpinner" class="spinner hidden"></div></button>
+                <button id="cancelEditBtn" type="button" class="hidden px-4 py-3 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium border border-slate-300/40 dark:border-slate-600/40 text-sm">✖️ Cancel</button>
               </div>
-              <div id="saveStatus" class="text-center text-sm font-medium"></div>
+              <div id="saveStatus" class="text-center text-xs font-medium"></div>
             </form>
           </div>
-        </section>
+        </div>
 
-        <!-- History Card -->
-        <section class="xl:col-span-3">
-          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
-            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+        <!-- History Section -->
+        <div class="history-section">
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/30 h-full flex flex-direction-column">
+            <div class="p-4 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-2 lg:items-center lg:justify-between">
               <div>
-                <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">📊 Progress History</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400">Real-time per-student notes (latest first)</p>
+                <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">📊 Progress History</h2>
+                <p class="text-xs text-slate-600 dark:text-slate-400">Real-time per-student notes (latest first)</p>
               </div>
-              <div class="flex flex-wrap gap-3">
-                <select id="filterStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500">
+              <div class="flex flex-wrap gap-2">
+                <select id="filterStudent" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus:border-blue-500">
                   <option value="">All students</option>
                 </select>
-                <input id="filterDate" type="date" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500" />
-                <button id="clearFilters" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200">🔄 Clear</button>
+                <input id="filterDate" type="date" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus:border-blue-500" />
+                <button id="clearFilters" class="px-2 py-1 rounded-lg bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 text-xs">🔄</button>
               </div>
             </div>
-            <div class="overflow-hidden">
-              <div class="overflow-x-auto custom-scrollbar max-h-96">
-                <table class="min-w-full text-left text-sm">
+            <div class="history-table-container">
+              <div class="overflow-x-auto custom-scrollbar h-full">
+                <table class="min-w-full text-left text-xs">
                   <thead class="sticky top-0 backdrop-blur bg-slate-100/90 dark:bg-slate-800/90">
                     <tr>
-                      <th class="px-6 py-3 font-semibold">📅 Date</th>
-                      <th class="px-6 py-3 font-semibold">👤 Student</th>
-                      <th class="px-6 py-3 font-semibold">📖 Quran</th>
-                      <th class="px-6 py-3 font-semibold">🕌 Surah</th>
-                      <th class="px-6 py-3 font-semibold">🤲 Salah</th>
-                      <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
-                      <th class="px-6 py-3 font-semibold">💭 Notes</th>
-                      <th class="px-6 py-3 font-semibold">⚡ Actions</th>
+                      <th class="px-3 py-2 font-semibold">📅 Date</th>
+                      <th class="px-3 py-2 font-semibold">👤 Student</th>
+                      <th class="px-3 py-2 font-semibold">📖 Quran</th>
+                      <th class="px-3 py-2 font-semibold">🕌 Surah</th>
+                      <th class="px-3 py-2 font-semibold">🤲 Salah</th>
+                      <th class="px-3 py-2 font-semibold">🌙 Qamar</th>
+                      <th class="px-3 py-2 font-semibold">💭 Notes</th>
+                      <th class="px-3 py-2 font-semibold">⚡ Actions</th>
                     </tr>
                   </thead>
                   <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
                 </table>
               </div>
-              <div id="emptyState" class="hidden text-center py-14">
-                <div class="text-6xl mb-3">📝</div>
-                <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No entries yet</h3>
-                <p class="text-slate-500">Add your first note using the form.</p>
+              <div id="emptyState" class="hidden text-center py-8">
+                <div class="text-4xl mb-2">📝</div>
+                <h3 class="text-sm font-semibold text-slate-600 dark:text-slate-400">No entries yet</h3>
+                <p class="text-xs text-slate-500">Add your first note using the form.</p>
               </div>
             </div>
-            <div class="p-6 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50">
-              <div id="countInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
-              <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">🔄 Refresh</button>
-            </div>
-          </div>
-        </section>
-
-        <!-- Monthly Reports Card -->
-        <section class="xl:col-span-5">
-          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
-            <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-              <div>
-                <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600">🗓️ Monthly Reports</h2>
-                <p class="text-sm text-slate-600 dark:text-slate-400">Review per-student progress and export it as a CSV or PDF file.</p>
-              </div>
-              <div class="flex flex-wrap gap-3 items-center">
-                <select id="reportStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus-border-emerald-500">
-                  <option value="" disabled selected>Select a student…</option>
-                </select>
-                <input id="reportMonth" type="month" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500" />
-                <select id="reportFormat" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-emerald-500">
-                  <option value="csv" selected>CSV</option>
-                  <option value="pdf">PDF</option>
-                </select>
-                <button id="reportDownload" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>⬇️ Download CSV</button>
-              </div>
-            </div>
-            <div class="p-6 md:p-8 space-y-6">
-              <div id="reportInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
-              <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden">
-                <table class="min-w-full text-left text-sm">
-                  <thead class="bg-slate-100/80 dark:bg-slate-800/80">
-                    <tr>
-                      <th class="px-6 py-3 font-semibold">📅 Date</th>
-                      <th class="px-6 py-3 font-semibold">📖 Quran</th>
-                      <th class="px-6 py-3 font-semibold">🕌 Surah</th>
-                      <th class="px-6 py-3 font-semibold">🤲 Salah</th>
-                      <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
-                      <th class="px-6 py-3 font-semibold">💭 Notes</th>
-                    </tr>
-                  </thead>
-                  <tbody id="reportBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
-                </table>
-              </div>
-              <div id="reportEmpty" class="text-center text-slate-500 py-10">
-                <div class="text-5xl mb-3">📂</div>
-                <p id="reportEmptyText">Select a student to see their monthly report.</p>
-              </div>
+            <div class="p-3 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50">
+              <div id="countInfo" class="text-xs text-slate-600 dark:text-slate-400"></div>
+              <button id="reload" class="px-3 py-1 rounded-lg text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-xs">🔄 Refresh</button>
             </div>
           </div>
-        </section>
+        </div>
       </div>
 
-      <footer class="mt-12 text-center">
-        <div class="glass bg-white/60 dark:bg-slate-800/60 rounded-2xl px-6 py-4 inline-block">
+      <!-- Monthly Reports Section -->
+      <div class="reports-section">
+        <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-2xl shadow-xl border border-white/20 dark:border-slate-700/30">
+          <div class="p-4 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-2 lg:items-center lg:justify-between">
+            <div>
+              <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-blue-600">🗓️ Monthly Reports</h2>
+              <p class="text-xs text-slate-600 dark:text-slate-400">Review per-student progress and export it as a CSV or PDF file.</p>
+            </div>
+            <div class="flex flex-wrap gap-2 items-center">
+              <select id="reportStudent" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus-border-emerald-500">
+                <option value="" disabled selected>Select a student…</option>
+              </select>
+              <input id="reportMonth" type="month" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus:border-emerald-500" />
+              <select id="reportFormat" class="rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 px-2 py-1 text-xs font-medium focus:border-emerald-500">
+                <option value="csv" selected>CSV</option>
+                <option value="pdf">PDF</option>
+              </select>
+              <button id="reportDownload" type="button" class="px-3 py-1 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-xs" disabled>⬇️ Download CSV</button>
+            </div>
+          </div>
+          <div class="p-4 space-y-4">
+            <div id="reportInfo" class="text-xs text-slate-600 dark:text-slate-400"></div>
+            <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden max-h-48">
+              <table class="min-w-full text-left text-xs">
+                <thead class="bg-slate-100/80 dark:bg-slate-800/80">
+                  <tr>
+                    <th class="px-3 py-2 font-semibold">📅 Date</th>
+                    <th class="px-3 py-2 font-semibold">📖 Quran</th>
+                    <th class="px-3 py-2 font-semibold">🕌 Surah</th>
+                    <th class="px-3 py-2 font-semibold">🤲 Salah</th>
+                    <th class="px-3 py-2 font-semibold">🌙 Qamar</th>
+                    <th class="px-3 py-2 font-semibold">💭 Notes</th>
+                  </tr>
+                </thead>
+                <tbody id="reportBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
+              </table>
+            </div>
+            <div id="reportEmpty" class="text-center text-slate-500 py-6">
+              <div class="text-3xl mb-2">📂</div>
+              <p id="reportEmptyText" class="text-xs">Select a student to see their monthly report.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="mt-4 text-center">
+        <div class="glass bg-white/60 dark:bg-slate-800/60 rounded-xl px-4 py-2 inline-block">
           <p class="text-xs text-slate-600 dark:text-slate-400">🔒 Data: <span class="font-mono font-semibold">classes/Attari/notes</span> • Unique per <em>date + student</em></p>
         </div>
       </footer>
@@ -290,6 +307,39 @@
 
     const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
     const noteId=(date,student)=>`${date}_${slug(student)}`;
+
+    // NEW: Student selection handler to load existing data for today
+    inputs.student.addEventListener('change', async () => {
+      const selectedStudent = inputs.student.value;
+      if (!selectedStudent || editingKey) return; // Don't interfere with edit mode
+      
+      try {
+        const todayId = noteId(todayKey, selectedStudent);
+        const docRef = doc(notesCol, todayId);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          // Pre-fill the form with existing data
+          inputs.quran.value = data.quran || '';
+          inputs.surah.value = data.surah || '';
+          inputs.laws.value = data.lawsOfSalah || '';
+          inputs.qamar.value = data.qamar || '';
+          inputs.anything.value = data.anythingElse || '';
+          
+          showToast('Loaded existing data for today', 'success');
+        } else {
+          // Clear form if no existing data
+          inputs.quran.value = '';
+          inputs.surah.value = '';
+          inputs.laws.value = '';
+          inputs.qamar.value = '';
+          inputs.anything.value = '';
+        }
+      } catch (error) {
+        console.error('Error loading existing data:', error);
+      }
+    });
 
     // Edit mode
     let editingKey=null;
@@ -417,16 +467,16 @@
       rows.forEach(r=>{
         const tr=document.createElement('tr');
         tr.innerHTML=`
-          <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
-          <td class='px-6 py-3'>${esc(r.student||'')}</td>
-          <td class='px-6 py-3'>${esc(r.quran||'')}</td>
-          <td class='px-6 py-3'>${esc(r.surah||'')}</td>
-          <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
-          <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
-          <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
-          <td class='px-6 py-3 whitespace-nowrap'>
-            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800' data-action='edit' data-id='${r.id}'>Edit</button>
-            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20' data-action='delete' data-id='${r.id}'>Delete</button>
+          <td class='px-3 py-2 font-medium'>${esc(formatDisplayDate(r.date))}</td>
+          <td class='px-3 py-2'>${esc(r.student||'')}</td>
+          <td class='px-3 py-2'>${esc(r.quran||'')}</td>
+          <td class='px-3 py-2'>${esc(r.surah||'')}</td>
+          <td class='px-3 py-2'>${esc(r.lawsOfSalah||'')}</td>
+          <td class='px-3 py-2'>${esc(r.qamar||'')}</td>
+          <td class='px-3 py-2'>${esc(r.anythingElse||'')}</td>
+          <td class='px-3 py-2 whitespace-nowrap'>
+            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-1 hover:bg-slate-100 dark:hover:bg-slate-800' data-action='edit' data-id='${r.id}'>Edit</button>
+            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20' data-action='delete' data-id='${r.id}'>Del</button>
           </td>`;
         historyBody.appendChild(tr);
       });
@@ -477,12 +527,12 @@
 
         reportBody.innerHTML=sorted.map(r=>`
           <tr>
-            <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
-            <td class='px-6 py-3'>${esc(r.quran||'')}</td>
-            <td class='px-6 py-3'>${esc(r.surah||'')}</td>
-            <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
-            <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
-            <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
+            <td class='px-3 py-2 font-medium'>${esc(formatDisplayDate(r.date))}</td>
+            <td class='px-3 py-2'>${esc(r.quran||'')}</td>
+            <td class='px-3 py-2'>${esc(r.surah||'')}</td>
+            <td class='px-3 py-2'>${esc(r.lawsOfSalah||'')}</td>
+            <td class='px-3 py-2'>${esc(r.qamar||'')}</td>
+            <td class='px-3 py-2'>${esc(r.anythingElse||'')}</td>
           </tr>`).join('');
 
         reportTableWrapper.classList.remove('hidden');
