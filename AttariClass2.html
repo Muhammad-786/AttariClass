@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Attari — Class Tracker</title>
+  <title>Ghausia — Class Tracker</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +43,7 @@
     <!-- Header -->
     <header class="text-center mb-10">
       <div class="float">
-        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Attari Class Tracker</h1>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Ghausia Class Tracker</h1>
         <div class="w-24 h-1 gradient-animated mx-auto mt-4 rounded-full"></div>
         <p class="mt-4 text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your class.</p>
         <p class="mt-2 text-sm"><span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> <span id="whoami">Not signed in</span> • <span id="todayDisplay"></span></span></p>
@@ -67,7 +67,7 @@
           <div class="text-sm text-slate-500">Create your teacher account.</div>
           <input id="suEmail" type="email" placeholder="Email" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
           <input id="suPass" type="password" placeholder="Password (min 6)" minlength="6" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
-          <input id="suClassName" type="text" placeholder="Class Name (e.g., Attari Class)" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+          <input id="suClassName" type="text" placeholder="Class Name (e.g., Ghausia Class)" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
           <button class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Create account & class</button>
           <p id="suMsg" class="text-sm text-slate-500"></p>
           <div class="text-sm"><button id="showSignin" type="button" class="text-emerald-700 hover:underline">Back to sign in</button></div>
@@ -78,33 +78,16 @@
     <!-- CLASS SELECTION -->
     <div id="classSelection" class="hidden max-w-4xl mx-auto">
       <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
-        <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
-          <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">Your Classes</h2>
-          <button id="createNewClass" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg">+ Create New Class</button>
+        <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50">
+          <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">Your Class</h2>
         </div>
         <div class="p-6 md:p-8">
-          <div id="classesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          <div id="classesList" class="max-w-md mx-auto"></div>
           <div id="noClasses" class="hidden text-center py-10">
             <div class="text-5xl mb-3">🏫</div>
-            <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No classes yet</h3>
-            <p class="text-slate-500">Create your first class to get started.</p>
+            <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No class found</h3>
+            <p class="text-slate-500">Please contact support if you're seeing this message.</p>
           </div>
-        </div>
-      </div>
-
-      <!-- Create Class Modal -->
-      <div id="createClassModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="glass bg-white/90 dark:bg-slate-900/90 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 max-w-md w-full mx-4">
-          <div class="p-6 border-b border-slate-200/50 dark:border-slate-700/50">
-            <h3 class="text-xl font-bold">Create New Class</h3>
-          </div>
-          <form id="createClassForm" class="p-6 space-y-4">
-            <input id="newClassName" type="text" placeholder="Class Name" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
-            <div class="flex gap-3">
-              <button type="submit" class="btn-primary flex-1 px-4 py-3 rounded-2xl text-white font-semibold">Create Class</button>
-              <button type="button" id="cancelCreateClass" class="px-4 py-3 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium">Cancel</button>
-            </div>
-          </form>
         </div>
       </div>
     </div>
@@ -122,7 +105,6 @@
               </div>
               <div class="flex gap-2">
                 <button id="manageStudentsBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Manage Students</button>
-                <button id="switchClassBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Switch Class</button>
                 <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Sign out</button>
               </div>
             </div>
@@ -299,13 +281,7 @@
     // Class management elements
     const classesList = document.getElementById('classesList');
     const noClasses = document.getElementById('noClasses');
-    const createNewClass = document.getElementById('createNewClass');
-    const createClassModal = document.getElementById('createClassModal');
-    const createClassForm = document.getElementById('createClassForm');
-    const newClassName = document.getElementById('newClassName');
-    const cancelCreateClass = document.getElementById('cancelCreateClass');
     const currentClassName = document.getElementById('currentClassName');
-    const switchClassBtn = document.getElementById('switchClassBtn');
     const manageStudentsBtn = document.getElementById('manageStudentsBtn');
 
     // Student management elements
@@ -370,7 +346,8 @@
       
       await setDoc(userRef, {
         email: email,
-        classes: [classId],
+        classId: classId,
+        className: className,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -390,40 +367,21 @@
       if (!userSnap.exists()) return [];
       
       const userData = userSnap.data();
-      const classIds = userData.classes || [];
+      const classId = userData.classId;
       
-      const classPromises = classIds.map(async (classId) => {
-        const classRef = doc(db, 'classes', classId);
-        const classSnap = await getDoc(classRef);
-        if (classSnap.exists()) {
-          return { id: classId, ...classSnap.data() };
-        }
-        return null;
-      });
+      if (!classId) return [];
       
-      const classes = await Promise.all(classPromises);
-      return classes.filter(c => c !== null);
-    }
-
-    async function createNewClassForUser(uid, className) {
-      const classId = generateClassId(className);
-      const userRef = doc(db, 'users', uid);
       const classRef = doc(db, 'classes', classId);
+      const classSnap = await getDoc(classRef);
       
-      await setDoc(classRef, {
-        name: className,
-        owner: uid,
-        students: [],
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-
-      await setDoc(userRef, {
-        classes: arrayUnion(classId)
-      }, { merge: true });
-
-      return classId;
+      if (classSnap.exists()) {
+        return [{ id: classId, ...classSnap.data() }];
+      }
+      
+      return [];
     }
+
+
 
     async function addStudentToClass(classId, studentName) {
       const classRef = doc(db, 'classes', classId);
@@ -497,36 +455,7 @@
     }
     cancelEditBtn.addEventListener('click',()=>setEditMode(null));
 
-    // Class and Student Management Event Handlers
-    createNewClass?.addEventListener('click', () => {
-      createClassModal.classList.remove('hidden');
-    });
-
-    cancelCreateClass?.addEventListener('click', () => {
-      createClassModal.classList.add('hidden');
-      newClassName.value = '';
-    });
-
-    createClassForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const className = newClassName.value.trim();
-      if (!className || !currentUser) return;
-      
-      try {
-        const classId = await createNewClassForUser(currentUser.uid, className);
-        createClassModal.classList.add('hidden');
-        newClassName.value = '';
-        showToast('Class created successfully!', 'success');
-        await loadAndDisplayClasses();
-      } catch (error) {
-        showToast('Failed to create class', 'error');
-        console.error(error);
-      }
-    });
-
-    switchClassBtn?.addEventListener('click', () => {
-      showClassSelection();
-    });
+    // Student Management Event Handlers
 
     manageStudentsBtn?.addEventListener('click', () => {
       if (currentClassId) {
@@ -568,15 +497,9 @@
         return;
       }
       
-      noClasses.classList.add('hidden');
-      classesList.innerHTML = classes.map(cls => `
-        <div class="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-100/80 dark:hover:bg-slate-700/80 cursor-pointer transition-colors"
-             onclick="selectClass('${cls.id}', '${cls.name}')">
-          <h3 class="font-semibold text-lg mb-2">${esc(cls.name)}</h3>
-          <p class="text-sm text-slate-600 dark:text-slate-400">${cls.students?.length || 0} students</p>
-          <p class="text-xs text-slate-500 mt-1">Created: ${formatDisplayDate(cls.createdAt?.toDate?.() || new Date())}</p>
-        </div>
-      `).join('');
+      // Automatically select the first (and only) class
+      const userClass = classes[0];
+      await selectClass(userClass.id, userClass.name);
     }
 
     async function selectClass(classId, className) {
@@ -608,9 +531,7 @@
     }
 
     function showClassSelection() {
-      appShell.classList.add('hidden');
-      classSelection.classList.remove('hidden');
-      if (unsub) unsub();
+      // Skip class selection screen and go directly to loading the user's class
       loadAndDisplayClasses();
     }
 
@@ -654,8 +575,6 @@
         console.error(error);
       }
     };
-
-    window.selectClass = selectClass;
 
     // Save/Update
     document.getElementById('notesForm').addEventListener('submit',async(e)=>{
