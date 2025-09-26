@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ghausia — Class Track</title>
+  <script>
+    // Suppress Tailwind CDN warning
+    window.process = { env: { NODE_ENV: 'development' } };
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -469,24 +473,45 @@
     }
 
     async function loadUserClasses(uid) {
-      const userRef = doc(db, 'users', uid);
-      const userSnap = await getDoc(userRef);
-      if (!userSnap.exists()) return [];
-      
-      const userData = userSnap.data();
-      const classIds = userData.classes || [];
-      
-      const classPromises = classIds.map(async (classId) => {
-        const classRef = doc(db, 'classes', classId);
-        const classSnap = await getDoc(classRef);
-        if (classSnap.exists()) {
-          return { id: classId, ...classSnap.data() };
+      try {
+        const userRef = doc(db, 'users', uid);
+        const userSnap = await getDoc(userRef);
+        
+        if (!userSnap.exists()) {
+          console.log('User document does not exist for uid:', uid);
+          return [];
         }
-        return null;
-      });
-      
-      const classes = await Promise.all(classPromises);
-      return classes.filter(c => c !== null);
+        
+        const userData = userSnap.data();
+        const classIds = userData.classes || [];
+        
+        if (classIds.length === 0) {
+          console.log('No classes found for user:', uid);
+          return [];
+        }
+        
+        const classPromises = classIds.map(async (classId) => {
+          try {
+            const classRef = doc(db, 'classes', classId);
+            const classSnap = await getDoc(classRef);
+            if (classSnap.exists()) {
+              return { id: classId, ...classSnap.data() };
+            }
+            console.log('Class document does not exist:', classId);
+            return null;
+          } catch (error) {
+            console.error('Error loading class:', classId, error);
+            return null;
+          }
+        });
+        
+        const classes = await Promise.all(classPromises);
+        return classes.filter(c => c !== null);
+      } catch (error) {
+        console.error('Error loading user classes:', error);
+        showToast('Error loading classes', 'error');
+        return [];
+      }
     }
 
 
@@ -732,16 +757,26 @@
 
     // Class and Student Display Functions
     async function loadAndDisplayClasses() {
-      if (!currentUser) return;
+      if (!currentUser) {
+        console.log('No current user, cannot load classes');
+        return;
+      }
+      
+      console.log('Loading classes for user:', currentUser.uid);
+      
+      // Add a small delay to ensure authentication is fully processed
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       const classes = await loadUserClasses(currentUser.uid);
       
       if (classes.length === 0) {
+        console.log('No classes found, showing no classes screen');
         classesList.innerHTML = '';
         noClasses.classList.remove('hidden');
         return;
       }
       
+      console.log('Found', classes.length, 'classes');
       // Automatically select the first (and only) class
       const firstClass = classes[0];
       await selectClass(firstClass.id, firstClass.name);
@@ -812,6 +847,35 @@
       settingsModal.classList.remove('hidden');
     }
 
+    // Helper function to get current field labels
+    function getCurrentFieldLabels() {
+      if (!currentClassData) {
+        return {
+          quran: '📖 Quran',
+          surah: '🕌 Surah',
+          laws: '🤲 Laws of Salah',
+          qamar: '🌙 Qamar',
+          notes: '💭 Additional Notes'
+        };
+      }
+      
+      const fieldSettings = currentClassData.fieldSettings || {
+        quran: { enabled: true, label: '📖 Quran' },
+        surah: { enabled: true, label: '🕌 Surah' },
+        laws: { enabled: true, label: '🤲 Laws of Salah' },
+        qamar: { enabled: true, label: '🌙 Qamar' },
+        notes: { enabled: true, label: '💭 Additional Notes' }
+      };
+      
+      return {
+        quran: fieldSettings.quran?.label || '📖 Quran',
+        surah: fieldSettings.surah?.label || '🕌 Surah',
+        laws: fieldSettings.laws?.label || '🤲 Laws of Salah',
+        qamar: fieldSettings.qamar?.label || '🌙 Qamar',
+        notes: fieldSettings.notes?.label || '💭 Additional Notes'
+      };
+    }
+
     function updateFormFields() {
       if (!currentClassData) return;
       
@@ -868,6 +932,34 @@
         notesDiv.querySelector('label').textContent = fieldSettings.notes?.label || '💭 Additional Notes';
       } else {
         notesDiv.style.display = 'none';
+      }
+      
+      // Update table headers to reflect new field labels
+      updateTableHeaders();
+    }
+
+    // Function to update table headers with current field labels
+    function updateTableHeaders() {
+      const labels = getCurrentFieldLabels();
+      
+      // Update Progress History table headers
+      const historyHeaders = document.querySelectorAll('#historyTable th');
+      if (historyHeaders.length >= 7) {
+        historyHeaders[2].textContent = labels.quran;
+        historyHeaders[3].textContent = labels.surah;
+        historyHeaders[4].textContent = labels.laws;
+        historyHeaders[5].textContent = labels.qamar;
+        historyHeaders[6].textContent = labels.notes;
+      }
+      
+      // Update Monthly Reports table headers
+      const reportHeaders = document.querySelectorAll('#reportTable th');
+      if (reportHeaders.length >= 6) {
+        reportHeaders[1].textContent = labels.quran;
+        reportHeaders[2].textContent = labels.surah;
+        reportHeaders[3].textContent = labels.laws;
+        reportHeaders[4].textContent = labels.qamar;
+        reportHeaders[5].textContent = labels.notes;
       }
     }
 
@@ -943,14 +1035,26 @@
         ownerUid:auth.currentUser?.uid||null,
         classId:currentClassId
       };
-      const snap=await getDoc(ref);
-      if(!snap.exists())payload.createdAt=serverTimestamp();
-      await setDoc(ref,payload,{merge:true});
-      saveSpinner.classList.add('hidden');
-      showToast(editingKey?'Updated ✓':'Saved ✓','success');
-      saveStatus.textContent=editingKey?'Updated ✅':'Saved ✅';
-      setTimeout(()=>saveStatus.textContent='',1200);
-      setEditMode(null);
+      try {
+        const snap=await getDoc(ref);
+        if(!snap.exists())payload.createdAt=serverTimestamp();
+        await setDoc(ref,payload,{merge:true});
+        saveSpinner.classList.add('hidden');
+        showToast(editingKey?'Updated ✓':'Saved ✓','success');
+        saveStatus.textContent=editingKey?'Updated ✅':'Saved ✅';
+        setTimeout(()=>saveStatus.textContent='',1200);
+        setEditMode(null);
+      } catch (error) {
+        saveSpinner.classList.add('hidden');
+        console.error('Error saving entry:', error);
+        if (error.code === 'permission-denied') {
+          saveStatus.textContent='Permission denied';
+          showToast('Permission denied. Please check your access rights.', 'error');
+        } else {
+          saveStatus.textContent='Save failed';
+          showToast('Failed to save entry', 'error');
+        }
+      }
     });
 
     // History stream & filters
@@ -960,12 +1064,29 @@
 
     function startHistoryStream(){
       if(unsub)unsub();
-      if(!notesCol || !currentClassId) return;
+      if(!notesCol || !currentClassId || !currentUser) {
+        console.log('Cannot start history stream - missing requirements:', {
+          notesCol: !!notesCol,
+          currentClassId: !!currentClassId,
+          currentUser: !!currentUser
+        });
+        return;
+      }
+      
+      console.log('Starting history stream for class:', currentClassId);
       const q=query(notesCol,orderBy('date','desc'),qLimit(200));
       unsub=onSnapshot(q,(snap)=>{
+        console.log('Received notes snapshot with', snap.docs.length, 'documents');
         historyRows=snap.docs.map(d=>({id:d.id,...d.data()}));
         applyFilters();
         renderMonthlyReport();
+      }, (error) => {
+        console.error('Error listening to notes:', error);
+        if (error.code === 'permission-denied') {
+          showToast('Permission denied. Please check database rules.', 'error');
+        } else {
+          showToast('Error loading notes. Please refresh the page.', 'error');
+        }
       });
     }
 
@@ -1137,7 +1258,8 @@
     }
 
     function downloadMonthlyCsv(student,monthValue){
-      const rows=[['Date','Student','Quran','Surah','Laws of Salah','Qamar','Notes']];
+      const labels = getCurrentFieldLabels();
+      const rows=[['Date','Student',labels.quran,labels.surah,labels.laws,labels.qamar,labels.notes]];
       currentReportRows.forEach(r=>{
         rows.push([formatDisplayDate(r.date),r.student||'',r.quran||'',r.surah||'',r.lawsOfSalah||'',r.qamar||'',r.anythingElse||'']);
       });
@@ -1184,12 +1306,13 @@
         y+=lineHeight;
 
         doc.setFont('helvetica','normal');
+        const labels = getCurrentFieldLabels();
         const sections=[
-          ['Quran',row.quran],
-          ['Surah',row.surah],
-          ['Laws of Salah',row.lawsOfSalah],
-          ['Qamar',row.qamar],
-          ['Notes',row.anythingElse],
+          [labels.quran,row.quran],
+          [labels.surah,row.surah],
+          [labels.laws,row.lawsOfSalah],
+          [labels.qamar,row.qamar],
+          [labels.notes,row.anythingElse],
         ];
         sections.forEach(([label,value])=>{
           const text=`• ${label}: ${value||'-'}`;
@@ -1282,29 +1405,40 @@
 
     // Auth gate
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        authGate.classList.add('hidden');
-        whoami.textContent = user.email || user.uid;
-        authStatus.textContent = 'Online';
-        dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
-        
-        // Load user's class and go directly to app
-        await loadAndDisplayClasses();
-      } else {
-        currentUser = null;
-        currentClassId = null;
-        currentClassData = null;
-        students = [];
-        
-        appShell.classList.add('hidden');
-        classSelection.classList.add('hidden');
-        authGate.classList.remove('hidden');
-        whoami.textContent = 'Not signed in';
-        authStatus.textContent = 'Signed out';
-        dot.className = 'w-2 h-2 rounded-full bg-amber-400';
-        
-        if (unsub) unsub();
+      try {
+        if (user) {
+          console.log('User authenticated:', user.email);
+          currentUser = user;
+          authGate.classList.add('hidden');
+          whoami.textContent = user.email || user.uid;
+          authStatus.textContent = 'Online';
+          dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+          
+          // Add a small delay to ensure Firebase is fully initialized
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          // Load user's class and go directly to app
+          await loadAndDisplayClasses();
+        } else {
+          console.log('User signed out');
+          currentUser = null;
+          currentClassId = null;
+          currentClassData = null;
+          students = [];
+          
+          appShell.classList.add('hidden');
+          classSelection.classList.add('hidden');
+          authGate.classList.remove('hidden');
+          whoami.textContent = 'Not signed in';
+          authStatus.textContent = 'Signed out';
+          dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+          
+          if (unsub) unsub();
+        }
+      } catch (error) {
+        console.error('Error in auth state change:', error);
+        authStatus.textContent = 'Error loading';
+        dot.className = 'w-2 h-2 rounded-full bg-red-400';
       }
     });
 
