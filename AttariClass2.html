@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ghausia — Class Tracker</title>
+  <title>Ghausia — Class Track</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +43,7 @@
     <!-- Header -->
     <header class="text-center mb-10">
       <div class="float">
-        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Ghausia Class Tracker</h1>
+        <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Ghausia Class Track</h1>
         <div class="w-24 h-1 gradient-animated mx-auto mt-4 rounded-full"></div>
         <p class="mt-4 text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your class.</p>
         <p class="mt-2 text-sm"><span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> <span id="whoami">Not signed in</span> • <span id="todayDisplay"></span></span></p>
@@ -82,14 +82,16 @@
           <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">Your Class</h2>
         </div>
         <div class="p-6 md:p-8">
-          <div id="classesList" class="max-w-md mx-auto"></div>
+          <div id="classesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
           <div id="noClasses" class="hidden text-center py-10">
             <div class="text-5xl mb-3">🏫</div>
-            <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No class found</h3>
-            <p class="text-slate-500">Please contact support if you're seeing this message.</p>
+            <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No classes yet</h3>
+            <p class="text-slate-500">Create your first class to get started.</p>
           </div>
         </div>
       </div>
+
+
     </div>
 
     <!-- APP -->
@@ -346,8 +348,7 @@
       
       await setDoc(userRef, {
         email: email,
-        classId: classId,
-        className: className,
+        classes: [classId],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -367,18 +368,19 @@
       if (!userSnap.exists()) return [];
       
       const userData = userSnap.data();
-      const classId = userData.classId;
+      const classIds = userData.classes || [];
       
-      if (!classId) return [];
+      const classPromises = classIds.map(async (classId) => {
+        const classRef = doc(db, 'classes', classId);
+        const classSnap = await getDoc(classRef);
+        if (classSnap.exists()) {
+          return { id: classId, ...classSnap.data() };
+        }
+        return null;
+      });
       
-      const classRef = doc(db, 'classes', classId);
-      const classSnap = await getDoc(classRef);
-      
-      if (classSnap.exists()) {
-        return [{ id: classId, ...classSnap.data() }];
-      }
-      
-      return [];
+      const classes = await Promise.all(classPromises);
+      return classes.filter(c => c !== null);
     }
 
 
@@ -498,8 +500,8 @@
       }
       
       // Automatically select the first (and only) class
-      const userClass = classes[0];
-      await selectClass(userClass.id, userClass.name);
+      const firstClass = classes[0];
+      await selectClass(firstClass.id, firstClass.name);
     }
 
     async function selectClass(classId, className) {
@@ -528,11 +530,6 @@
         currentClassData = classSnap.data();
         students = currentClassData.students || [];
       }
-    }
-
-    function showClassSelection() {
-      // Skip class selection screen and go directly to loading the user's class
-      loadAndDisplayClasses();
     }
 
     function showApp() {
@@ -575,6 +572,8 @@
         console.error(error);
       }
     };
+
+    window.selectClass = selectClass;
 
     // Save/Update
     document.getElementById('notesForm').addEventListener('submit',async(e)=>{
@@ -947,8 +946,8 @@
         authStatus.textContent = 'Online';
         dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
         
-        // Load user's classes and show class selection
-        showClassSelection();
+        // Load user's class and go directly to app
+        await loadAndDisplayClasses();
       } else {
         currentUser = null;
         currentClassId = null;
