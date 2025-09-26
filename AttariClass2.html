@@ -35,104 +35,18 @@
     .notification.show{transform:translateX(0)}
     .notification.success{background:linear-gradient(135deg,#10b981,#059669)}
     .notification.error{background:linear-gradient(135deg,#ef4444,#dc2626)}
-    
-    /* Improved responsive design */
-    @media (max-width: 768px) {
-      .grid-cols-1.xl\\:grid-cols-5 { grid-template-columns: 1fr; }
-      .overflow-x-auto { max-width: calc(100vw - 2rem); }
-      .xl\\:col-span-2, .xl\\:col-span-3, .xl\\:col-span-5 { grid-column: span 1; }
-    }
-    
-    /* Better table responsiveness */
-    .table-container {
-      max-height: 70vh;
-      overflow: auto;
-    }
-    
-    /* Modal styles */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 1rem;
-    }
-    .modal.hidden { display: none; }
-    
-    /* Entry exists indicator */
-    .entry-exists-indicator {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      animation: pulse 2s infinite;
-    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
   <div id="toast" class="notification" role="status" aria-live="polite"></div>
-  
-  <!-- Class Management Modal -->
-  <div id="classModal" class="modal hidden">
-    <div class="glass bg-white/90 dark:bg-slate-900/90 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="p-6 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
-        <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">🏫 Class Management</h2>
-        <button id="closeClassModal" class="text-slate-500 hover:text-slate-700 text-2xl">&times;</button>
-      </div>
-      <div class="p-6 space-y-6">
-        <!-- Current Class Selection -->
-        <div>
-          <label class="block text-sm font-semibold mb-2">Current Class</label>
-          <select id="currentClassSelect" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0">
-            <option value="Attari">Attari (Default)</option>
-          </select>
-        </div>
-        
-        <!-- Create New Class -->
-        <div class="border-t pt-6">
-          <h3 class="text-lg font-semibold mb-4">Create New Class</h3>
-          <form id="newClassForm" class="space-y-4">
-            <input id="newClassName" type="text" placeholder="Class Name (e.g., Intermediate Arabic)" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
-            <button type="submit" class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Create Class</button>
-          </form>
-        </div>
-        
-        <!-- Student Management -->
-        <div class="border-t pt-6">
-          <h3 class="text-lg font-semibold mb-4">Manage Students</h3>
-          <form id="addStudentForm" class="space-y-4 mb-4">
-            <input id="newStudentName" type="text" placeholder="Student Name" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" required />
-            <button type="submit" class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Add Student</button>
-          </form>
-          
-          <div id="studentsList" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-            <!-- Students will be populated here -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
   <div class="max-w-7xl mx-auto p-4 md:p-8 relative">
     <!-- Header -->
     <header class="text-center mb-10">
       <div class="float">
         <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600">Attari Class Tracker</h1>
         <div class="w-24 h-1 gradient-animated mx-auto mt-4 rounded-full"></div>
-        <p class="mt-4 text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your classes.</p>
-        <p class="mt-2 text-sm">
-          <span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700">
-            <span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> 
-            <span id="whoami">Not signed in</span> • 
-            <span id="currentClassDisplay">Class: Attari</span> • 
-            <span id="todayDisplay"></span>
-          </span>
-        </p>
+        <p class="mt-4 text-slate-600 dark:text-slate-400">Beautiful, responsive progress tracking for your class.</p>
+        <p class="mt-2 text-sm"><span id="authStatus" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 dark:bg-slate-800/70 ring-1 ring-slate-200 dark:ring-slate-700"><span class="w-2 h-2 rounded-full bg-amber-400" id="dot"></span> <span id="whoami">Not signed in</span> • <span id="todayDisplay"></span></span></p>
       </div>
     </header>
 
@@ -153,10 +67,45 @@
           <div class="text-sm text-slate-500">Create your teacher account.</div>
           <input id="suEmail" type="email" placeholder="Email" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
           <input id="suPass" type="password" placeholder="Password (min 6)" minlength="6" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
-          <button class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Create account</button>
+          <input id="suClassName" type="text" placeholder="Class Name (e.g., Attari Class)" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+          <button class="btn-primary w-full px-5 py-3 rounded-2xl text-white font-semibold">Create account & class</button>
           <p id="suMsg" class="text-sm text-slate-500"></p>
           <div class="text-sm"><button id="showSignin" type="button" class="text-emerald-700 hover:underline">Back to sign in</button></div>
         </form>
+      </div>
+    </div>
+
+    <!-- CLASS SELECTION -->
+    <div id="classSelection" class="hidden max-w-4xl mx-auto">
+      <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
+        <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+          <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-emerald-600">Your Classes</h2>
+          <button id="createNewClass" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg">+ Create New Class</button>
+        </div>
+        <div class="p-6 md:p-8">
+          <div id="classesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          <div id="noClasses" class="hidden text-center py-10">
+            <div class="text-5xl mb-3">🏫</div>
+            <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No classes yet</h3>
+            <p class="text-slate-500">Create your first class to get started.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create Class Modal -->
+      <div id="createClassModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="glass bg-white/90 dark:bg-slate-900/90 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 max-w-md w-full mx-4">
+          <div class="p-6 border-b border-slate-200/50 dark:border-slate-700/50">
+            <h3 class="text-xl font-bold">Create New Class</h3>
+          </div>
+          <form id="createClassForm" class="p-6 space-y-4">
+            <input id="newClassName" type="text" placeholder="Class Name" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+            <div class="flex gap-3">
+              <button type="submit" class="btn-primary flex-1 px-4 py-3 rounded-2xl text-white font-semibold">Create Class</button>
+              <button type="button" id="cancelCreateClass" class="px-4 py-3 rounded-2xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium">Cancel</button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
@@ -167,10 +116,14 @@
         <section class="xl:col-span-2">
           <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
             <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
-              <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"><span id="formTitle">✨ New Entry</span></h2>
+              <div>
+                <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600"><span id="formTitle">✨ New Entry</span></h2>
+                <p class="text-sm text-slate-600 dark:text-slate-400">Class: <span id="currentClassName">-</span></p>
+              </div>
               <div class="flex gap-2">
-                <button id="manageClassesBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🏫 Classes</button>
-                <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">Sign out</button>
+                <button id="manageStudentsBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Manage Students</button>
+                <button id="switchClassBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Switch Class</button>
+                <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Sign out</button>
               </div>
             </div>
             <form id="notesForm" class="p-6 md:p-8 space-y-6">
@@ -179,9 +132,6 @@
                 <select id="student" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required>
                   <option value="" disabled selected>Choose a student…</option>
                 </select>
-                <div id="entryExistsIndicator" class="mt-2 hidden">
-                  <span class="entry-exists-indicator">📝 Entry already exists for today - showing existing data</span>
-                </div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label class="block text-sm font-semibold mb-1">📖 Quran</label><input id="quran" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" /></div>
@@ -204,7 +154,7 @@
 
         <!-- History Card -->
         <section class="xl:col-span-3">
-          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 h-fit">
+          <div class="glass bg-white/70 dark:bg-slate-900/70 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30">
             <div class="p-6 md:p-8 border-b border-slate-200/50 dark:border-slate-700/50 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
               <div>
                 <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">📊 Progress History</h2>
@@ -215,25 +165,27 @@
                   <option value="">All students</option>
                 </select>
                 <input id="filterDate" type="date" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500" />
-                <button id="clearFilters" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 text-sm">🔄 Clear</button>
+                <button id="clearFilters" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200">🔄 Clear</button>
               </div>
             </div>
-            <div class="table-container custom-scrollbar">
-              <table class="min-w-full text-left text-sm">
-                <thead class="sticky top-0 backdrop-blur bg-slate-100/90 dark:bg-slate-800/90">
-                  <tr>
-                    <th class="px-6 py-3 font-semibold">📅 Date</th>
-                    <th class="px-6 py-3 font-semibold">👤 Student</th>
-                    <th class="px-6 py-3 font-semibold">📖 Quran</th>
-                    <th class="px-6 py-3 font-semibold">🕌 Surah</th>
-                    <th class="px-6 py-3 font-semibold">🤲 Salah</th>
-                    <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
-                    <th class="px-6 py-3 font-semibold">💭 Notes</th>
-                    <th class="px-6 py-3 font-semibold">⚡ Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
-              </table>
+            <div class="overflow-hidden">
+              <div class="overflow-x-auto custom-scrollbar max-h-96">
+                <table class="min-w-full text-left text-sm">
+                  <thead class="sticky top-0 backdrop-blur bg-slate-100/90 dark:bg-slate-800/90">
+                    <tr>
+                      <th class="px-6 py-3 font-semibold">📅 Date</th>
+                      <th class="px-6 py-3 font-semibold">👤 Student</th>
+                      <th class="px-6 py-3 font-semibold">📖 Quran</th>
+                      <th class="px-6 py-3 font-semibold">🕌 Surah</th>
+                      <th class="px-6 py-3 font-semibold">🤲 Salah</th>
+                      <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
+                      <th class="px-6 py-3 font-semibold">💭 Notes</th>
+                      <th class="px-6 py-3 font-semibold">⚡ Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
+                </table>
+              </div>
               <div id="emptyState" class="hidden text-center py-14">
                 <div class="text-6xl mb-3">📝</div>
                 <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No entries yet</h3>
@@ -242,7 +194,7 @@
             </div>
             <div class="p-6 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50">
               <div id="countInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
-              <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-sm">🔄 Refresh</button>
+              <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">🔄 Refresh</button>
             </div>
           </div>
         </section>
@@ -264,12 +216,12 @@
                   <option value="csv" selected>CSV</option>
                   <option value="pdf">PDF</option>
                 </select>
-                <button id="reportDownload" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm" disabled>⬇️ Download CSV</button>
+                <button id="reportDownload" type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>⬇️ Download CSV</button>
               </div>
             </div>
             <div class="p-6 md:p-8 space-y-6">
               <div id="reportInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
-              <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden max-h-96">
+              <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden">
                 <table class="min-w-full text-left text-sm">
                   <thead class="bg-slate-100/80 dark:bg-slate-800/80">
                     <tr>
@@ -295,9 +247,30 @@
 
       <footer class="mt-12 text-center">
         <div class="glass bg-white/60 dark:bg-slate-800/60 rounded-2xl px-6 py-4 inline-block">
-          <p class="text-xs text-slate-600 dark:text-slate-400">🔒 Data: <span class="font-mono font-semibold" id="dataPath">classes/Attari/notes</span> • Unique per <em>date + student</em></p>
+          <p class="text-xs text-slate-600 dark:text-slate-400">🔒 Data: <span class="font-mono font-semibold">classes/<span id="footerClassId">your-class</span>/notes</span> • Unique per <em>date + student</em></p>
         </div>
       </footer>
+    </div>
+  </div>
+
+  <!-- Student Management Modal -->
+  <div id="studentModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="glass bg-white/90 dark:bg-slate-900/90 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+      <div class="p-6 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+        <h3 class="text-xl font-bold">Manage Students</h3>
+        <button id="closeStudentModal" class="text-slate-500 hover:text-slate-700">✕</button>
+      </div>
+      <div class="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
+        <form id="addStudentForm" class="flex gap-3 mb-6">
+          <input id="newStudentName" type="text" placeholder="Student Name" class="flex-1 rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+          <button type="submit" class="btn-primary px-6 py-3 rounded-2xl text-white font-semibold">Add Student</button>
+        </form>
+        <div id="studentsList" class="space-y-2"></div>
+        <div id="noStudents" class="hidden text-center py-6 text-slate-500">
+          <div class="text-3xl mb-2">👥</div>
+          <p>No students added yet</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -305,9 +278,9 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, orderBy, where, limit as qLimit, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, orderBy, where, limit as qLimit, onSnapshot, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-    const firebaseConfig = { apiKey:"AIzaSyCTGIoNNey_0GwRxg_85Xv-jEQtQDjzehw", authDomain:"attari-579d2.firebaseapp.com", projectId:"attari-579d2", storageBucket:"attari-579d2.firebasestorage.app", messagingSenderId:"765966619098", appId:"1:765966619098:web:9ab852c4881426472b70e3" };
+    const firebaseConfig = { apiKey:"AIzaSyAS37LFzGqN3YFmT5n3i3qSNXOG8G8R2as", authDomain:"attari2-f55f3.firebaseapp.com", projectId:"attari2-f55f3", storageBucket:"attari2-f55f3.firebasestorage.app", messagingSenderId:"199694820477", appId:"1:199694820477:web:163be13dba7c1878cfbd14" };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -315,189 +288,57 @@
 
     // UI refs
     const authGate = document.getElementById('authGate');
+    const classSelection = document.getElementById('classSelection');
     const appShell = document.getElementById('app');
     const authStatus = document.getElementById('authStatus');
     const dot = document.getElementById('dot');
     const whoami = document.getElementById('whoami');
     const signOutBtn = document.getElementById('signOutBtn');
     const toast = document.getElementById('toast');
-    const currentClassDisplay = document.getElementById('currentClassDisplay');
-    const dataPath = document.getElementById('dataPath');
 
-    // Class management
-    const classModal = document.getElementById('classModal');
-    const manageClassesBtn = document.getElementById('manageClassesBtn');
-    const closeClassModal = document.getElementById('closeClassModal');
-    const currentClassSelect = document.getElementById('currentClassSelect');
-    const newClassForm = document.getElementById('newClassForm');
+    // Class management elements
+    const classesList = document.getElementById('classesList');
+    const noClasses = document.getElementById('noClasses');
+    const createNewClass = document.getElementById('createNewClass');
+    const createClassModal = document.getElementById('createClassModal');
+    const createClassForm = document.getElementById('createClassForm');
     const newClassName = document.getElementById('newClassName');
+    const cancelCreateClass = document.getElementById('cancelCreateClass');
+    const currentClassName = document.getElementById('currentClassName');
+    const switchClassBtn = document.getElementById('switchClassBtn');
+    const manageStudentsBtn = document.getElementById('manageStudentsBtn');
+
+    // Student management elements
+    const studentModal = document.getElementById('studentModal');
+    const closeStudentModal = document.getElementById('closeStudentModal');
     const addStudentForm = document.getElementById('addStudentForm');
     const newStudentName = document.getElementById('newStudentName');
     const studentsList = document.getElementById('studentsList');
+    const noStudents = document.getElementById('noStudents');
 
     // Forms
     const signinForm = document.getElementById('signinForm');
     const signupForm = document.getElementById('signupForm');
+    const siEmail = document.getElementById('siEmail');
+    const siPass = document.getElementById('siPass');
+    const siMsg = document.getElementById('siMsg');
+    const suEmail = document.getElementById('suEmail');
+    const suPass = document.getElementById('suPass');
+    const suClassName = document.getElementById('suClassName');
+    const suMsg = document.getElementById('suMsg');
+    
     document.getElementById('showSignup').addEventListener('click',()=>{signinForm.classList.add('hidden');signupForm.classList.remove('hidden')});
     document.getElementById('showSignin').addEventListener('click',()=>{signupForm.classList.add('hidden');signinForm.classList.remove('hidden')});
 
     signinForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=siEmail.value.trim();const pass=siPass.value;siMsg.textContent='';try{await signInWithEmailAndPassword(auth,email,pass);}catch(err){siMsg.textContent=err.message;showToast(err.message,'error')}});
-    signupForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=suEmail.value.trim();const pass=suPass.value;suMsg.textContent='';try{await createUserWithEmailAndPassword(auth,email,pass);suMsg.textContent='Account created. Signed in.';showToast('Welcome!','success')}catch(err){suMsg.textContent=err.message;showToast(err.message,'error')}});
+    signupForm.addEventListener('submit', async (e)=>{e.preventDefault();const email=suEmail.value.trim();const pass=suPass.value;const className=suClassName.value.trim();suMsg.textContent='';try{const userCredential=await createUserWithEmailAndPassword(auth,email,pass);const user=userCredential.user;await createUserProfile(user.uid,email,className);suMsg.textContent='Account created. Signed in.';showToast('Welcome!','success')}catch(err){suMsg.textContent=err.message;showToast(err.message,'error')}});
     signOutBtn?.addEventListener('click', ()=>signOut(auth));
 
     // Global state
-    let currentClass = 'Attari';
-    let classes = { 'Attari': ["Siyaam Azar","Hussain Ali","Hamza Razzaq","Subhan Hussain","Milad Raza","Murtaza Arfan","Zeeshan Hussain","Mohammed Subhan Ramzan","Onees Usman","Mohammed Hassan Hussain","Ali Hussein"] };
     let currentUser = null;
-
-    // Initialize user classes on auth
-    async function initializeUserClasses(user) {
-      currentUser = user;
-      const userClassesDoc = doc(db, 'userClasses', user.uid);
-      const userClassesSnap = await getDoc(userClassesDoc);
-      
-      if (userClassesSnap.exists()) {
-        const userData = userClassesSnap.data();
-        classes = userData.classes || { 'Attari': classes['Attari'] };
-        currentClass = userData.currentClass || 'Attari';
-      } else {
-        // Initialize with default class
-        await setDoc(userClassesDoc, {
-          classes: classes,
-          currentClass: currentClass,
-          createdAt: serverTimestamp()
-        });
-      }
-      
-      updateClassUI();
-      populateStudents();
-    }
-
-    // Save user classes to Firebase
-    async function saveUserClasses() {
-      if (!currentUser) return;
-      
-      const userClassesDoc = doc(db, 'userClasses', currentUser.uid);
-      await setDoc(userClassesDoc, {
-        classes: classes,
-        currentClass: currentClass,
-        updatedAt: serverTimestamp()
-      }, { merge: true });
-    }
-
-    // Class management UI
-    function updateClassUI() {
-      currentClassDisplay.textContent = `Class: ${currentClass}`;
-      dataPath.textContent = `classes/${currentClass}/notes`;
-      
-      // Update class select dropdown
-      currentClassSelect.innerHTML = '';
-      Object.keys(classes).forEach(className => {
-        const option = document.createElement('option');
-        option.value = className;
-        option.textContent = className;
-        option.selected = className === currentClass;
-        currentClassSelect.appendChild(option);
-      });
-      
-      renderStudentsList();
-    }
-
-    function renderStudentsList() {
-      studentsList.innerHTML = '';
-      const currentStudents = classes[currentClass] || [];
-      
-      currentStudents.forEach(student => {
-        const studentDiv = document.createElement('div');
-        studentDiv.className = 'flex items-center justify-between p-3 bg-slate-50/80 dark:bg-slate-800/80 rounded-xl';
-        studentDiv.innerHTML = `
-          <span class="font-medium">${esc(student)}</span>
-          <button class="text-red-600 hover:text-red-800 text-sm" data-action="remove-student" data-student="${esc(student)}">Remove</button>
-        `;
-        studentsList.appendChild(studentDiv);
-      });
-      
-      if (currentStudents.length === 0) {
-        studentsList.innerHTML = '<div class="text-center text-slate-500 py-4">No students in this class</div>';
-      }
-    }
-
-    // Event listeners for class management
-    manageClassesBtn.addEventListener('click', () => {
-      classModal.classList.remove('hidden');
-    });
-
-    closeClassModal.addEventListener('click', () => {
-      classModal.classList.add('hidden');
-    });
-
-    classModal.addEventListener('click', (e) => {
-      if (e.target === classModal) {
-        classModal.classList.add('hidden');
-      }
-    });
-
-    currentClassSelect.addEventListener('change', async (e) => {
-      currentClass = e.target.value;
-      await saveUserClasses();
-      updateClassUI();
-      populateStudents();
-      if (unsub) startHistoryStream(); // Refresh data for new class
-      showToast(`Switched to ${currentClass}`, 'success');
-    });
-
-    newClassForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const className = newClassName.value.trim();
-      
-      if (!className) return;
-      if (classes[className]) {
-        showToast('Class already exists', 'error');
-        return;
-      }
-      
-      classes[className] = [];
-      await saveUserClasses();
-      updateClassUI();
-      newClassName.value = '';
-      showToast(`Created class: ${className}`, 'success');
-    });
-
-    addStudentForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const studentName = newStudentName.value.trim();
-      
-      if (!studentName) return;
-      if (classes[currentClass].includes(studentName)) {
-        showToast('Student already exists in this class', 'error');
-        return;
-      }
-      
-      classes[currentClass].push(studentName);
-      await saveUserClasses();
-      renderStudentsList();
-      populateStudents();
-      newStudentName.value = '';
-      showToast(`Added student: ${studentName}`, 'success');
-    });
-
-    studentsList.addEventListener('click', async (e) => {
-      if (e.target.dataset.action === 'remove-student') {
-        const student = e.target.dataset.student;
-        if (confirm(`Remove ${student} from ${currentClass}?`)) {
-          const index = classes[currentClass].indexOf(student);
-          if (index > -1) {
-            classes[currentClass].splice(index, 1);
-            await saveUserClasses();
-            renderStudentsList();
-            populateStudents();
-            showToast(`Removed ${student}`, 'success');
-          }
-        }
-      }
-    });
-
-    // Students and elements
+    let currentClassId = null;
+    let currentClassData = null;
+    let students = [];
     const MONTH_LABELS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const inputs={student:document.getElementById('student'),quran:document.getElementById('quran'),surah:document.getElementById('surah'),laws:document.getElementById('laws'),qamar:document.getElementById('qamar'),anything:document.getElementById('anything')};
     const filterStudent=document.getElementById('filterStudent');
@@ -520,20 +361,99 @@
     const reportEmptyText=document.getElementById('reportEmptyText');
     const reportInfo=document.getElementById('reportInfo');
     const reportDownload=document.getElementById('reportDownload');
-    const entryExistsIndicator = document.getElementById('entryExistsIndicator');
+
+    // User and Class Management
+    async function createUserProfile(uid, email, className) {
+      const classId = generateClassId(className);
+      const userRef = doc(db, 'users', uid);
+      const classRef = doc(db, 'classes', classId);
+      
+      await setDoc(userRef, {
+        email: email,
+        classes: [classId],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      await setDoc(classRef, {
+        name: className,
+        owner: uid,
+        students: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+    }
+
+    async function loadUserClasses(uid) {
+      const userRef = doc(db, 'users', uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) return [];
+      
+      const userData = userSnap.data();
+      const classIds = userData.classes || [];
+      
+      const classPromises = classIds.map(async (classId) => {
+        const classRef = doc(db, 'classes', classId);
+        const classSnap = await getDoc(classRef);
+        if (classSnap.exists()) {
+          return { id: classId, ...classSnap.data() };
+        }
+        return null;
+      });
+      
+      const classes = await Promise.all(classPromises);
+      return classes.filter(c => c !== null);
+    }
+
+    async function createNewClassForUser(uid, className) {
+      const classId = generateClassId(className);
+      const userRef = doc(db, 'users', uid);
+      const classRef = doc(db, 'classes', classId);
+      
+      await setDoc(classRef, {
+        name: className,
+        owner: uid,
+        students: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+
+      await setDoc(userRef, {
+        classes: arrayUnion(classId)
+      }, { merge: true });
+
+      return classId;
+    }
+
+    async function addStudentToClass(classId, studentName) {
+      const classRef = doc(db, 'classes', classId);
+      await setDoc(classRef, {
+        students: arrayUnion(studentName),
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    }
+
+    async function removeStudentFromClass(classId, studentName) {
+      const classRef = doc(db, 'classes', classId);
+      await setDoc(classRef, {
+        students: arrayRemove(studentName),
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    }
+
+    function generateClassId(className) {
+      return className.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now();
+    }
 
     // Populate selects
     function populateStudents(){
-      const currentStudents = classes[currentClass] || [];
-      
       inputs.student.innerHTML='<option value="" disabled selected>Choose a student…</option>';
       filterStudent.innerHTML='<option value="">All students</option>';
       reportStudent.innerHTML='<option value="" disabled selected>Select a student…</option>';
-      
-      currentStudents.forEach(name=>{
-        const o=document.createElement('option');o.value=name;o.textContent=name;inputs.student.appendChild(o);
-        const o2=document.createElement('option');o2.value=name;o2.textContent=name;filterStudent.appendChild(o2);
-        const o3=document.createElement('option');o3.value=name;o3.textContent=name;reportStudent.appendChild(o3);
+      students.forEach(n=>{
+        const o=document.createElement('option');o.value=n;o.textContent=n;inputs.student.appendChild(o);
+        const o2=document.createElement('option');o2.value=o.value;o2.textContent=n;filterStudent.appendChild(o2);
+        const o3=document.createElement('option');o3.value=o.value;o3.textContent=n;reportStudent.appendChild(o3);
       });
     }
 
@@ -543,61 +463,15 @@
     if(reportMonth)reportMonth.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 
     let notesCol = null;
+
     function updateNotesCollection() {
-      notesCol = collection(doc(db,'classes',currentClass),'notes');
+      if (currentClassId) {
+        notesCol = collection(doc(db, 'classes', currentClassId), 'notes');
+      }
     }
 
     const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
     const noteId=(date,student)=>`${date}_${slug(student)}`;
-
-    // Check if entry exists for today and show existing data
-    async function checkExistingEntry(student) {
-      if (!student || !notesCol) return;
-      
-      const today = toLocalISODate(new Date());
-      const id = noteId(today, student);
-      const ref = doc(notesCol, id);
-      
-      try {
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const data = snap.data();
-          // Show existing data in form
-          inputs.quran.value = data.quran || '';
-          inputs.surah.value = data.surah || '';
-          inputs.laws.value = data.lawsOfSalah || '';
-          inputs.qamar.value = data.qamar || '';
-          inputs.anything.value = data.anythingElse || '';
-          
-          // Show indicator
-          entryExistsIndicator.classList.remove('hidden');
-          return true;
-        } else {
-          // Clear form for new entry
-          inputs.quran.value = '';
-          inputs.surah.value = '';
-          inputs.laws.value = '';
-          inputs.qamar.value = '';
-          inputs.anything.value = '';
-          
-          // Hide indicator
-          entryExistsIndicator.classList.add('hidden');
-          return false;
-        }
-      } catch (err) {
-        console.error('Error checking existing entry:', err);
-        entryExistsIndicator.classList.add('hidden');
-        return false;
-      }
-    }
-
-    // Student selection change event
-    inputs.student.addEventListener('change', async (e) => {
-      const selectedStudent = e.target.value;
-      if (selectedStudent && !editingKey) {
-        await checkExistingEntry(selectedStudent);
-      }
-    });
 
     // Edit mode
     let editingKey=null;
@@ -613,28 +487,183 @@
         inputs.laws.value=n.lawsOfSalah||'';
         inputs.qamar.value=n.qamar||'';
         inputs.anything.value=n.anythingElse||n.other||'';
-        entryExistsIndicator.classList.add('hidden'); // Hide during edit
       } else {
         editingKey=null;
         formTitle.textContent='✨ New Entry';
         saveText.textContent='💾 Save Entry';
         cancelEditBtn.classList.add('hidden');
         document.getElementById('notesForm').reset();
-        entryExistsIndicator.classList.add('hidden');
       }
     }
     cancelEditBtn.addEventListener('click',()=>setEditMode(null));
 
-    // Save/Update
-    document.getElementById('notesForm').addEventListener('submit',async(e)=>{
+    // Class and Student Management Event Handlers
+    createNewClass?.addEventListener('click', () => {
+      createClassModal.classList.remove('hidden');
+    });
+
+    cancelCreateClass?.addEventListener('click', () => {
+      createClassModal.classList.add('hidden');
+      newClassName.value = '';
+    });
+
+    createClassForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!notesCol) {
-        showToast('Please wait for initialization', 'error');
+      const className = newClassName.value.trim();
+      if (!className || !currentUser) return;
+      
+      try {
+        const classId = await createNewClassForUser(currentUser.uid, className);
+        createClassModal.classList.add('hidden');
+        newClassName.value = '';
+        showToast('Class created successfully!', 'success');
+        await loadAndDisplayClasses();
+      } catch (error) {
+        showToast('Failed to create class', 'error');
+        console.error(error);
+      }
+    });
+
+    switchClassBtn?.addEventListener('click', () => {
+      showClassSelection();
+    });
+
+    manageStudentsBtn?.addEventListener('click', () => {
+      if (currentClassId) {
+        showStudentManagement();
+      }
+    });
+
+    closeStudentModal?.addEventListener('click', () => {
+      studentModal.classList.add('hidden');
+    });
+
+    addStudentForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const studentName = newStudentName.value.trim();
+      if (!studentName || !currentClassId) return;
+      
+      try {
+        await addStudentToClass(currentClassId, studentName);
+        newStudentName.value = '';
+        await loadCurrentClass();
+        updateStudentsDisplay();
+        populateStudents();
+        showToast('Student added successfully!', 'success');
+      } catch (error) {
+        showToast('Failed to add student', 'error');
+        console.error(error);
+      }
+    });
+
+    // Class and Student Display Functions
+    async function loadAndDisplayClasses() {
+      if (!currentUser) return;
+      
+      const classes = await loadUserClasses(currentUser.uid);
+      
+      if (classes.length === 0) {
+        classesList.innerHTML = '';
+        noClasses.classList.remove('hidden');
         return;
       }
       
+      noClasses.classList.add('hidden');
+      classesList.innerHTML = classes.map(cls => `
+        <div class="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-100/80 dark:hover:bg-slate-700/80 cursor-pointer transition-colors"
+             onclick="selectClass('${cls.id}', '${cls.name}')">
+          <h3 class="font-semibold text-lg mb-2">${esc(cls.name)}</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">${cls.students?.length || 0} students</p>
+          <p class="text-xs text-slate-500 mt-1">Created: ${formatDisplayDate(cls.createdAt?.toDate?.() || new Date())}</p>
+        </div>
+      `).join('');
+    }
+
+    async function selectClass(classId, className) {
+      currentClassId = classId;
+      await loadCurrentClass();
+      currentClassName.textContent = className;
+      updateNotesCollection();
+      populateStudents();
+      showApp();
+      startHistoryStream();
+      
+      // Update footer
+      const footerClassId = document.getElementById('footerClassId');
+      if (footerClassId) {
+        footerClassId.textContent = classId;
+      }
+    }
+
+    async function loadCurrentClass() {
+      if (!currentClassId) return;
+      
+      const classRef = doc(db, 'classes', currentClassId);
+      const classSnap = await getDoc(classRef);
+      
+      if (classSnap.exists()) {
+        currentClassData = classSnap.data();
+        students = currentClassData.students || [];
+      }
+    }
+
+    function showClassSelection() {
+      appShell.classList.add('hidden');
+      classSelection.classList.remove('hidden');
+      if (unsub) unsub();
+      loadAndDisplayClasses();
+    }
+
+    function showApp() {
+      classSelection.classList.add('hidden');
+      appShell.classList.remove('hidden');
+    }
+
+    function showStudentManagement() {
+      studentModal.classList.remove('hidden');
+      updateStudentsDisplay();
+    }
+
+    function updateStudentsDisplay() {
+      if (!students.length) {
+        studentsList.innerHTML = '';
+        noStudents.classList.remove('hidden');
+        return;
+      }
+      
+      noStudents.classList.add('hidden');
+      studentsList.innerHTML = students.map(student => `
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+          <span class="font-medium">${esc(student)}</span>
+          <button onclick="removeStudent('${student}')" class="px-3 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20">Remove</button>
+        </div>
+      `).join('');
+    }
+
+    window.removeStudent = async function(studentName) {
+      if (!confirm(`Remove ${studentName} from the class?`)) return;
+      
+      try {
+        await removeStudentFromClass(currentClassId, studentName);
+        await loadCurrentClass();
+        updateStudentsDisplay();
+        populateStudents();
+        showToast('Student removed successfully!', 'success');
+      } catch (error) {
+        showToast('Failed to remove student', 'error');
+        console.error(error);
+      }
+    };
+
+    window.selectClass = selectClass;
+
+    // Save/Update
+    document.getElementById('notesForm').addEventListener('submit',async(e)=>{
+      e.preventDefault();
       const student=inputs.student.value;
       if(!student){saveStatus.textContent='Choose a student';return}
+      if(!currentClassId || !notesCol){saveStatus.textContent='No class selected';return}
+      
       saveSpinner.classList.remove('hidden');
       const defaultDate=toLocalISODate(new Date());
       const entryDate=editingKey?extractDateFromId(editingKey)||defaultDate:defaultDate;
@@ -650,7 +679,8 @@
         qamar:inputs.qamar.value.trim(),
         anythingElse:inputs.anything.value.trim(),
         updatedAt:serverTimestamp(),
-        ownerUid:auth.currentUser?.uid||null
+        ownerUid:auth.currentUser?.uid||null,
+        classId:currentClassId
       };
       const snap=await getDoc(ref);
       if(!snap.exists())payload.createdAt=serverTimestamp();
@@ -669,8 +699,7 @@
 
     function startHistoryStream(){
       if(unsub)unsub();
-      if (!notesCol) return;
-      
+      if(!notesCol || !currentClassId) return;
       const q=query(notesCol,orderBy('date','desc'),qLimit(200));
       unsub=onSnapshot(q,(snap)=>{
         historyRows=snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -694,8 +723,7 @@
     document.getElementById('reload').addEventListener('click',applyFilters);
 
     async function fetchMonthlyRows(student,range){
-      if (!notesCol) return [];
-      
+      if (!notesCol || !currentClassId) return [];
       const baseConstraints=[where('date','>=',range.start),where('date','<=',range.end),orderBy('date','asc')];
       const mapSnap=snap=>snap.docs.map(docSnap=>({id:docSnap.id,...docSnap.data()}));
       if(!student){
@@ -722,6 +750,8 @@
       if(reportDownload.disabled)return;
       await downloadMonthlyReport();
     });
+    renderMonthlyReport();
+    updateReportDownloadLabel();
 
     function renderHistory(rows){
       historyBody.innerHTML='';
@@ -975,71 +1005,61 @@
     historyBody.addEventListener('click',async(e)=>{
       const btn=e.target.closest('button'); if(!btn) return;
       const id=btn.getAttribute('data-id');
+      if(!currentClassId || !notesCol) return;
+      
       if(btn.getAttribute('data-action')==='edit'){
-        const snap=await getDoc(doc(notesCol,id));
+        const noteRef = doc(notesCol, id);
+        const snap=await getDoc(noteRef);
         if(snap.exists()) setEditMode(snap.data());
       } else if(btn.getAttribute('data-action')==='delete'){
         if(!confirm('Delete this note?')) return;
-        await deleteDoc(doc(notesCol,id));
+        const noteRef = doc(notesCol, id);
+        await deleteDoc(noteRef);
         showToast('Deleted','success');
       }
     });
 
     // Auth gate
-    onAuthStateChanged(auth,async (user)=>{
-      if(user){
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
         authGate.classList.add('hidden');
-        appShell.classList.remove('hidden');
-        whoami.textContent=user.email||user.uid;
-        authStatus.textContent='Online';
-        dot.className='w-2 h-2 rounded-full bg-emerald-400';
+        whoami.textContent = user.email || user.uid;
+        authStatus.textContent = 'Online';
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
         
-        await initializeUserClasses(user);
-        updateNotesCollection();
-        startHistoryStream();
-        renderMonthlyReport();
-        updateReportDownloadLabel();
+        // Load user's classes and show class selection
+        showClassSelection();
       } else {
-        appShell.classList.add('hidden');
-        authGate.classList.remove('hidden');
-        whoami.textContent='Not signed in';
-        authStatus.textContent='Signed out';
-        dot.className='w-2 h-2 rounded-full bg-amber-400';
         currentUser = null;
+        currentClassId = null;
+        currentClassData = null;
+        students = [];
+        
+        appShell.classList.add('hidden');
+        classSelection.classList.add('hidden');
+        authGate.classList.remove('hidden');
+        whoami.textContent = 'Not signed in';
+        authStatus.textContent = 'Signed out';
+        dot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        
+        if (unsub) unsub();
       }
     });
 
-        // Utils
-    function extractDateFromId(id){
-      if(!id)return null;
-      const m=String(id).match(/^(\d{4}-\d{2}-\d{2})_/);
-      return m?m[1]:null;
-    }
-    
+    // Utils
+    function extractDateFromId(id){if(!id)return null;const m=String(id).match(/^(\d{4}-\d{2}-\d{2})_/);return m?m[1]:null;}
     function parseDate(input){
       if(!input&&input!==0)return null;
       if(input instanceof Date)return isNaN(input.getTime())?null:input;
-      if(typeof input?.toDate==='function'){
-        const d=input.toDate();
-        return d instanceof Date&&!isNaN(d.getTime())?d:null;
-      }
+      if(typeof input?.toDate==='function'){const d=input.toDate();return d instanceof Date&&!isNaN(d.getTime())?d:null;}
       const str=String(input).trim();
       const iso=str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-      if(iso){
-        const[,y,m,d]=iso;
-        const dt=new Date(Number(y),Number(m)-1,Number(d));
-        return isNaN(dt.getTime())?null:dt;
-      }
+      if(iso){const[,y,m,d]=iso;const dt=new Date(Number(y),Number(m)-1,Number(d));return isNaN(dt.getTime())?null:dt;}
       const slash=str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-      if(slash){
-        const[,d,m,y]=slash;
-        const dt=new Date(Number(y),Number(m)-1,Number(d));
-        return isNaN(dt.getTime())?null:dt;
-      }
-      const parsed=new Date(str);
-      return isNaN(parsed.getTime())?null:parsed;
+      if(slash){const[,d,m,y]=slash;const dt=new Date(Number(y),Number(m)-1,Number(d));return isNaN(dt.getTime())?null:dt;}
+      const parsed=new Date(str);return isNaN(parsed.getTime())?null:parsed;
     }
-    
     function toLocalISODate(value){
       const date=value instanceof Date?value:parseDate(value);
       if(!date)return '';
@@ -1048,7 +1068,6 @@
       const day=String(date.getDate()).padStart(2,'0');
       return `${year}-${month}-${day}`;
     }
-    
     function formatDisplayDate(value){
       const date=value instanceof Date?value:parseDate(value);
       if(!date)return value??'';
@@ -1057,67 +1076,34 @@
       const year=date.getFullYear();
       return month?`${day} ${month} ${year}`:value??'';
     }
-    
     function formatMonthYear(monthValue){
       if(!monthValue)return '';
       const parts=String(monthValue).split('-');
       if(parts.length<2)return monthValue;
-      const year=Number(parts[0]);
-      const monthIndex=Number(parts[1])-1;
+      const year=Number(parts[0]); const monthIndex=Number(parts[1])-1;
       if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return monthValue;
-      const month=MONTH_LABELS[monthIndex]||'';
-      return month?`${month} ${year}`:monthValue;
+      const month=MONTH_LABELS[monthIndex]||''; return month?`${month} ${year}`:monthValue;
     }
-    
     function getMonthDateRange(monthValue){
       if(!monthValue)return null;
-      const parts=String(monthValue).split('-');
-      if(parts.length<2)return null;
-      const yearStr=parts[0];
-      const monthNum=Number(parts[1]);
-      const monthIndex=monthNum-1;
-      const year=Number(yearStr);
+      const parts=String(monthValue).split('-'); if(parts.length<2)return null;
+      const yearStr=parts[0]; const monthNum=Number(parts[1]); const monthIndex=monthNum-1; const year=Number(yearStr);
       if(Number.isNaN(year)||Number.isNaN(monthIndex)||monthIndex<0||monthIndex>11)return null;
       const monthStr=String(monthIndex+1).padStart(2,'0');
       const lastDay=new Date(year,monthIndex+1,0).getDate();
       const endDay=String(lastDay).padStart(2,'0');
-      return {
-        start:`${yearStr}-${monthStr}-01`,
-        end:`${yearStr}-${monthStr}-${endDay}`
-      };
+      return {start:`${yearStr}-${monthStr}-01`,end:`${yearStr}-${monthStr}-${endDay}`};
     }
-    
     function isInMonth(dateValue,monthValue){
-      const date=parseDate(dateValue);
-      if(!date||!monthValue)return false;
+      const date=parseDate(dateValue); if(!date||!monthValue)return false;
       const [yearStr,monthStr]=String(monthValue).split('-');
-      const year=Number(yearStr);
-      const month=Number(monthStr);
+      const year=Number(yearStr); const month=Number(monthStr);
       if(Number.isNaN(year)||Number.isNaN(month))return false;
       return date.getFullYear()===year&&date.getMonth()+1===month;
     }
-    
-    function toCsvValue(value){
-      const str=(value??'').toString().replace(/"/g,'""').replace(/\r?\n/g,' ');
-      return `"${str}"`;
-    }
-    
-    function esc(s){
-      return (s??'').toString().replace(/[&<>\"]/g,c=>({
-        '&':'&amp;',
-        '<':'&lt;',
-        '>':'&gt;',
-        '\"':'&quot;'
-      }[c]));
-    }
-    
-    function showToast(text,type='success'){
-      toast.textContent=text;
-      toast.className=`notification show ${type}`;
-      setTimeout(()=>{
-        toast.classList.remove('show');
-      },1600);
-    }
+    function toCsvValue(value){const str=(value??'').toString().replace(/"/g,'""').replace(/\r?\n/g,' ');return `"${str}"`;}
+    function esc(s){return (s??'').toString().replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]))}
+    function showToast(text,type='success'){ toast.textContent=text; toast.className=`notification show ${type}`; setTimeout(()=>{toast.classList.remove('show')},1600); }
   </script>
 </body>
 </html>
