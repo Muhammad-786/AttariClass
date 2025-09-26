@@ -107,15 +107,22 @@
               </div>
               <div class="flex gap-2">
                 <button id="manageStudentsBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Manage Students</button>
+                <button id="settingsBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Settings</button>
                 <button id="signOutBtn" class="px-3 py-1.5 rounded-xl ring-1 ring-slate-300 dark:ring-slate-700 text-sm">Sign out</button>
               </div>
             </div>
             <form id="notesForm" class="p-6 md:p-8 space-y-6">
-              <div>
-                <label class="block text-sm font-semibold mb-1">👤 Student</label>
-                <select id="student" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required>
-                  <option value="" disabled selected>Choose a student…</option>
-                </select>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-semibold mb-1">👤 Student</label>
+                  <select id="student" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required>
+                    <option value="" disabled selected>Choose a student…</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold mb-1">📅 Date</label>
+                  <input id="entryDate" type="date" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
+                </div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div><label class="block text-sm font-semibold mb-1">📖 Quran</label><input id="quran" type="text" class="w-full rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-blue-500 focus:ring-0" /></div>
@@ -245,14 +252,94 @@
         <button id="closeStudentModal" class="text-slate-500 hover:text-slate-700">✕</button>
       </div>
       <div class="p-6 space-y-4 overflow-y-auto max-h-[60vh]">
-        <form id="addStudentForm" class="flex gap-3 mb-6">
+        <!-- Add Single Student -->
+        <form id="addStudentForm" class="flex gap-3 mb-4">
           <input id="newStudentName" type="text" placeholder="Student Name" class="flex-1 rounded-2xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-3 focus:border-emerald-500 focus:ring-0" required />
           <button type="submit" class="btn-primary px-6 py-3 rounded-2xl text-white font-semibold">Add Student</button>
         </form>
+
+        <!-- Bulk Import Toggle -->
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm text-slate-600 dark:text-slate-400">Or add multiple students at once:</span>
+          <button id="toggleBulkImport" class="px-3 py-1 text-xs rounded-lg ring-1 ring-slate-300 dark:ring-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">Bulk Import</button>
+        </div>
+
+        <!-- Bulk Import Form -->
+        <div id="bulkImportSection" class="hidden mb-6 p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+          <label class="block text-sm font-semibold mb-2">Paste student names (one per line):</label>
+          <textarea id="bulkStudentNames" rows="6" placeholder="Siyaam Azar&#10;Hussain Ali&#10;Hamza Razzaq&#10;..." class="w-full rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-200/60 dark:border-slate-700/60 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-0"></textarea>
+          <div class="flex justify-end gap-2 mt-3">
+            <button id="cancelBulkImport" type="button" class="px-4 py-2 text-sm rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">Cancel</button>
+            <button id="processBulkImport" type="button" class="btn-primary px-4 py-2 text-sm rounded-lg text-white font-semibold">Add All Students</button>
+          </div>
+        </div>
         <div id="studentsList" class="space-y-2"></div>
         <div id="noStudents" class="hidden text-center py-6 text-slate-500">
           <div class="text-3xl mb-2">👥</div>
           <p>No students added yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="glass bg-white/90 dark:bg-slate-900/90 rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700/30 max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+      <div class="p-6 border-b border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between">
+        <h3 class="text-xl font-bold">Class Settings</h3>
+        <button id="closeSettingsModal" class="text-slate-500 hover:text-slate-700">✕</button>
+      </div>
+      <div class="p-6 space-y-6 overflow-y-auto max-h-[60vh]">
+        <div>
+          <h4 class="text-lg font-semibold mb-4">Customize Form Fields</h4>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">Customize the labels and visibility of form fields:</p>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" id="enableQuran" class="rounded" checked>
+                <label for="enableQuran" class="font-medium">📖 Quran Field</label>
+              </div>
+              <input type="text" id="quranLabel" value="📖 Quran" class="px-3 py-1 text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600">
+            </div>
+            
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" id="enableSurah" class="rounded" checked>
+                <label for="enableSurah" class="font-medium">🕌 Surah Field</label>
+              </div>
+              <input type="text" id="surahLabel" value="🕌 Surah" class="px-3 py-1 text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600">
+            </div>
+            
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" id="enableLaws" class="rounded" checked>
+                <label for="enableLaws" class="font-medium">🤲 Laws of Salah Field</label>
+              </div>
+              <input type="text" id="lawsLabel" value="🤲 Laws of Salah" class="px-3 py-1 text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600">
+            </div>
+            
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" id="enableQamar" class="rounded" checked>
+                <label for="enableQamar" class="font-medium">🌙 Qamar Field</label>
+              </div>
+              <input type="text" id="qamarLabel" value="🌙 Qamar" class="px-3 py-1 text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600">
+            </div>
+            
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" id="enableNotes" class="rounded" checked>
+                <label for="enableNotes" class="font-medium">💭 Additional Notes Field</label>
+              </div>
+              <input type="text" id="notesLabel" value="💭 Additional Notes" class="px-3 py-1 text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600">
+            </div>
+          </div>
+          
+          <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-200/50 dark:border-slate-700/50">
+            <button id="resetFieldSettings" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200 font-medium">Reset to Default</button>
+            <button id="saveFieldSettings" class="btn-primary px-6 py-2 rounded-xl text-white font-semibold">Save Settings</button>
+          </div>
         </div>
       </div>
     </div>
@@ -293,6 +380,18 @@
     const newStudentName = document.getElementById('newStudentName');
     const studentsList = document.getElementById('studentsList');
     const noStudents = document.getElementById('noStudents');
+    const toggleBulkImport = document.getElementById('toggleBulkImport');
+    const bulkImportSection = document.getElementById('bulkImportSection');
+    const bulkStudentNames = document.getElementById('bulkStudentNames');
+    const cancelBulkImport = document.getElementById('cancelBulkImport');
+    const processBulkImport = document.getElementById('processBulkImport');
+
+    // Settings elements
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsModal = document.getElementById('closeSettingsModal');
+    const saveFieldSettings = document.getElementById('saveFieldSettings');
+    const resetFieldSettings = document.getElementById('resetFieldSettings');
 
     // Forms
     const signinForm = document.getElementById('signinForm');
@@ -318,7 +417,7 @@
     let currentClassData = null;
     let students = [];
     const MONTH_LABELS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const inputs={student:document.getElementById('student'),quran:document.getElementById('quran'),surah:document.getElementById('surah'),laws:document.getElementById('laws'),qamar:document.getElementById('qamar'),anything:document.getElementById('anything')};
+    const inputs={student:document.getElementById('student'),entryDate:document.getElementById('entryDate'),quran:document.getElementById('quran'),surah:document.getElementById('surah'),laws:document.getElementById('laws'),qamar:document.getElementById('qamar'),anything:document.getElementById('anything')};
     const filterStudent=document.getElementById('filterStudent');
     const filterDate=document.getElementById('filterDate');
     const historyBody=document.getElementById('historyBody');
@@ -357,6 +456,13 @@
         name: className,
         owner: uid,
         students: [],
+        fieldSettings: {
+          quran: { enabled: true, label: '📖 Quran' },
+          surah: { enabled: true, label: '🕌 Surah' },
+          laws: { enabled: true, label: '🤲 Laws of Salah' },
+          qamar: { enabled: true, label: '🌙 Qamar' },
+          notes: { enabled: true, label: '💭 Additional Notes' }
+        },
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -421,6 +527,7 @@
     const todayKey=toLocalISODate(now);
     document.getElementById('todayDisplay').textContent=formatDisplayDate(todayKey);
     if(reportMonth)reportMonth.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    if(inputs.entryDate)inputs.entryDate.value=todayKey;
 
     let notesCol = null;
 
@@ -442,20 +549,41 @@
         saveText.textContent='✅ Update Entry';
         cancelEditBtn.classList.remove('hidden');
         inputs.student.value=n.student;
+        inputs.entryDate.value=n.date||toLocalISODate(new Date());
         inputs.quran.value=n.quran||'';
         inputs.surah.value=n.surah||'';
         inputs.laws.value=n.lawsOfSalah||'';
         inputs.qamar.value=n.qamar||'';
         inputs.anything.value=n.anythingElse||n.other||'';
+        updateFormTitle();
       } else {
         editingKey=null;
         formTitle.textContent='✨ New Entry';
         saveText.textContent='💾 Save Entry';
         cancelEditBtn.classList.add('hidden');
         document.getElementById('notesForm').reset();
+        if(inputs.entryDate)inputs.entryDate.value=toLocalISODate(new Date());
+        updateFormTitle();
       }
     }
+    
+    function updateFormTitle() {
+      const selectedDate = inputs.entryDate?.value;
+      const today = toLocalISODate(new Date());
+      
+      if (editingKey) {
+        formTitle.textContent = '✏️ Edit Entry';
+      } else if (selectedDate && selectedDate !== today) {
+        formTitle.textContent = `✨ New Entry (${formatDisplayDate(selectedDate)})`;
+      } else {
+        formTitle.textContent = '✨ New Entry';
+      }
+    }
+    
     cancelEditBtn.addEventListener('click',()=>setEditMode(null));
+    
+    // Update form title when date changes
+    inputs.entryDate?.addEventListener('change', updateFormTitle);
 
     // Student Management Event Handlers
 
@@ -467,6 +595,7 @@
 
     closeStudentModal?.addEventListener('click', () => {
       studentModal.classList.add('hidden');
+      hideBulkImport();
     });
 
     addStudentForm?.addEventListener('submit', async (e) => {
@@ -485,6 +614,120 @@
         showToast('Failed to add student', 'error');
         console.error(error);
       }
+    });
+
+    // Bulk Import Event Handlers
+    toggleBulkImport?.addEventListener('click', () => {
+      bulkImportSection.classList.toggle('hidden');
+      if (!bulkImportSection.classList.contains('hidden')) {
+        bulkStudentNames.focus();
+      }
+    });
+
+    cancelBulkImport?.addEventListener('click', hideBulkImport);
+
+    processBulkImport?.addEventListener('click', async () => {
+      const text = bulkStudentNames.value.trim();
+      if (!text || !currentClassId) return;
+      
+      const names = text.split('\n')
+        .map(name => name.trim())
+        .filter(name => name.length > 0)
+        .filter((name, index, arr) => arr.indexOf(name) === index); // Remove duplicates
+      
+      if (names.length === 0) {
+        showToast('No valid student names found', 'error');
+        return;
+      }
+      
+      try {
+        // Add students in batches to avoid overwhelming the database
+        for (const name of names) {
+          await addStudentToClass(currentClassId, name);
+        }
+        
+        bulkStudentNames.value = '';
+        hideBulkImport();
+        await loadCurrentClass();
+        updateStudentsDisplay();
+        populateStudents();
+        showToast(`Successfully added ${names.length} student${names.length === 1 ? '' : 's'}!`, 'success');
+      } catch (error) {
+        showToast('Failed to add students', 'error');
+        console.error(error);
+      }
+    });
+
+    function hideBulkImport() {
+      bulkImportSection.classList.add('hidden');
+      bulkStudentNames.value = '';
+    }
+
+    // Settings Event Handlers
+    settingsBtn?.addEventListener('click', () => {
+      if (currentClassId) {
+        showSettings();
+      }
+    });
+
+    closeSettingsModal?.addEventListener('click', () => {
+      settingsModal.classList.add('hidden');
+    });
+
+    saveFieldSettings?.addEventListener('click', async () => {
+      if (!currentClassId) return;
+      
+      try {
+        const fieldSettings = {
+          quran: { 
+            enabled: document.getElementById('enableQuran').checked, 
+            label: document.getElementById('quranLabel').value.trim() || '📖 Quran'
+          },
+          surah: { 
+            enabled: document.getElementById('enableSurah').checked, 
+            label: document.getElementById('surahLabel').value.trim() || '🕌 Surah'
+          },
+          laws: { 
+            enabled: document.getElementById('enableLaws').checked, 
+            label: document.getElementById('lawsLabel').value.trim() || '🤲 Laws of Salah'
+          },
+          qamar: { 
+            enabled: document.getElementById('enableQamar').checked, 
+            label: document.getElementById('qamarLabel').value.trim() || '🌙 Qamar'
+          },
+          notes: { 
+            enabled: document.getElementById('enableNotes').checked, 
+            label: document.getElementById('notesLabel').value.trim() || '💭 Additional Notes'
+          }
+        };
+
+        const classRef = doc(db, 'classes', currentClassId);
+        await setDoc(classRef, {
+          fieldSettings: fieldSettings,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        await loadCurrentClass();
+        updateFormFields();
+        settingsModal.classList.add('hidden');
+        showToast('Settings saved successfully!', 'success');
+      } catch (error) {
+        showToast('Failed to save settings', 'error');
+        console.error(error);
+      }
+    });
+
+    resetFieldSettings?.addEventListener('click', () => {
+      document.getElementById('enableQuran').checked = true;
+      document.getElementById('quranLabel').value = '📖 Quran';
+      document.getElementById('enableSurah').checked = true;
+      document.getElementById('surahLabel').value = '🕌 Surah';
+      document.getElementById('enableLaws').checked = true;
+      document.getElementById('lawsLabel').value = '🤲 Laws of Salah';
+      document.getElementById('enableQamar').checked = true;
+      document.getElementById('qamarLabel').value = '🌙 Qamar';
+      document.getElementById('enableNotes').checked = true;
+      document.getElementById('notesLabel').value = '💭 Additional Notes';
     });
 
     // Class and Student Display Functions
@@ -510,6 +753,7 @@
       currentClassName.textContent = className;
       updateNotesCollection();
       populateStudents();
+      updateFormFields(); // Apply field settings
       showApp();
       startHistoryStream();
       
@@ -540,6 +784,91 @@
     function showStudentManagement() {
       studentModal.classList.remove('hidden');
       updateStudentsDisplay();
+    }
+
+    function showSettings() {
+      if (!currentClassData) return;
+      
+      const fieldSettings = currentClassData.fieldSettings || {
+        quran: { enabled: true, label: '📖 Quran' },
+        surah: { enabled: true, label: '🕌 Surah' },
+        laws: { enabled: true, label: '🤲 Laws of Salah' },
+        qamar: { enabled: true, label: '🌙 Qamar' },
+        notes: { enabled: true, label: '💭 Additional Notes' }
+      };
+
+      // Populate settings form
+      document.getElementById('enableQuran').checked = fieldSettings.quran?.enabled !== false;
+      document.getElementById('quranLabel').value = fieldSettings.quran?.label || '📖 Quran';
+      document.getElementById('enableSurah').checked = fieldSettings.surah?.enabled !== false;
+      document.getElementById('surahLabel').value = fieldSettings.surah?.label || '🕌 Surah';
+      document.getElementById('enableLaws').checked = fieldSettings.laws?.enabled !== false;
+      document.getElementById('lawsLabel').value = fieldSettings.laws?.label || '🤲 Laws of Salah';
+      document.getElementById('enableQamar').checked = fieldSettings.qamar?.enabled !== false;
+      document.getElementById('qamarLabel').value = fieldSettings.qamar?.label || '🌙 Qamar';
+      document.getElementById('enableNotes').checked = fieldSettings.notes?.enabled !== false;
+      document.getElementById('notesLabel').value = fieldSettings.notes?.label || '💭 Additional Notes';
+
+      settingsModal.classList.remove('hidden');
+    }
+
+    function updateFormFields() {
+      if (!currentClassData) return;
+      
+      const fieldSettings = currentClassData.fieldSettings || {
+        quran: { enabled: true, label: '📖 Quran' },
+        surah: { enabled: true, label: '🕌 Surah' },
+        laws: { enabled: true, label: '🤲 Laws of Salah' },
+        qamar: { enabled: true, label: '🌙 Qamar' },
+        notes: { enabled: true, label: '💭 Additional Notes' }
+      };
+
+      // Update form field labels and visibility
+      const quranDiv = inputs.quran.closest('div');
+      const surahDiv = inputs.surah.closest('div');
+      const lawsDiv = inputs.laws.closest('div');
+      const qamarDiv = inputs.qamar.closest('div');
+      const notesDiv = inputs.anything.closest('div');
+
+      // Update Quran field
+      if (fieldSettings.quran?.enabled !== false) {
+        quranDiv.style.display = '';
+        quranDiv.querySelector('label').textContent = fieldSettings.quran?.label || '📖 Quran';
+      } else {
+        quranDiv.style.display = 'none';
+      }
+
+      // Update Surah field
+      if (fieldSettings.surah?.enabled !== false) {
+        surahDiv.style.display = '';
+        surahDiv.querySelector('label').textContent = fieldSettings.surah?.label || '🕌 Surah';
+      } else {
+        surahDiv.style.display = 'none';
+      }
+
+      // Update Laws field
+      if (fieldSettings.laws?.enabled !== false) {
+        lawsDiv.style.display = '';
+        lawsDiv.querySelector('label').textContent = fieldSettings.laws?.label || '🤲 Laws of Salah';
+      } else {
+        lawsDiv.style.display = 'none';
+      }
+
+      // Update Qamar field
+      if (fieldSettings.qamar?.enabled !== false) {
+        qamarDiv.style.display = '';
+        qamarDiv.querySelector('label').textContent = fieldSettings.qamar?.label || '🌙 Qamar';
+      } else {
+        qamarDiv.style.display = 'none';
+      }
+
+      // Update Notes field
+      if (fieldSettings.notes?.enabled !== false) {
+        notesDiv.style.display = '';
+        notesDiv.querySelector('label').textContent = fieldSettings.notes?.label || '💭 Additional Notes';
+      } else {
+        notesDiv.style.display = 'none';
+      }
     }
 
     function updateStudentsDisplay() {
@@ -579,14 +908,28 @@
     document.getElementById('notesForm').addEventListener('submit',async(e)=>{
       e.preventDefault();
       const student=inputs.student.value;
+      const selectedDate=inputs.entryDate.value;
       if(!student){saveStatus.textContent='Choose a student';return}
+      if(!selectedDate){saveStatus.textContent='Choose a date';return}
       if(!currentClassId || !notesCol){saveStatus.textContent='No class selected';return}
       
       saveSpinner.classList.remove('hidden');
-      const defaultDate=toLocalISODate(new Date());
-      const entryDate=editingKey?extractDateFromId(editingKey)||defaultDate:defaultDate;
+      const entryDate=selectedDate;
       const id=editingKey||noteId(entryDate,student);
       const ref=doc(notesCol,id);
+      
+      // Check if entry already exists for this date/student combination (only for new entries)
+      if (!editingKey) {
+        const existingSnap = await getDoc(ref);
+        if (existingSnap.exists()) {
+          const confirmOverwrite = confirm(`An entry already exists for ${student} on ${formatDisplayDate(entryDate)}. Do you want to update it?`);
+          if (!confirmOverwrite) {
+            saveSpinner.classList.add('hidden');
+            return;
+          }
+        }
+      }
+      
       const payload={
         id,
         date:entryDate,
