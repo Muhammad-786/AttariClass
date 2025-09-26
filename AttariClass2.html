@@ -847,19 +847,9 @@
       settingsModal.classList.remove('hidden');
     }
 
-    // Helper function to get current field labels
-    function getCurrentFieldLabels() {
-      if (!currentClassData) {
-        return {
-          quran: '📖 Quran',
-          surah: '🕌 Surah',
-          laws: '🤲 Laws of Salah',
-          qamar: '🌙 Qamar',
-          notes: '💭 Additional Notes'
-        };
-      }
-      
-      const fieldSettings = currentClassData.fieldSettings || {
+    // Get field settings with defaults
+    function getFieldSettings() {
+      if (!currentClassData) return {
         quran: { enabled: true, label: '📖 Quran' },
         surah: { enabled: true, label: '🕌 Surah' },
         laws: { enabled: true, label: '🤲 Laws of Salah' },
@@ -867,25 +857,19 @@
         notes: { enabled: true, label: '💭 Additional Notes' }
       };
       
-      return {
-        quran: fieldSettings.quran?.label || '📖 Quran',
-        surah: fieldSettings.surah?.label || '🕌 Surah',
-        laws: fieldSettings.laws?.label || '🤲 Laws of Salah',
-        qamar: fieldSettings.qamar?.label || '🌙 Qamar',
-        notes: fieldSettings.notes?.label || '💭 Additional Notes'
+      return currentClassData.fieldSettings || {
+        quran: { enabled: true, label: '📖 Quran' },
+        surah: { enabled: true, label: '🕌 Surah' },
+        laws: { enabled: true, label: '🤲 Laws of Salah' },
+        qamar: { enabled: true, label: '🌙 Qamar' },
+        notes: { enabled: true, label: '💭 Additional Notes' }
       };
     }
 
     function updateFormFields() {
       if (!currentClassData) return;
       
-      const fieldSettings = currentClassData.fieldSettings || {
-        quran: { enabled: true, label: '📖 Quran' },
-        surah: { enabled: true, label: '🕌 Surah' },
-        laws: { enabled: true, label: '🤲 Laws of Salah' },
-        qamar: { enabled: true, label: '🌙 Qamar' },
-        notes: { enabled: true, label: '💭 Additional Notes' }
-      };
+      const fieldSettings = getFieldSettings();
 
       // Update form field labels and visibility
       const quranDiv = inputs.quran.closest('div');
@@ -934,33 +918,98 @@
         notesDiv.style.display = 'none';
       }
       
-      // Update table headers to reflect new field labels
+      // Update table headers with new field labels
       updateTableHeaders();
     }
 
-    // Function to update table headers with current field labels
+    // Update table headers with custom field labels and hide disabled fields
     function updateTableHeaders() {
-      const labels = getCurrentFieldLabels();
+      const fieldSettings = getFieldSettings();
+      console.log('Updating table headers with field settings:', fieldSettings);
       
-      // Update Progress History table headers
-      const historyHeaders = document.querySelectorAll('#historyTable th');
+      // Update progress history table headers
+      const historyTable = document.querySelector('#historyBody').closest('table');
+      const historyHeaders = historyTable.querySelectorAll('thead th');
       if (historyHeaders.length >= 7) {
-        historyHeaders[2].textContent = labels.quran;
-        historyHeaders[3].textContent = labels.surah;
-        historyHeaders[4].textContent = labels.laws;
-        historyHeaders[5].textContent = labels.qamar;
-        historyHeaders[6].textContent = labels.notes;
+        // Update labels and hide disabled columns
+        historyHeaders[2].textContent = fieldSettings.quran?.label || '📖 Quran';
+        historyHeaders[2].style.display = fieldSettings.quran?.enabled !== false ? '' : 'none';
+        
+        historyHeaders[3].textContent = fieldSettings.surah?.label || '🕌 Surah';
+        historyHeaders[3].style.display = fieldSettings.surah?.enabled !== false ? '' : 'none';
+        
+        historyHeaders[4].textContent = fieldSettings.laws?.label || '🤲 Laws of Salah';
+        historyHeaders[4].style.display = fieldSettings.laws?.enabled !== false ? '' : 'none';
+        
+        historyHeaders[5].textContent = fieldSettings.qamar?.label || '🌙 Qamar';
+        historyHeaders[5].style.display = fieldSettings.qamar?.enabled !== false ? '' : 'none';
+        
+        historyHeaders[6].textContent = fieldSettings.notes?.label || '💭 Additional Notes';
+        historyHeaders[6].style.display = fieldSettings.notes?.enabled !== false ? '' : 'none';
+        
+        console.log('Updated history table headers');
+      } else {
+        console.log('History table headers not found, found', historyHeaders.length, 'headers');
       }
       
-      // Update Monthly Reports table headers
-      const reportHeaders = document.querySelectorAll('#reportTable th');
+      // Update monthly report table headers
+      const reportTable = document.querySelector('#reportBody').closest('table');
+      const reportHeaders = reportTable.querySelectorAll('thead th');
       if (reportHeaders.length >= 6) {
-        reportHeaders[1].textContent = labels.quran;
-        reportHeaders[2].textContent = labels.surah;
-        reportHeaders[3].textContent = labels.laws;
-        reportHeaders[4].textContent = labels.qamar;
-        reportHeaders[5].textContent = labels.notes;
+        // Update labels and hide disabled columns
+        reportHeaders[1].textContent = fieldSettings.quran?.label || '📖 Quran';
+        reportHeaders[1].style.display = fieldSettings.quran?.enabled !== false ? '' : 'none';
+        
+        reportHeaders[2].textContent = fieldSettings.surah?.label || '🕌 Surah';
+        reportHeaders[2].style.display = fieldSettings.surah?.enabled !== false ? '' : 'none';
+        
+        reportHeaders[3].textContent = fieldSettings.laws?.label || '🤲 Laws of Salah';
+        reportHeaders[3].style.display = fieldSettings.laws?.enabled !== false ? '' : 'none';
+        
+        reportHeaders[4].textContent = fieldSettings.qamar?.label || '🌙 Qamar';
+        reportHeaders[4].style.display = fieldSettings.qamar?.enabled !== false ? '' : 'none';
+        
+        reportHeaders[5].textContent = fieldSettings.notes?.label || '💭 Additional Notes';
+        reportHeaders[5].style.display = fieldSettings.notes?.enabled !== false ? '' : 'none';
+        
+        console.log('Updated report table headers');
+      } else {
+        console.log('Report table headers not found, found', reportHeaders.length, 'headers');
       }
+      
+      // Also update the table body cells to hide disabled columns
+      updateTableBodyVisibility();
+    }
+
+    // Update table body cell visibility based on field settings
+    function updateTableBodyVisibility() {
+      const fieldSettings = getFieldSettings();
+      
+      // Update history table body cells
+      const historyRows = document.querySelectorAll('#historyBody tr');
+      historyRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 7) {
+          cells[2].style.display = fieldSettings.quran?.enabled !== false ? '' : 'none'; // Quran
+          cells[3].style.display = fieldSettings.surah?.enabled !== false ? '' : 'none'; // Surah
+          cells[4].style.display = fieldSettings.laws?.enabled !== false ? '' : 'none'; // Laws
+          cells[5].style.display = fieldSettings.qamar?.enabled !== false ? '' : 'none'; // Qamar
+          cells[6].style.display = fieldSettings.notes?.enabled !== false ? '' : 'none'; // Notes
+        }
+      });
+      
+      // Update report table body cells
+      const reportRows = document.querySelectorAll('#reportBody tr');
+      reportRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 6) {
+          cells[1].style.display = fieldSettings.quran?.enabled !== false ? '' : 'none'; // Quran
+          cells[2].style.display = fieldSettings.surah?.enabled !== false ? '' : 'none'; // Surah
+          cells[3].style.display = fieldSettings.laws?.enabled !== false ? '' : 'none'; // Laws
+          cells[4].style.display = fieldSettings.qamar?.enabled !== false ? '' : 'none'; // Qamar
+          cells[5].style.display = fieldSettings.notes?.enabled !== false ? '' : 'none'; // Notes
+        }
+      });
     }
 
     function updateStudentsDisplay() {
@@ -1160,6 +1209,9 @@
         historyBody.appendChild(tr);
       });
       countInfo.textContent=`${rows.length} note${rows.length===1?'':'s'} shown`;
+      
+      // Update cell visibility based on field settings
+      updateTableBodyVisibility();
     }
 
     async function renderMonthlyReport(){
@@ -1222,6 +1274,9 @@
           updateReportDownloadLabel();
         }
         currentReportRows=sorted;
+        
+        // Update cell visibility based on field settings
+        updateTableBodyVisibility();
       }catch(err){
         if(requestId!==reportRequestToken)return;
         console.error(err);
@@ -1258,10 +1313,42 @@
     }
 
     function downloadMonthlyCsv(student,monthValue){
-      const labels = getCurrentFieldLabels();
-      const rows=[['Date','Student',labels.quran,labels.surah,labels.laws,labels.qamar,labels.notes]];
-      currentReportRows.forEach(r=>{
-        rows.push([formatDisplayDate(r.date),r.student||'',r.quran||'',r.surah||'',r.lawsOfSalah||'',r.qamar||'',r.anythingElse||'']);
+      const fieldSettings = getFieldSettings();
+      
+      // Helper function to remove emojis for CSV compatibility
+      const cleanLabelForCsv = (label) => {
+        return label ? label.replace(/[\u{1F000}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{E000}-\u{F8FF}]|[\u{FE00}-\u{FE0F}]|[\u{200D}]/gu, '').trim() : '';
+      };
+      
+      // Build header row with only enabled fields
+      const headerRow = ['Date', 'Student'];
+      const dataExtractors = [(r) => formatDisplayDate(r.date), (r) => r.student || ''];
+      
+      if (fieldSettings.quran?.enabled !== false) {
+        headerRow.push(cleanLabelForCsv(fieldSettings.quran?.label) || 'Quran');
+        dataExtractors.push((r) => r.quran || '');
+      }
+      if (fieldSettings.surah?.enabled !== false) {
+        headerRow.push(cleanLabelForCsv(fieldSettings.surah?.label) || 'Surah');
+        dataExtractors.push((r) => r.surah || '');
+      }
+      if (fieldSettings.laws?.enabled !== false) {
+        headerRow.push(cleanLabelForCsv(fieldSettings.laws?.label) || 'Laws of Salah');
+        dataExtractors.push((r) => r.lawsOfSalah || '');
+      }
+      if (fieldSettings.qamar?.enabled !== false) {
+        headerRow.push(cleanLabelForCsv(fieldSettings.qamar?.label) || 'Qamar');
+        dataExtractors.push((r) => r.qamar || '');
+      }
+      if (fieldSettings.notes?.enabled !== false) {
+        headerRow.push(cleanLabelForCsv(fieldSettings.notes?.label) || 'Notes');
+        dataExtractors.push((r) => r.anythingElse || '');
+      }
+      
+      const rows = [headerRow];
+      currentReportRows.forEach(r => {
+        const dataRow = dataExtractors.map(extractor => extractor(r));
+        rows.push(dataRow);
       });
       const csv=rows.map(row=>row.map(toCsvValue).join(',')).join('\r\n');
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
@@ -1306,14 +1393,30 @@
         y+=lineHeight;
 
         doc.setFont('helvetica','normal');
-        const labels = getCurrentFieldLabels();
-        const sections=[
-          [labels.quran,row.quran],
-          [labels.surah,row.surah],
-          [labels.laws,row.lawsOfSalah],
-          [labels.qamar,row.qamar],
-          [labels.notes,row.anythingElse],
-        ];
+        const fieldSettings = getFieldSettings();
+        
+        // Helper function to remove emojis for PDF compatibility
+        const cleanLabelForPdf = (label) => {
+          return label ? label.replace(/[\u{1F000}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{1F1E0}-\u{1F1FF}]|[\u{E000}-\u{F8FF}]|[\u{FE00}-\u{FE0F}]|[\u{200D}]/gu, '').trim() : '';
+        };
+        
+        // Build sections array with only enabled fields
+        const sections = [];
+        if (fieldSettings.quran?.enabled !== false) {
+          sections.push([cleanLabelForPdf(fieldSettings.quran?.label) || 'Quran', row.quran]);
+        }
+        if (fieldSettings.surah?.enabled !== false) {
+          sections.push([cleanLabelForPdf(fieldSettings.surah?.label) || 'Surah', row.surah]);
+        }
+        if (fieldSettings.laws?.enabled !== false) {
+          sections.push([cleanLabelForPdf(fieldSettings.laws?.label) || 'Laws of Salah', row.lawsOfSalah]);
+        }
+        if (fieldSettings.qamar?.enabled !== false) {
+          sections.push([cleanLabelForPdf(fieldSettings.qamar?.label) || 'Qamar', row.qamar]);
+        }
+        if (fieldSettings.notes?.enabled !== false) {
+          sections.push([cleanLabelForPdf(fieldSettings.notes?.label) || 'Notes', row.anythingElse]);
+        }
         sections.forEach(([label,value])=>{
           const text=`• ${label}: ${value||'-'}`;
           const lines=doc.splitTextToSize(text,Math.max(maxWidth-20,0));
