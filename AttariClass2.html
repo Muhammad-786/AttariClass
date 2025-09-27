@@ -39,34 +39,6 @@
     .notification.show{transform:translateX(0)}
     .notification.success{background:linear-gradient(135deg,#10b981,#059669)}
     .notification.error{background:linear-gradient(135deg,#ef4444,#dc2626)}
-    
-    /* Enhanced table styles */
-    .enhanced-table {
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    .enhanced-table tbody tr:nth-child(even) {
-      background-color: rgba(248, 250, 252, 0.3);
-    }
-    .dark .enhanced-table tbody tr:nth-child(even) {
-      background-color: rgba(30, 41, 59, 0.3);
-    }
-    .table-cell-highlight {
-      position: relative;
-    }
-    .table-cell-highlight::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-    .enhanced-table tbody tr:hover .table-cell-highlight::before {
-      opacity: 1;
-    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 text-slate-900 dark:text-slate-100 min-h-screen overflow-x-hidden">
@@ -184,55 +156,40 @@
                 <p class="text-sm text-slate-600 dark:text-slate-400">Real-time per-student notes (latest first)</p>
               </div>
               <div class="flex flex-wrap gap-3">
-                <div class="relative">
-                  <select id="filterStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 pl-10 pr-4 py-2 text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all">
-                    <option value="">All students</option>
-                  </select>
-                  <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">👤</div>
-                </div>
-                <div class="relative">
-                  <input id="filterDate" type="date" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 pl-10 pr-4 py-2 text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all" />
-                  <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">📅</div>
-                </div>
-                <button id="clearFilters" class="px-4 py-2 rounded-xl bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 text-slate-700 dark:text-slate-200 font-medium hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-600 dark:hover:to-slate-500 transition-all duration-200 border border-slate-300/40 dark:border-slate-600/40">🔄 Clear</button>
+                <select id="filterStudent" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500">
+                  <option value="">All students</option>
+                </select>
+                <input id="filterDate" type="date" class="rounded-xl bg-slate-50/80 dark:bg-slate-800/80 border-2 border-slate-200/60 dark:border-slate-700/60 px-4 py-2 text-sm font-medium focus:border-blue-500" />
+                <button id="clearFilters" class="px-4 py-2 rounded-xl bg-slate-200/80 dark:bg-slate-700/80 text-slate-700 dark:text-slate-200">🔄 Clear</button>
               </div>
             </div>
-            <div class="overflow-hidden rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur enhanced-table">
+            <div class="overflow-hidden">
               <div class="overflow-x-auto custom-scrollbar max-h-96">
                 <table class="min-w-full text-left text-sm">
-                  <thead class="sticky top-0 backdrop-blur bg-gradient-to-r from-blue-50/90 to-indigo-50/90 dark:from-slate-800/90 dark:to-slate-700/90 border-b border-slate-200/60 dark:border-slate-700/60">
+                  <thead class="sticky top-0 backdrop-blur bg-slate-100/90 dark:bg-slate-800/90">
                     <tr>
-                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">📅 Date</th>
-                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">👤 Student</th>
-                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">📖 Quran</th>
-                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">🕌 Surah</th>
-                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">🤲 Salah</th>
-                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">🌙 Qamar</th>
-                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">💭 Notes</th>
-                      <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs text-center">⚡ Actions</th>
+                      <th class="px-6 py-3 font-semibold">📅 Date</th>
+                      <th class="px-6 py-3 font-semibold">👤 Student</th>
+                      <th class="px-6 py-3 font-semibold">📖 Quran</th>
+                      <th class="px-6 py-3 font-semibold">🕌 Surah</th>
+                      <th class="px-6 py-3 font-semibold">🤲 Salah</th>
+                      <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
+                      <th class="px-6 py-3 font-semibold">💭 Notes</th>
+                      <th class="px-6 py-3 font-semibold">⚡ Actions</th>
                     </tr>
                   </thead>
-                  <tbody id="historyBody" class="divide-y divide-slate-200/30 dark:divide-slate-700/30"></tbody>
+                  <tbody id="historyBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
                 </table>
               </div>
-              <div id="emptyState" class="hidden text-center py-16">
-                <div class="text-7xl mb-4 animate-pulse">📝</div>
-                <h3 class="text-xl font-bold text-slate-700 dark:text-slate-300 mb-2">No entries yet</h3>
-                <p class="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Start tracking progress by adding your first note using the form on the left.</p>
-                <div class="mt-6 flex justify-center">
-                  <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium">
-                    <span>💡</span>
-                    <span>Use the form to get started</span>
-                  </div>
-                </div>
+              <div id="emptyState" class="hidden text-center py-14">
+                <div class="text-6xl mb-3">📝</div>
+                <h3 class="text-lg font-semibold text-slate-600 dark:text-slate-400">No entries yet</h3>
+                <p class="text-slate-500">Add your first note using the form.</p>
               </div>
             </div>
-            <div class="p-6 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50 bg-slate-50/30 dark:bg-slate-800/30">
-              <div class="flex items-center gap-3">
-                <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <div id="countInfo" class="text-sm font-medium text-slate-600 dark:text-slate-400">0 notes</div>
-              </div>
-              <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-200">🔄 Refresh</button>
+            <div class="p-6 flex items-center justify-between border-t border-slate-200/50 dark:border-slate-700/50">
+              <div id="countInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
+              <button id="reload" class="px-4 py-2 rounded-xl text-white font-medium shadow-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">🔄 Refresh</button>
             </div>
           </div>
         </section>
@@ -259,22 +216,20 @@
             </div>
             <div class="p-6 md:p-8 space-y-6">
               <div id="reportInfo" class="text-sm text-slate-600 dark:text-slate-400"></div>
-              <div id="reportTableWrapper" class="hidden overflow-hidden rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur enhanced-table">
-                <div class="overflow-x-auto custom-scrollbar max-h-96">
-                  <table class="min-w-full text-left text-sm">
-                    <thead class="bg-gradient-to-r from-emerald-50/90 to-teal-50/90 dark:from-slate-800/90 dark:to-slate-700/90 border-b border-slate-200/60 dark:border-slate-700/60">
-                      <tr>
-                        <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">📅 Date</th>
-                        <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">📖 Quran</th>
-                        <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">🕌 Surah</th>
-                        <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">🤲 Salah</th>
-                        <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">🌙 Qamar</th>
-                        <th class="px-6 py-4 font-semibold text-slate-700 dark:text-slate-200 tracking-wide uppercase text-xs">💭 Notes</th>
-                      </tr>
-                    </thead>
-                    <tbody id="reportBody" class="divide-y divide-slate-200/30 dark:divide-slate-700/30"></tbody>
-                  </table>
-                </div>
+              <div id="reportTableWrapper" class="overflow-x-auto custom-scrollbar hidden">
+                <table class="min-w-full text-left text-sm">
+                  <thead class="bg-slate-100/80 dark:bg-slate-800/80">
+                    <tr>
+                      <th class="px-6 py-3 font-semibold">📅 Date</th>
+                      <th class="px-6 py-3 font-semibold">📖 Quran</th>
+                      <th class="px-6 py-3 font-semibold">🕌 Surah</th>
+                      <th class="px-6 py-3 font-semibold">🤲 Salah</th>
+                      <th class="px-6 py-3 font-semibold">🌙 Qamar</th>
+                      <th class="px-6 py-3 font-semibold">💭 Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportBody" class="divide-y divide-slate-200/50 dark:divide-slate-700/50"></tbody>
+                </table>
               </div>
               <div id="reportEmpty" class="text-center text-slate-500 py-10">
                 <div class="text-5xl mb-3">📂</div>
@@ -1239,20 +1194,17 @@
       emptyState.classList.add('hidden');
       rows.forEach(r=>{
         const tr=document.createElement('tr');
-        tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors duration-150';
         tr.innerHTML=`
-          <td class='px-6 py-4 font-medium text-slate-900 dark:text-slate-100 table-cell-highlight'>${esc(formatDisplayDate(r.date))}</td>
-          <td class='px-6 py-4 text-slate-700 dark:text-slate-300'>${esc(r.student||'')}</td>
-          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(r.quran||'')}</td>
-          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(r.surah||'')}</td>
-          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(r.lawsOfSalah||'')}</td>
-          <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(r.qamar||'')}</td>
-          <td class='px-6 py-4 text-slate-600 dark:text-slate-400 max-w-xs truncate'>${esc(r.anythingElse||'')}</td>
-          <td class='px-6 py-4 whitespace-nowrap text-center'>
-            <div class="flex items-center justify-center gap-2">
-              <button class='px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/30 transition-colors' data-action='edit' data-id='${r.id}'>✏️ Edit</button>
-              <button class='px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/30 transition-colors' data-action='delete' data-id='${r.id}'>🗑️ Delete</button>
-            </div>
+          <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
+          <td class='px-6 py-3'>${esc(r.student||'')}</td>
+          <td class='px-6 py-3'>${esc(r.quran||'')}</td>
+          <td class='px-6 py-3'>${esc(r.surah||'')}</td>
+          <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
+          <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
+          <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
+          <td class='px-6 py-3 whitespace-nowrap'>
+            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-slate-300 mr-2 hover:bg-slate-100 dark:hover:bg-slate-800' data-action='edit' data-id='${r.id}'>Edit</button>
+            <button class='px-2 py-1 text-xs rounded-lg ring-1 ring-red-300 text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20' data-action='delete' data-id='${r.id}'>Delete</button>
           </td>`;
         historyBody.appendChild(tr);
       });
@@ -1305,13 +1257,13 @@
         if(requestId!==reportRequestToken)return;
 
         reportBody.innerHTML=sorted.map(r=>`
-          <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors duration-150">
-            <td class='px-6 py-4 font-medium text-slate-900 dark:text-slate-100 table-cell-highlight'>${esc(formatDisplayDate(r.date))}</td>
-            <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(r.quran||'')}</td>
-            <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(r.surah||'')}</td>
-            <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(r.lawsOfSalah||'')}</td>
-            <td class='px-6 py-4 text-slate-600 dark:text-slate-400'>${esc(r.qamar||'')}</td>
-            <td class='px-6 py-4 text-slate-600 dark:text-slate-400 max-w-xs truncate'>${esc(r.anythingElse||'')}</td>
+          <tr>
+            <td class='px-6 py-3 font-medium'>${esc(formatDisplayDate(r.date))}</td>
+            <td class='px-6 py-3'>${esc(r.quran||'')}</td>
+            <td class='px-6 py-3'>${esc(r.surah||'')}</td>
+            <td class='px-6 py-3'>${esc(r.lawsOfSalah||'')}</td>
+            <td class='px-6 py-3'>${esc(r.qamar||'')}</td>
+            <td class='px-6 py-3'>${esc(r.anythingElse||'')}</td>
           </tr>`).join('');
 
         reportTableWrapper.classList.remove('hidden');
